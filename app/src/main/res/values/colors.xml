@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The app branding color for the app bar -->
+    <color name="colorPrimary">#52C5B2</color>
+
+    <!-- Darker variant for the status bar and contextual app bars -->
+    <color name="colorPrimaryDark">#48726C</color>
+
+    <!-- Accent color for UI controls like checkboxes and text fields -->
+    <color name="colorAccent">#AA7527</color>
+
+    <!-- Primary color for the details screen -->
+    <color name="detailsColorPrimary">#CC8C2E</color>
+
+    <!-- Primary dark color for the details screen -->
+    <color name="detailsColorPrimaryDark">#5A3610</color>
+
+</resources>
