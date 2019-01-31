@@ -188,7 +188,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 return true;
             case R.id.action_buy:
                 String[] emailAddress = {supplier_email.getText().toString()};
-                String emailSubject = getResources().getString(R.string.email_order_request) + " " + product_name.getText().toString();
+                String emailSubject = getResources().getString(R.string.email_order_request_subject) + " " + product_name.getText().toString();
                 composeEmail(emailAddress, emailSubject, createEmailBody());
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
