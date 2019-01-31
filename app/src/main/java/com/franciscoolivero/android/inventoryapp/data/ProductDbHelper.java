@@ -29,7 +29,7 @@ public class ProductDbHelper extends SQLiteOpenHelper {
             + ProductEntry.COLUMN_PRODUCT_NAME + " TEXT NOT NULL, "
             + ProductEntry.COLUMN_PRODUCT_MODEL + " TEXT NOT NULL, "
             + ProductEntry.COLUMN_PRODUCT_PRICE + " INTEGER NOT NULL, "
-            + ProductEntry.COLUMN_PRODUCT_QUANTITY+ " INTEGER NOT NULL DEFAULT 0, "
+            + ProductEntry.COLUMN_PRODUCT_QUANTITY + " INTEGER NOT NULL DEFAULT 0, "
             + ProductEntry.COLUMN_PRODUCT_PICTURE + " BLOB DEFAULT NULL, "
             + ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME + " TEXT NOT NULL,"
             + ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL + " TEXT NOT NULL);";
@@ -38,7 +38,7 @@ public class ProductDbHelper extends SQLiteOpenHelper {
 
 
     public ProductDbHelper(Context context) {
-        super(context,DATABASE_NAME , null, DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override

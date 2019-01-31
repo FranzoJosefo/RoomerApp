@@ -32,6 +32,7 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
     private final String LOG_TAG = getClass().getSimpleName();
     @BindView(R.id.list_view)
     ListView listView;
+
     ProductCursorAdapter mCursorAdapter;
     private static final int PRODUCT_LOADER_ID = 0;
 
@@ -140,6 +141,7 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
         }
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_catalog.xml file.
@@ -170,6 +172,7 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
                 ProductEntry.COLUMN_PRODUCT_MODEL,
                 ProductEntry.COLUMN_PRODUCT_QUANTITY,
                 ProductEntry.COLUMN_PRODUCT_PRICE,
+                ProductEntry.COLUMN_PRODUCT_PICTURE,
         };
         return new CursorLoader(this,
                 ProductEntry.CONTENT_URI,

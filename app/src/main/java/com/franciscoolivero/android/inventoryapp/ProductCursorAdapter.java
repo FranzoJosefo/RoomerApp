@@ -1,13 +1,22 @@
 package com.franciscoolivero.android.inventoryapp;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.franciscoolivero.android.inventoryapp.data.ProductContract.ProductEntry;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,15 +69,66 @@ public class ProductCursorAdapter extends CursorAdapter {
         String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
         String model = cursor.getString(cursor.getColumnIndexOrThrow("model"));
         float price = cursor.getFloat(cursor.getColumnIndexOrThrow("price"));
-        String quantity = String.valueOf(cursor.getInt(cursor.getColumnIndexOrThrow("quantity")));
+        int quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"));
+        byte[] pictureByteArray = cursor.getBlob(cursor.getColumnIndexOrThrow("picture"));
+        Bitmap bitmap = BitmapFactory.decodeByteArray(pictureByteArray, 0, pictureByteArray.length);
+        if (bitmap != null) {
+            holder.picture.setImageBitmap(bitmap);
+        }
+
+        ImageButton buttonSale = view.findViewById(R.id.button_sale);
+
+        int currentId = cursor.getInt(cursor.getColumnIndexOrThrow(ProductEntry._ID));
+
+        Uri mCurrentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, currentId);
+
+
+        buttonSale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int quantity = Integer.valueOf(holder.quantity.getText().toString());
+                long affectedRowOrId;
+
+                if (quantity != 0) {
+                    quantity -= 1;
+                }
+
+                String strQuantity = String.valueOf(quantity);
+
+                // Create a new map of values, where column names are the keys
+                ContentValues values = new ContentValues();
+
+                values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, strQuantity);
+
+                affectedRowOrId = context.getContentResolver().update(mCurrentProductUri, values, null, null);
+                notifyDataSetChanged();
+
+                if (affectedRowOrId == 0) {
+                    Toast toast = Toast.makeText(view.getContext(), "Error selling product", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        });
+
         holder.name.setText(name);
         holder.model.setText(model);
         String priceString = String.format("%.2f", price);
         holder.price.setText(priceString);
-        quantity = context.getResources().getString(R.string.in_stock_label_list_item)+quantity;
-        holder.quantity.setText(quantity);
+
+        String quantityStr = String.valueOf(quantity);
+
+        if (quantity == 0) {
+            holder.quantity.setText(context.getResources().getString(R.string.out_of_stock_label_list_item));
+            holder.buttonSale.setVisibility(View.GONE);
+            holder.inStockLabel.setVisibility(View.GONE);
+        } else {
+            holder.buttonSale.setVisibility(View.VISIBLE);
+            holder.inStockLabel.setVisibility(View.VISIBLE);
+            holder.quantity.setText(quantityStr);
+        }
 
     }
+
 
     static class ViewHolder {
         @BindView(R.id.name)
@@ -79,13 +139,15 @@ public class ProductCursorAdapter extends CursorAdapter {
         TextView quantity;
         @BindView(R.id.price)
         TextView price;
-        @BindView(R.id.list_item_parent_view)
-        LinearLayout parentView;
+        @BindView(R.id.image_list_item)
+        ImageView picture;
+        @BindView(R.id.button_sale)
+        ImageButton buttonSale;
+        @BindView(R.id.in_stock_label)
+        TextView inStockLabel;
 
         private ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
     }
-
-
 }

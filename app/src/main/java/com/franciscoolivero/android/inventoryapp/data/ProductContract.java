@@ -54,14 +54,14 @@ public class ProductContract {
 
         /**
          * Unique ID number for the product (only for use in the database table)
-         *
+         * <p>
          * Type: INTEGER
          */
         public static final String _ID = BaseColumns._ID;
 
         /**
          * Name of the the product
-         *
+         * <p>
          * Type: TEXT
          */
         public static final String COLUMN_PRODUCT_NAME = "name";
@@ -69,43 +69,42 @@ public class ProductContract {
 
         /**
          * Model of the the product
-         *
+         * <p>
          * Type: TEXT
          */
         public static final String COLUMN_PRODUCT_MODEL = "model";
 
         /**
          * Available Quantity (Stock) of the product
-         *
+         * <p>
          * Type: INTEGER
          */
         public static final String COLUMN_PRODUCT_QUANTITY = "quantity";
 
         /**
          * Price of the product
-         *
+         * <p>
          * Type: INTEGER
-         *
          */
         public static final String COLUMN_PRODUCT_PRICE = "price";
 
         /**
          * Picture of the product
-         *
+         * <p>
          * Type: BLOB
          */
         public static final String COLUMN_PRODUCT_PICTURE = "picture";
 
         /**
          * Supplier name
-         *
+         * <p>
          * Type: String
          */
         public static final String COLUMN_PRODUCT_SUPPLIER_NAME = "supplierName";
 
         /**
          * Supplier email
-         *
+         * <p>
          * Type: String
          */
         public static final String COLUMN_PRODUCT_SUPPLIER_EMAIL = "supplierEmail";

@@ -355,7 +355,8 @@ public class ProductProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
-        return rowsDeleted; }
+        return rowsDeleted;
+    }
 
     /**
      * Returns the MIME type of data for the content URI.

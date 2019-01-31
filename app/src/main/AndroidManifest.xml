@@ -15,19 +15,33 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="text/plain" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SENDTO" />
+                <data android:scheme="mailto" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
         </activity>
-        <activity android:name=".DetailActivity"
-            android:theme="@style/DetailTheme"
-            android:parentActivityName=".ProductsActivity">
+        <activity
+            android:name=".DetailActivity"
+            android:parentActivityName=".ProductsActivity"
+            android:theme="@style/DetailTheme">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ProductsActivity" />
         </activity>
+
         <provider
-            android:authorities="com.franciscoolivero.android.inventoryapp"
             android:name=".data.ProductProvider"
-            android:exported="false"/>
+            android:authorities="com.franciscoolivero.android.inventoryapp"
+            android:exported="false" />
+
     </application>
 
 </manifest>

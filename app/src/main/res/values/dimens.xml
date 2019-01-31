@@ -4,7 +4,7 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <!-- Common margin value used throughout the app -->
-    <dimen name="activity_margin">16dp</dimen>
+    <dimen name="activity_margin">8dp</dimen>
 
     <!-- Height of the Image in Details Activity -->
     <dimen name="details_image_height">200dp</dimen>

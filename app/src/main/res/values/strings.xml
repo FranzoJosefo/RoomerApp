@@ -23,10 +23,10 @@
     <string name="action_order">Order Product</string>
 
     <!-- Label for overview category of attributes in the editor [CHAR LIMIT=30] -->
-    <string name="category_overview">Product Overview *</string>
+    <string name="category_overview">Overview *</string>
 
     <!-- Label for stock category in the editor [CHAR LIMIT=30] -->
-    <string name="category_stock">Product Stock</string>
+    <string name="category_stock">Stock</string>
 
     <!-- Label for picture in the editor [CHAR LIMIT=30] -->
     <string name="category_picture">Picture</string>
@@ -108,10 +108,16 @@
     <string name="image_tap_helper_text">Tap to upload image</string>
 
     <!-- Units for weight of the pet (kilograms) [CHAR LIMIT=5] -->
-    <string name="unit_pet_currency">U$S</string>
+    <string name="unit_pet_currency">U$S\u0020</string>
 
     <!-- In Stock label for List Item -->
     <string name="in_stock_label_list_item">In Stock:\u0020</string>
+
+    <!-- OUT OF STOCK label for cases in which quantity is 0 for List Item -->
+    <string name="out_of_stock_label_list_item">OUT OF STOCK</string>
+
+    <!-- Order request subject for Email intent in DetailsActivity -->
+    <string name="email_order_request_subject">Order Request</string>
 
 </resources>
 

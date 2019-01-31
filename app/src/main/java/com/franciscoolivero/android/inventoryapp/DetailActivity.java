@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -43,6 +44,12 @@ import butterknife.ButterKnife;
  */
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    /**
+     * Gender of the product. The possible values are:
+     * 0 for unknown gender, 1 for male, 2 for female.
+     */
+    private static final int PICK_IMAGE_REQUEST = 100;
+    private static final int PRODUCT_LOADER_ID = 0;
     // Find all relevant views that we will need to read user input from
     @BindView(R.id.edit_product_name)
     EditText product_name;
@@ -58,17 +65,31 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     EditText supplier_name;
     @BindView(R.id.edit_supplier_email)
     EditText supplier_email;
-
-    /**
-     * Gender of the product. The possible values are:
-     * 0 for unknown gender, 1 for male, 2 for female.
-     */
-    private static final int PICK_IMAGE_REQUEST = 100;
-    private static final int PRODUCT_LOADER_ID = 0;
+    @BindView(R.id.btn_inc_quantity)
+    Button btn_inc_quantity;
+    @BindView(R.id.btn_dec_quantity)
+    Button btn_dec_quantity;
     private boolean mProductHasChanged = false;
     private String LOG_TAG = getClass().getSimpleName();
     private Uri mCurrentProductUri;
     private Uri selectedImage;
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            mProductHasChanged = true;
+            return false;
+        }
+    };
+
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        //Reduce the quality to avoid issues with BLOB (BLOB cannot exceed 1mb).
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
+        return outputStream.toByteArray();
+    }
+
+    // OnTouchListener that listens for any user touches on a View, implying that they are modifying
+    // the view, and we change the mProductHasChanged boolean to true.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,17 +139,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         return true;
     }
 
-    // OnTouchListener that listens for any user touches on a View, implying that they are modifying
-    // the view, and we change the mProductHasChanged boolean to true.
-
-    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            mProductHasChanged = true;
-            return false;
-        }
-    };
-
     @Override
     public void onBackPressed() {
         // If the product hasn't changed, continue with handling back button press
@@ -177,7 +187,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 showDeleteConfirmationDialog();
                 return true;
             case R.id.action_buy:
-                //TODO
+                String[] emailAddress = {supplier_email.getText().toString()};
+                String emailSubject = getResources().getString(R.string.email_order_request) + " " + product_name.getText().toString();
+                composeEmail(emailAddress, emailSubject, createEmailBody());
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
@@ -230,7 +242,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         alertDialog.show();
     }
 
-
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
@@ -263,12 +274,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      */
     private void deleteProduct() {
         int rowsDeleted = 0;
-        if(mCurrentProductUri!=null){
+        if (mCurrentProductUri != null) {
             rowsDeleted = getContentResolver().delete(mCurrentProductUri,
                     null,
                     null);
         }
-        if(rowsDeleted>0){
+        if (rowsDeleted > 0) {
             Toast toast = Toast.makeText(this, R.string.editor_delete_product_successful, Toast.LENGTH_SHORT);
             toast.show();
             Log.v(LOG_TAG, "Success - # Of rows deleted: " + rowsDeleted);
@@ -282,7 +293,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Insert or Update a product in the database.
      */
-    //TODO ADD IMAGE
     private void saveProduct() {
         long affectedRowOrId;
         String sProduct_name = product_name.getText().toString().trim();
@@ -290,7 +300,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         String sProduct_price = String.valueOf(product_price.getText()).trim();
         String sProduct_quantity = String.valueOf(product_quantity.getText()).trim();
         //Convert Drawable to bitmap
-        Bitmap bitmapPicture = ((BitmapDrawable)product_picture.getDrawable()).getBitmap();
+        Bitmap bitmapPicture = ((BitmapDrawable) product_picture.getDrawable()).getBitmap();
         //Create ByteArray from bitmap
         byte[] byteArrayPicture = getBitmapAsByteArray(bitmapPicture);
         String sSupplier_name = supplier_name.getText().toString().trim();
@@ -299,19 +309,24 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         if (TextUtils.isEmpty(sProduct_name) || TextUtils.isEmpty(sProduct_model) || TextUtils.isEmpty(sProduct_price) || TextUtils.isEmpty(sSupplier_name) || TextUtils.isEmpty(sSupplier_email)) {
             Toast toast = Toast.makeText(this, "Missing required fields, Try again.", Toast.LENGTH_SHORT);
             toast.show();
-//            finish();
 
             return;
         }
 
-        float iProduct_price = 0;
-        if(!TextUtils.isEmpty(sProduct_price)){
-            iProduct_price = Float.parseFloat(sProduct_price);
-            if(iProduct_price==0){
+        float fProduct_price = 0;
+        if (!TextUtils.isEmpty(sProduct_price)) {
+            if (!isNumeric(sProduct_price)) {
+                Toast toast = Toast.makeText(this, "Price must be a number, QA scum", Toast.LENGTH_SHORT);
+                toast.show();
+                return;
+            }
+            fProduct_price = Float.parseFloat(sProduct_price);
+            if (fProduct_price == 0) {
                 Toast toast = Toast.makeText(this, "Price cannot be 0", Toast.LENGTH_SHORT);
                 toast.show();
                 return;
             }
+
         }
 
         // If the quantity is not provided by the user, don't try to parse the string into an
@@ -328,7 +343,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         values.put(ProductEntry.COLUMN_PRODUCT_NAME, sProduct_name);
         values.put(ProductEntry.COLUMN_PRODUCT_MODEL, sProduct_model);
-        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, iProduct_price);
+        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, fProduct_price);
         values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, iProduct_quantity);
         values.put(ProductEntry.COLUMN_PRODUCT_PICTURE, byteArrayPicture);
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME, sSupplier_name);
@@ -345,18 +360,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     }
 
-
-
-    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, outputStream);
-        return outputStream.toByteArray();
+    public boolean isNumeric(String s) {
+        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
 
     /**
      * Insert a new product in the database.
      */
-    //TODO ADD IMAGE
     private long insertProduct(ContentValues values) {
         // Insert the new row, returning the full Uri for the added row (scheme + content authority + path)
         Uri newUriId = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
@@ -368,7 +378,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Update an existing product in the database.
      */
-    //TODO ADD IMAGE
     private long updateProduct(ContentValues values) {
         return getContentResolver().update(mCurrentProductUri, values, null, null);
     }
@@ -399,24 +408,41 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
+    /**
+     * Handle clicking on the ImageButton to pick an image from the Gallery
+     */
     public void pickImage(View v) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
+    /**
+     * After a user selects an image from the Gallery, update the UI with new data or error if needed.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         selectedImage = null;
-        switch(requestCode){
+        switch (requestCode) {
             case PICK_IMAGE_REQUEST:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     selectedImage = data.getData();
 
                     try {
-                        product_picture.setImageURI(null);
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
+
+                        //Check if image isn't 10MB(almost just in case) or bigger, if it is BLOB will cause conflict in DB, so return an Error Toast.
+                        byte[] bitmapAsArray = getBitmapAsByteArray(bitmap);
+                        int bitmapArrayLength = bitmapAsArray.length;
                         product_picture.setImageBitmap(bitmap);
+
+                        if (bitmapArrayLength > 9999999) {
+                            Toast toast = Toast.makeText(this, "Image must be smaller than 1MB", Toast.LENGTH_LONG);
+                            toast.show();
+
+                        } else {
+                            product_picture.setImageBitmap(bitmap);
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -424,6 +450,59 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 break;
         }
     }
+
+    public String createEmailBody() {
+        String supplierName = supplier_name.getText().toString();
+        String productName = product_name.getText().toString();
+        String productModel = product_model.getText().toString();
+        String emailBody = "Hi, " + supplierName + "\n\n" +
+                "I'm writing to you to place an order for the following product: " + "\n\n" +
+                "Product Name: " + productName + "\n" +
+                "Product Model: " + productModel + "\n" +
+                "Quantity: ";
+
+        return emailBody;
+    }
+
+    public void composeEmail(String[] addresses, String subject, String body) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_EMAIL, addresses);
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, body);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+
+    public void decreaseQuantity(View view) {
+        String quantity = product_quantity.getText().toString();
+        if (!TextUtils.isEmpty(quantity)) {
+            int intQuantity = Integer.parseInt(quantity);
+            if (intQuantity != 0) {
+                intQuantity--;
+                product_quantity.setText(String.valueOf(intQuantity));
+                return;
+            }
+        }
+        Toast.makeText(this, "Min stock limit reached", Toast.LENGTH_SHORT).show();
+    }
+
+    public void increaseQuantity(View view) {
+        int intQuantity = 0;
+        String quantity = product_quantity.getText().toString();
+        if (!TextUtils.isEmpty(quantity)) {
+            intQuantity = Integer.parseInt(quantity);
+            if (intQuantity == 9999) {
+                Toast.makeText(this, "Max stock limit reached", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        intQuantity++;
+        product_quantity.setText(String.valueOf(intQuantity));
+    }
+
 
     @NonNull
     @Override
@@ -451,12 +530,16 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 null);                 // Default sort order
     }
 
-    //TODO ADD IMAGE LOGIC
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
         Log.v(LOG_TAG, "onLoadFinished triggered");
+
+        //Check if onLoadFinished was called even after the user updated fields in Edit mode, if so return earlier so that when the user returns from the Image Gallery the views aren't overwritten with DB info.
+        if (mProductHasChanged) {
+            return;
+        }
         //Figure out the index of each column
-        if(cursor.getCount() <= 0) return;
+        if (cursor.getCount() <= 0) return;
 
         // Proceed with moving to the first row of the cursor and reading data from it
         // (This should be the only row in the cursor)
@@ -475,7 +558,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
             byte[] byteArrayPicture = cursor.getBlob(productPictureColumnIndex);
             Bitmap bitmap = BitmapFactory.decodeByteArray(byteArrayPicture, 0, byteArrayPicture.length);
-            if(bitmap!=null){
+            if (bitmap != null) {
                 product_picture.setImageBitmap(bitmap);
             }
 
