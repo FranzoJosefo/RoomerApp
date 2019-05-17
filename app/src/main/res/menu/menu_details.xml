@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<!-- Options menu for the DetailActivity -->
+<!-- Options menu for the ProfileActivity -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".EditorActivity">
+    tools:context=".R">
 
     <item
         android:id="@+id/action_save"

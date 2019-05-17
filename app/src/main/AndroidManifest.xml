@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_inventory"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ProductsActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +28,7 @@
 
         </activity>
         <activity
-            android:name=".DetailActivity"
+            android:name=".ProfileActivity"
             android:parentActivityName=".ProductsActivity"
             android:theme="@style/DetailTheme">
             <!-- Parent activity meta-data to support 4.0 and lower -->

@@ -42,7 +42,7 @@ import butterknife.ButterKnife;
 /**
  * Allows user to create a new product or edit an existing one.
  */
-public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ProfileActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * Gender of the product. The possible values are:
@@ -196,7 +196,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 // If the product hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}.
                 if (!mProductHasChanged) {
-                    NavUtils.navigateUpFromSameTask(DetailActivity.this);
+                    NavUtils.navigateUpFromSameTask(ProfileActivity.this);
                     return true;
                 }
 
@@ -208,7 +208,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // User clicked "Discard" button, navigate to parent activity.
-                                NavUtils.navigateUpFromSameTask(DetailActivity.this);
+                                NavUtils.navigateUpFromSameTask(ProfileActivity.this);
                             }
                         };
 

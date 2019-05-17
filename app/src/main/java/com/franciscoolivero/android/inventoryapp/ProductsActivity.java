@@ -47,10 +47,10 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ProductsActivity.this, DetailActivity.class);
+                Intent intent = new Intent(ProductsActivity.this, ProfileActivity.class);
 
                 /**
-                 * Start the {@link DetailActivity} to Insert a new product
+                 * Start the {@link ProfileActivity} to Insert a new product
                  */
                 startActivity(intent);
             }
@@ -59,14 +59,14 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Intent intent = new Intent(ProductsActivity.this, DetailActivity.class);
+                Intent intent = new Intent(ProductsActivity.this, ProfileActivity.class);
 
                 //Pass the Content Uri (schema + authority + Id) as data field in the Intent
                 //By appending to the Base CONTENT_URI the Id of the item selected, passed along by the Adapter.
                 intent.setData(ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id));
 
                 /**
-                 * Start the {@link DetailActivity} to display the data for the selected Product
+                 * Start the {@link ProfileActivity} to display the data for the selected Product
                  */
                 startActivity(intent);
 
