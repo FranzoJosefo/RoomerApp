@@ -1,4 +1,4 @@
-package com.franciscoolivero.android.inventoryapp.data;
+package com.franciscoolivero.android.roomerapp.data;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
-import com.franciscoolivero.android.inventoryapp.data.ProductContract.ProductEntry;
+import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
 
 public class ProductProvider extends ContentProvider {
 

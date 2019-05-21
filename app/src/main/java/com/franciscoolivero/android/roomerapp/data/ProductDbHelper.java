@@ -1,11 +1,11 @@
-package com.franciscoolivero.android.inventoryapp.data;
+package com.franciscoolivero.android.roomerapp.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.franciscoolivero.android.inventoryapp.data.ProductContract.ProductEntry;
+import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
 
 public class ProductDbHelper extends SQLiteOpenHelper {
 

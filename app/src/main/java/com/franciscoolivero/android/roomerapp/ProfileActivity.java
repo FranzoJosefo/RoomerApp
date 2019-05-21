@@ -1,4 +1,4 @@
-package com.franciscoolivero.android.inventoryapp;
+package com.franciscoolivero.android.roomerapp;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -23,7 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.franciscoolivero.android.inventoryapp.data.ProductContract.ProductEntry;
+import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -250,7 +250,7 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the product.
-                deleteProduct();
+//                deleteProduct();
                 finish();
             }
         });
@@ -272,23 +272,23 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
     /**
      * Perform the deletion of the product in the database.
      */
-    private void deleteProduct() {
-        int rowsDeleted = 0;
-        if (mCurrentProductUri != null) {
-            rowsDeleted = getContentResolver().delete(mCurrentProductUri,
-                    null,
-                    null);
-        }
-        if (rowsDeleted > 0) {
-            Toast toast = Toast.makeText(this, R.string.editor_delete_product_successful, Toast.LENGTH_SHORT);
-            toast.show();
-            Log.v(LOG_TAG, "Success - # Of rows deleted: " + rowsDeleted);
-        } else {
-            Toast toast = Toast.makeText(this, R.string.editor_delete_product_failed, Toast.LENGTH_SHORT);
-            toast.show();
-            Log.v(LOG_TAG, "Failure - # Of rows deleted: " + rowsDeleted);
-        }
-    }
+//    private void deleteProduct() {
+//        int rowsDeleted = 0;
+//        if (mCurrentProductUri != null) {
+//            rowsDeleted = getContentResolver().delete(mCurrentProductUri,
+//                    null,
+//                    null);
+//        }
+//        if (rowsDeleted > 0) {
+//            Toast toast = Toast.makeText(this, R.string.editor_delete_product_successful, Toast.LENGTH_SHORT);
+//            toast.show();
+//            Log.v(LOG_TAG, "Success - # Of rows deleted: " + rowsDeleted);
+//        } else {
+//            Toast toast = Toast.makeText(this, R.string.editor_delete_product_failed, Toast.LENGTH_SHORT);
+//            toast.show();
+//            Log.v(LOG_TAG, "Failure - # Of rows deleted: " + rowsDeleted);
+//        }
+//    }
 
     /**
      * Insert or Update a product in the database.

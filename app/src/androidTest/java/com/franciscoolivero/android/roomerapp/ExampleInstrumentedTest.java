@@ -1,4 +1,4 @@
-package com.franciscoolivero.android.inventoryapp;
+package com.franciscoolivero.android.roomerapp;
 
 import android.content.Context;
 import androidx.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.franciscoolivero.android.inventoryapp", appContext.getPackageName());
+        assertEquals("com.franciscoolivero.android.roomerapp", appContext.getPackageName());
     }
 }

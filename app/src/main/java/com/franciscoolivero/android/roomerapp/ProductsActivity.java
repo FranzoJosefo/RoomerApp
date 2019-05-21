@@ -1,4 +1,4 @@
-package com.franciscoolivero.android.inventoryapp;
+package com.franciscoolivero.android.roomerapp;
 
 import android.app.AlertDialog;
 import android.content.ContentUris;
@@ -14,7 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.franciscoolivero.android.inventoryapp.data.ProductContract.ProductEntry;
+import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;

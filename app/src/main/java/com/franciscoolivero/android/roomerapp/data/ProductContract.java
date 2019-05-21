@@ -1,4 +1,4 @@
-package com.franciscoolivero.android.inventoryapp.data;
+package com.franciscoolivero.android.roomerapp.data;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -19,7 +19,7 @@ public class ProductContract {
      * content authority is the package name for the app, which is guaranteed to be unique on the
      * device.
      */
-    public static final String CONTENT_AUTHORITY = "com.franciscoolivero.android.inventoryapp";
+    public static final String CONTENT_AUTHORITY = "com.franciscoolivero.android.roomerapp";
 
     /**
      * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact

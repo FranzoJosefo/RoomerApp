@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.franciscoolivero.android.inventoryapp">
+    package="com.franciscoolivero.android.roomerapp">
 
     <application
         android:allowBackup="true"
@@ -39,7 +39,7 @@
 
         <provider
             android:name=".data.ProductProvider"
-            android:authorities="com.franciscoolivero.android.inventoryapp"
+            android:authorities="com.franciscoolivero.android.roomerapp"
             android:exported="false" />
 
     </application>

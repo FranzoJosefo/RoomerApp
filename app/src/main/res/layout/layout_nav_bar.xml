@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.franciscoolivero.android.inventoryapp.MainActivity">
+    tools:context="com.franciscoolivero.android.roomerapp.MainActivity">
 
     <FrameLayout
         android:id="@+id/frame_container"

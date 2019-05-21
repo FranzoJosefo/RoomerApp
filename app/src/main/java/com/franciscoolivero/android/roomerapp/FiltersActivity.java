@@ -1,4 +1,4 @@
-package com.franciscoolivero.android.inventoryapp;
+package com.franciscoolivero.android.roomerapp;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -23,7 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.franciscoolivero.android.inventoryapp.data.ProductContract.ProductEntry;
+import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -186,7 +186,7 @@ public class FiltersActivity extends AppCompatActivity implements LoaderManager.
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
-                showDeleteConfirmationDialog();
+//                showDeleteConfirmationDialog();
                 return true;
             case R.id.action_buy:
                 String[] emailAddress = {supplier_email.getText().toString()};
@@ -244,53 +244,53 @@ public class FiltersActivity extends AppCompatActivity implements LoaderManager.
         alertDialog.show();
     }
 
-    private void showDeleteConfirmationDialog() {
-        // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the positive and negative buttons on the dialog.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.delete_dialog_msg);
-        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the product.
-                deleteProduct();
-                finish();
-            }
-        });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the product.
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
+//    private void showDeleteConfirmationDialog() {
+//        // Create an AlertDialog.Builder and set the message, and click listeners
+//        // for the positive and negative buttons on the dialog.
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setMessage(R.string.delete_dialog_msg);
+//        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int id) {
+//                // User clicked the "Delete" button, so delete the product.
+//                deleteProduct();
+//                finish();
+//            }
+//        });
+//        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int id) {
+//                // User clicked the "Cancel" button, so dismiss the dialog
+//                // and continue editing the product.
+//                if (dialog != null) {
+//                    dialog.dismiss();
+//                }
+//            }
+//        });
+//
+//        // Create and show the AlertDialog
+//        AlertDialog alertDialog = builder.create();
+//        alertDialog.show();
+//    }
 
-        // Create and show the AlertDialog
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
-
-    /**
-     * Perform the deletion of the product in the database.
-     */
-    private void deleteProduct() {
-        int rowsDeleted = 0;
-        if (mCurrentProductUri != null) {
-            rowsDeleted = getContentResolver().delete(mCurrentProductUri,
-                    null,
-                    null);
-        }
-        if (rowsDeleted > 0) {
-            Toast toast = Toast.makeText(this, R.string.editor_delete_product_successful, Toast.LENGTH_SHORT);
-            toast.show();
-            Log.v(LOG_TAG, "Success - # Of rows deleted: " + rowsDeleted);
-        } else {
-            Toast toast = Toast.makeText(this, R.string.editor_delete_product_failed, Toast.LENGTH_SHORT);
-            toast.show();
-            Log.v(LOG_TAG, "Failure - # Of rows deleted: " + rowsDeleted);
-        }
-    }
+//    /**
+//     * Perform the deletion of the product in the database.
+//     */
+//    private void deleteProduct() {
+//        int rowsDeleted = 0;
+//        if (mCurrentProductUri != null) {
+//            rowsDeleted = getContentResolver().delete(mCurrentProductUri,
+//                    null,
+//                    null);
+//        }
+//        if (rowsDeleted > 0) {
+//            Toast toast = Toast.makeText(this, R.string.editor_delete_product_successful, Toast.LENGTH_SHORT);
+//            toast.show();
+//            Log.v(LOG_TAG, "Success - # Of rows deleted: " + rowsDeleted);
+//        } else {
+//            Toast toast = Toast.makeText(this, R.string.editor_delete_product_failed, Toast.LENGTH_SHORT);
+//            toast.show();
+//            Log.v(LOG_TAG, "Failure - # Of rows deleted: " + rowsDeleted);
+//        }
+//    }
 
     /**
      * Insert or Update a product in the database.

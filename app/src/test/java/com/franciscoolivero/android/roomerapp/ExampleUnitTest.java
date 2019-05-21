@@ -1,4 +1,4 @@
-package com.franciscoolivero.android.inventoryapp;
+package com.franciscoolivero.android.roomerapp;
 
 import org.junit.Test;
 

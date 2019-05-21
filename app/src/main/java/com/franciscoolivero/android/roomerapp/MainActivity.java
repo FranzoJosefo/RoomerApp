@@ -1,4 +1,4 @@
-package com.franciscoolivero.android.inventoryapp;
+package com.franciscoolivero.android.roomerapp;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         toolbar.setTitle("Shop");
-        loadFragment(new ResultsFragment());
+        loadFragment(new FiltersFragment());
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_albums:
                     toolbar.setTitle("Shop");
-                    fragment = new ResultsFragment();
+                    fragment = new FiltersFragment();
                     loadFragment(fragment);
                     return true;
                 case R.id.navigation_artists:

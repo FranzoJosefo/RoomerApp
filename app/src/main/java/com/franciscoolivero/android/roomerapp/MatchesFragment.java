@@ -1,4 +1,4 @@
-package com.franciscoolivero.android.inventoryapp;
+package com.franciscoolivero.android.roomerapp;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -11,9 +11,9 @@ import java.util.ArrayList;
 
 import androidx.fragment.app.Fragment;
 
-public class ProfileFragment extends Fragment {
+public class MatchesFragment extends Fragment {
 
-    public ProfileFragment() {
+    public MatchesFragment() {
         //Required empty constructor
     }
 

@@ -62,26 +62,35 @@
     <!-- Toast message in editor when new product has failed to be updated [CHAR LIMIT=NONE] -->
     <string name="editor_update_product_failed">Error with updating product</string>
 
-    <!-- Title text for the empty view [CHAR LIMIT=50] -->
-    <string name="empty_view_title_text">Your inventory is empty&#8230;</string>
+    <!-- Title text for the empty view in Results Screen [CHAR LIMIT=50] -->
+    <string name="empty_view_results_title_text">No hay resultados!&#8230;</string>
 
-    <!-- Subtitle text for the empty view that prompts the user to add a product [CHAR LIMIT=50] -->
-    <string name="empty_view_subtitle_text">Get started by adding a product</string>
+    <!-- Subtitle text for the Results empty view that prompts the user to update filters [CHAR LIMIT=50] -->
+    <string name="empty_view_results_subtitle_text">Elegí nuevos filtros</string>
+
+    <!-- Title text for the empty view in Matches Screen [CHAR LIMIT=50] -->
+    <string name="empty_view_matches_title_text">No hay matches!&#8230;</string>
+
+    <!-- Subtitle text for the Matches empty view that prompts the user to search new users [CHAR LIMIT=50] -->
+    <string name="empty_view_matches_subtitle_text">Buscá y likea perfiles!</string>
+
+    <!--&lt;!&ndash; Title text for the empty view [CHAR LIMIT=50] &ndash;&gt;-->
+    <!--<string name="empty_view_title_text">Your inventory is empty&#8230;</string>-->
 
     <!-- Dialog message when user is leaving editor but hasn't saved changes [CHAR LIMIT=NONE] -->
-    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+    <string name="unsaved_changes_dialog_msg">Deseas descartar los cambios?</string>
 
     <!-- Dialog button text for the option to discard a user's changes [CHAR LIMIT=20] -->
-    <string name="discard">Discard</string>
+    <string name="discard">Descartar</string>
 
-    <!-- Dialog button text for the option to keep editing the current product [CHAR LIMIT=20] -->
-    <string name="keep_editing">Keep Editing</string>
+    <!-- Dialog button text for the option to keep editing the current screen [CHAR LIMIT=20] -->
+    <string name="keep_editing">Seguir editando</string>
 
-    <!-- Toast message in editor when current product was successfully deleted [CHAR LIMIT=NONE] -->
-    <string name="editor_delete_product_successful">Product deleted</string>
+    <!--&lt;!&ndash; Toast message in editor when current product was successfully deleted [CHAR LIMIT=NONE] &ndash;&gt;-->
+    <!--<string name="editor_delete_product_successful">Product deleted</string>-->
 
-    <!-- Toast message in editor when current product has failed to be deleted [CHAR LIMIT=NONE] -->
-    <string name="editor_delete_product_failed">Error with deleting product</string>
+    <!--&lt;!&ndash; Toast message in editor when current product has failed to be deleted [CHAR LIMIT=NONE] &ndash;&gt;-->
+    <!--<string name="editor_delete_product_failed">Error with deleting product</string>-->
 
     <!-- Dialog message to ask the user to confirm deleting the current product [CHAR LIMIT=NONE] -->
     <string name="delete_dialog_msg">Delete this product?</string>
