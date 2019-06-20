@@ -1,7 +1,9 @@
-package com.franciscoolivero.android.roomerapp;
+package com.franciscoolivero.android.roomerapp.Filters;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.franciscoolivero.android.roomerapp.Profile.Profile;
 
 import androidx.annotation.NonNull;
 
@@ -121,15 +123,15 @@ public class Filter implements Parcelable {
         this.mGender = in.readInt();
     }
 
-    public static final Parcelable.Creator<Profile> CREATOR = new Parcelable.Creator<Profile>() {
+    public static final Parcelable.Creator<Filter> CREATOR = new Parcelable.Creator<Filter>() {
         @Override
-        public Profile createFromParcel(Parcel source) {
-            return new Profile(source);
+        public Filter createFromParcel(Parcel source) {
+            return new Filter(source);
         }
 
         @Override
-        public Profile[] newArray(int size) {
-            return new Profile[size];
+        public Filter[] newArray(int size) {
+            return new Filter[size];
         }
     };
 }

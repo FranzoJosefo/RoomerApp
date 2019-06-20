@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_songs"
-        android:icon="@drawable/ic_launcher_background"
+        android:id="@+id/navigation_busquedas"
+        android:icon="@drawable/round_search_black_48"
         android:title="Busqueda"/>
 
     <item
-        android:id="@+id/navigation_albums"
-        android:icon="@drawable/ic_done"
+        android:id="@+id/navigation_filtros"
+        android:icon="@drawable/round_filter_list_black_48"
         android:title="Filtros"/>
 
     <item
-        android:id="@+id/navigation_artists"
-        android:icon="@drawable/ic_launcher_foreground"
+        android:id="@+id/navigation_matches"
+        android:icon="@drawable/round_group_black_48"
         android:title="Matches"/>
 
 </menu>

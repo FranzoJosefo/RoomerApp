@@ -14,8 +14,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.franciscoolivero.android.roomerapp.Profile.ProfileActivity;
 import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,18 +43,18 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
         ButterKnife.bind(this);
 
         // Setup FAB to open DetailsActivity
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ProductsActivity.this, ProfileActivity.class);
-
-                /**
-                 * Start the {@link ProfileActivity} to Insert a new product
-                 */
-                startActivity(intent);
-            }
-        });
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(ProductsActivity.this, ProfileActivity.class);
+//
+//                /**
+//                 * Start the {@link ProfileActivity} to Insert a new product
+//                 */
+//                startActivity(intent);
+//            }
+//        });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

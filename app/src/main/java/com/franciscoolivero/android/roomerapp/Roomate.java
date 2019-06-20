@@ -3,6 +3,9 @@ package com.franciscoolivero.android.roomerapp;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.franciscoolivero.android.roomerapp.Filters.Filter;
+import com.franciscoolivero.android.roomerapp.Profile.Profile;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +45,9 @@ public class Roomate implements Parcelable {
 //     * @param mTitle      is the tittle of the Roomate.
 //     * @param mAuthors      is the author of the Roomate.
 //     * @param mInfoLink         is the Google Roomates website of the Roomate.
-//     * @param mListPrice  is the List Price of the book.
-//     * @param mCurrencyCode is the currency code for the book sale.
-//     * @param mRating is the average rating of the book.
+//     * @param mListPrice  is the List Price of the profile.
+//     * @param mCurrencyCode is the currency code for the profile sale.
+//     * @param mRating is the average rating of the profile.
 //     *
 //     */
 

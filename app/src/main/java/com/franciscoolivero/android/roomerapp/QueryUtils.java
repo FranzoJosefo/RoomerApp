@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Helper methods related to requesting and receiving books data from Google Roomates API.
+ * Helper methods related to requesting and receiving profiles data from Google Roomates API.
  */
 public final class QueryUtils {
 
@@ -107,7 +107,7 @@ public final class QueryUtils {
             }
 
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the book JSON results", e);
+            Log.e(LOG_TAG, "Problem retrieving the profile JSON results", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -142,15 +142,15 @@ public final class QueryUtils {
      * parsing a JSON response.
      */
     private static List<Roomate> extractRoomates(String jsonResponse) {
-        List<Roomate> books = new ArrayList<Roomate>();
+        List<Roomate> profiles = new ArrayList<Roomate>();
 
         //If the JSON string is empty or null, then return early.
         if (TextUtils.isEmpty(jsonResponse)) {
             return null;
         }
 
-        // Create an empty ArrayList that we can start adding books to
-//        List<Roomate> books = new ArrayList<>();
+        // Create an empty ArrayList that we can start adding profiles to
+//        List<Roomate> profiles = new ArrayList<>();
 
 //         Try to parse the SAMPLE_JSON_RESPONSE. If there's a problem with the way the JSON
 //         is formatted, a JSONException exception object will be thrown.
@@ -166,44 +166,44 @@ public final class QueryUtils {
                 JSONArray currentAuthorArray = currentVolumeInfo.optJSONArray("authors");
                 JSONObject currentSaleInfo = currentItem.getJSONObject("saleInfo");
 
-                String bookTitle = currentVolumeInfo.optString("title");
-                String bookInfoLink = currentVolumeInfo.optString("infoLink");
-                String bookRating = currentVolumeInfo.optString("averageRating");
+                String profileTitle = currentVolumeInfo.optString("title");
+                String profileInfoLink = currentVolumeInfo.optString("infoLink");
+                String profileRating = currentVolumeInfo.optString("averageRating");
 
                 //Initialize all of below as null in case the Roomate doesn't contain any of those in the JSON response.
-                String bookAmount = null;
-                String bookCurrency = null;
-                ArrayList<String> bookAuthors = new ArrayList<>();
+                String profileAmount = null;
+                String profileCurrency = null;
+                ArrayList<String> profileAuthors = new ArrayList<>();
 
 
-                //Check if the book is for sale, if it is retrieve amount (price) and currency code, else leave those as null.
+                //Check if the profile is for sale, if it is retrieve amount (price) and currency code, else leave those as null.
                 String saleability = currentSaleInfo.getString("saleability");
                 if (saleability.equals(FOR_SALE)) {
                     JSONObject currentListPrice = currentSaleInfo.getJSONObject("listPrice");
-                    bookAmount = currentListPrice.getString("amount");
-                    bookCurrency = currentListPrice.getString("currencyCode");
+                    profileAmount = currentListPrice.getString("amount");
+                    profileCurrency = currentListPrice.getString("currencyCode");
                 }
 
-                //Check if Author Array is available, some books may not list the authors.
+                //Check if Author Array is available, some profiles may not list the authors.
                 if (currentAuthorArray != null) {
                     String currentAuthor;
                     for (int y = 0; y < currentAuthorArray.length(); y++) {
                         currentAuthor = currentAuthorArray.optString(y);
-                        bookAuthors.add(currentAuthor);
+                        profileAuthors.add(currentAuthor);
                     }
                 }
 
 
-                Roomate book = new Roomate(bookTitle, bookAuthors, bookInfoLink, bookAmount, bookCurrency, bookRating);
-                books.add(book);
+//                Roomate profile = new Roomate(profileTitle, profileAuthors, profileInfoLink, profileAmount, profileCurrency, profileRating);
+//                profiles.add(profile);
             }
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error parsing Json results in extractRoomates()", e);
         }
 
-        //Return the list of books
-        return books;
+        //Return the list of profiles
+        return profiles;
     }
 
 }

@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">Inventory App</string>
+    <string name="app_name">Roomer App</string>
+
+    <string name="web_application_id">739467235704-4g2nm0n6mjeofabgbdg8j8fgql2dmec1.apps.googleusercontent.com</string>
 
     <!-- Label for overflow menu option that inserts fake product data into the app [CHAR LIMIT=20] -->
     <string name="action_insert_dummy_data">Insert Dummy Data</string>
@@ -8,7 +10,11 @@
     <string name="action_delete_all_entries">Delete All Products</string>
 
     <!-- Title for the activity to add a new product [CHAR LIMIT=20] -->
-    <string name="editor_activity_title_new_product">Add a Product</string>
+    <string name="editor_activity_title_profile_create">Crear Perfil</string>
+
+    <string name="editor_activity_title_filters_create">Elegir Filtros</string>
+
+    <string name="editor_activity_title_profile_edit">Editar Perfil</string>
 
     <!-- Title for the activity to edit a product [CHAR LIMIT=20] -->
     <string name="editor_activity_title_edit_product">Edit Product</string>
@@ -22,23 +28,38 @@
     <!-- Label for editor overflow menu option that starts intent to order the current product [CHAR LIMIT=20] -->
     <string name="action_order">Order Product</string>
 
+    <!-- Titulo del Spinner (dropdown) para seleccionar el sexo -->
+    <string name="spinner_title_sexo">Sexo</string>
+
     <!-- Label for overview category of attributes in the editor [CHAR LIMIT=30] -->
-    <string name="category_overview">Overview *</string>
+    <string name="category_datos">Datos Personales *</string>
 
     <!-- Label for stock category in the editor [CHAR LIMIT=30] -->
-    <string name="category_stock">Stock</string>
+    <string name="category_contact">Info de Contacto</string>
 
     <!-- Label for picture in the editor [CHAR LIMIT=30] -->
-    <string name="category_picture">Picture</string>
+    <string name="category_picture">Foto Perfil</string>
 
     <!-- Label for supplier information in the editor [CHAR LIMIT=30] -->
     <string name="category_supplier_info">Supplier Info *</string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_product_name">Product Name</string>
+    <string name="hint_user_name">Nombre</string>
 
     <!-- Text hint for model field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_product_model">Model</string>
+    <string name="hint_user_last_name">Apellido</string>
+
+    <!-- Text hint for model field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_user_dni">DNI</string>
+
+    <!-- Text hint for model field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_user_age">Edad</string>
+
+    <!-- Text hint for model field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_user_phone">Teléfono</string>
+
+    <!-- Text hint for model field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_user_area_code">Cód. Area</string>
 
     <!-- Text hint for price field in the editor [CHAR LIMIT=30] -->
     <string name="hint_product_price">Price</string>
@@ -86,6 +107,7 @@
     <!-- Dialog button text for the option to keep editing the current screen [CHAR LIMIT=20] -->
     <string name="keep_editing">Seguir editando</string>
 
+
     <!--&lt;!&ndash; Toast message in editor when current product was successfully deleted [CHAR LIMIT=NONE] &ndash;&gt;-->
     <!--<string name="editor_delete_product_successful">Product deleted</string>-->
 
@@ -114,10 +136,10 @@
     <string name="delete_all">Delete All</string>
 
     <!-- Helper label for the product's picture to inform user how to select an image[CHAR LIMIT=20] -->
-    <string name="image_tap_helper_text">Tap to upload image</string>
+    <string name="image_tap_helper_text">Tocá para subir una foto</string>
 
     <!-- Units for weight of the pet (kilograms) [CHAR LIMIT=5] -->
-    <string name="unit_pet_currency">U$S\u0020</string>
+    <string name="unit_pet_currency">AR$\u0020</string>
 
     <!-- In Stock label for List Item -->
     <string name="in_stock_label_list_item">In Stock:\u0020</string>
@@ -127,6 +149,22 @@
 
     <!-- Order request subject for Email intent in DetailsActivity -->
     <string name="email_order_request_subject">Order Request</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+
 
 </resources>
 

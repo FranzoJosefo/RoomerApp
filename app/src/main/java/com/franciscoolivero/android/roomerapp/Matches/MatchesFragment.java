@@ -1,4 +1,4 @@
-package com.franciscoolivero.android.roomerapp;
+package com.franciscoolivero.android.roomerapp.Matches;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.franciscoolivero.android.roomerapp.R;
 
 import java.util.ArrayList;
 
@@ -19,7 +21,7 @@ public class MatchesFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_details, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_matches, container, false);
 
 
         final ArrayList<Location> locations = new ArrayList<>();

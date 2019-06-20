@@ -1,23 +1,29 @@
-package com.franciscoolivero.android.roomerapp;
+package com.franciscoolivero.android.roomerapp.Filters;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.franciscoolivero.android.roomerapp.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class FiltersFragment extends Fragment {
+public class FiltersFragment extends Fragment{
 
     public FiltersFragment() {
         //Required empty constructor
@@ -42,24 +48,24 @@ public class FiltersFragment extends Fragment {
 
     private static final int PRODUCT_LOADER_ID = 0;
     // Find all relevant views that we will need to read user input from
-    @BindView(R.id.edit_product_name)
-    EditText product_name;
-    @BindView(R.id.edit_product_model)
-    EditText product_model;
-    @BindView(R.id.edit_product_price)
-    EditText product_price;
-    @BindView(R.id.edit_product_quantity)
-    EditText product_quantity;
-    @BindView(R.id.edit_product_picture)
-    ImageView product_picture;
-    @BindView(R.id.edit_supplier_name)
-    EditText supplier_name;
-    @BindView(R.id.edit_supplier_email)
-    EditText supplier_email;
-    @BindView(R.id.btn_inc_quantity)
-    Button btn_inc_quantity;
-    @BindView(R.id.btn_dec_quantity)
-    Button btn_dec_quantity;
+//    @BindView(R.id.edit_user_name)
+//    EditText product_name;
+//    @BindView(R.id.edit_user_last_name)
+//    EditText product_model;
+//    @BindView(R.id.edit_product_price)
+//    EditText product_price;
+//    @BindView(R.id.edit_product_quantity)
+//    EditText product_quantity;
+//    @BindView(R.id.edit_product_picture)
+//    ImageView product_picture;
+//    @BindView(R.id.edit_supplier_name)
+//    EditText supplier_name;
+//    @BindView(R.id.edit_supplier_email)
+//    EditText supplier_email;
+//    @BindView(R.id.btn_inc_quantity)
+//    Button btn_inc_quantity;
+//    @BindView(R.id.btn_dec_quantity)
+//    Button btn_dec_quantity;
 
     private boolean mProductHasChanged = false;
     private String LOG_TAG = getClass().getSimpleName();
@@ -67,18 +73,18 @@ public class FiltersFragment extends Fragment {
     private Uri selectedImage;
 
     /**
-     * Create a new {@link android.widget.ArrayAdapter} of books.
+     * Create a new {@link android.widget.ArrayAdapter} of profiles.
      */
-//    private RoomateAdapter bookAdapter;
+//    private RoomateAdapter profileAdapter;
 //    private ArrayList<Roomate> savedRoomates;
     android.app.LoaderManager loaderManager;
 
     /**
-     * Constant value for the book loader ID. We can choose any integer.
+     * Constant value for the profile loader ID. We can choose any integer.
      * This really only comes into play if you're using multiple loaders.
      */
     private static final int BOOK_LOADER_ID = 1;
-    private static final String GOOGLE_BOOKS_BASE_URL = "https://www.googleapis.com/books/v1/volumes?q=";
+    private static final String GOOGLE_BOOKS_BASE_URL = "https://www.googleapis.com/profiles/v1/volumes?q=";
     private String userQuery;
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -94,18 +100,100 @@ public class FiltersFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_filters, container, false);
         ButterKnife.bind(this, rootView);
 
+
+
         //Avoid keyboard from opening focused on first EditText
         getActivity().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        product_name.setOnTouchListener(mTouchListener);
-        product_model.setOnTouchListener(mTouchListener);
-        product_price.setOnTouchListener(mTouchListener);
-        product_picture.setOnTouchListener(mTouchListener);
-        supplier_name.setOnTouchListener(mTouchListener);
-        supplier_email.setOnTouchListener(mTouchListener);
+//        product_name.setOnTouchListener(mTouchListener);
+//        product_model.setOnTouchListener(mTouchListener);
+//        product_price.setOnTouchListener(mTouchListener);
+//        product_picture.setOnTouchListener(mTouchListener);
+//        supplier_name.setOnTouchListener(mTouchListener);
+//        supplier_email.setOnTouchListener(mTouchListener);
 
         mCurrentProductUri = getActivity().getIntent().getData();
+
+        // Spinner element
+        Spinner spinner = (Spinner) rootView.findViewById(R.id.spinner);
+        Spinner spinnerSexo = (Spinner) rootView.findViewById(R.id.spinnerSexo);
+
+        // Spinner click listener
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                Object item = adapterView.getItemAtPosition(position);
+                if (item != null) {
+                    Toast.makeText(getContext(), item.toString(),
+                            Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(getContext(), "Selected",
+                        Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
+        spinnerSexo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                Object item = adapterView.getItemAtPosition(position);
+                if (item != null) {
+                    Toast.makeText(getContext(), item.toString(),
+                            Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(getContext(), "Selected",
+                        Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
+        // Spinner Drop down elements
+        List<String> categories = new ArrayList<String>();
+        categories.add("Otro");
+        categories.add("F");
+        categories.add("M");
+
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, categories);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+
+        // attaching data adapter to spinner
+        spinnerSexo.setAdapter(dataAdapter);
+
+
+        // Spinner Drop down elements
+        List<String> categoriesBarrios = new ArrayList<String>();
+        categoriesBarrios.add("Belgrano");
+        categoriesBarrios.add("Avellaneda");
+        categoriesBarrios.add("Palermo");
+
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapterSpinnerBarrio = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, categoriesBarrios);
+
+        // Drop down layout style - list view with radio button
+        dataAdapterSpinnerBarrio.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        spinner.setAdapter(dataAdapterSpinnerBarrio);
 
 //        if (mCurrentProductUri == null) {
 //            getActivity().setTitle(R.string.editor_activity_title_new_product);
@@ -123,6 +211,12 @@ public class FiltersFragment extends Fragment {
 
     }
 
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
 //    @Override
 //    //Gets fired after calling invalidateOptionsMenu()
 //    public boolean onPrepareOptionsMenu(Menu menu) {
@@ -136,7 +230,8 @@ public class FiltersFragment extends Fragment {
 //        }
 //        return true;
 //    }
-//
+
+
 //    @Override
 //    public void onBackPressed() {
 //        // If the product hasn't changed, continue with handling back button press
@@ -159,15 +254,15 @@ public class FiltersFragment extends Fragment {
 //        // Show dialog that there are unsaved changes
 //        showUnsavedChangesDialog(discardButtonClickListener);
 //    }
-//
+
 //    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
+//    public onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu options from the res/menu/menu_editor.xml file.
 //        // This adds menu items to the app bar.
 //        getMenuInflater().inflate(R.menu.menu_details, menu);
 //        return true;
 //    }
-//
+
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
 //        // User clicked on a menu option in the app bar overflow menu
@@ -176,26 +271,28 @@ public class FiltersFragment extends Fragment {
 //            case R.id.action_save:
 //                // Trigger saveProduct() method to save Product to DB.
 //                //Could handle and validate errors here.
-//                saveProduct();
+////                saveProduct();
 //                // Exit Activity
-//                finish();
+////                finish();
+//                Intent intent = new Intent(getActivity(), MainActivity.class);
+//                startActivity(intent);
 //                return true;
 //            // Respond to a click on the "Delete" menu option
 //            case R.id.action_delete:
 ////                showDeleteConfirmationDialog();
 //                return true;
-//            case R.id.action_buy:
-//                String[] emailAddress = {supplier_email.getText().toString()};
-//                String emailSubject = getResources().getString(R.string.email_order_request_subject) + " " + product_name.getText().toString();
-//                composeEmail(emailAddress, emailSubject, createEmailBody());
-//                return true;
+////            case R.id.action_buy:
+////                String[] emailAddress = {supplier_email.getText().toString()};
+////                String emailSubject = getResources().getString(R.string.email_order_request_subject) + " " + product_name.getText().toString();
+////                composeEmail(emailAddress, emailSubject, createEmailBody());
+////                return true;
 //            // Respond to a click on the "Up" arrow button in the app bar
 //            case android.R.id.home:
 //                // If the product hasn't changed, continue with navigating up to parent activity
 //                // which is the {@link CatalogActivity}.
 //                if (!mProductHasChanged) {
-//                    NavUtils.navigateUpFromSameTask(FiltersFragment.this);
-//                    return true;
+//                    NavUtils.navigateUpFromSameTask(getActivity());
+//
 //                }
 //
 //                // Otherwise if there are unsaved changes, setup a dialog to warn the user.
@@ -206,7 +303,7 @@ public class FiltersFragment extends Fragment {
 //                            @Override
 //                            public void onClick(DialogInterface dialogInterface, int i) {
 //                                // User clicked "Discard" button, navigate to parent activity.
-//                                NavUtils.navigateUpFromSameTask(FiltersActivity.this);
+//                                NavUtils.navigateUpFromSameTask(getActivity());
 //                            }
 //                        };
 //
@@ -217,28 +314,28 @@ public class FiltersFragment extends Fragment {
 //        }
 //        return super.onOptionsItemSelected(item);
 //    }
-
-    private void showUnsavedChangesDialog(
-            DialogInterface.OnClickListener discardButtonClickListener) {
-        // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the positive and negative buttons on the dialog.
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.unsaved_changes_dialog_msg);
-        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
-        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the product.
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
-
-        // Create and show the AlertDialog
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
+//
+//    private void showUnsavedChangesDialog(
+//            DialogInterface.OnClickListener discardButtonClickListener) {
+//        // Create an AlertDialog.Builder and set the message, and click listeners
+//        // for the positive and negative buttons on the dialog.
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setMessage(R.string.unsaved_changes_dialog_msg);
+//        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
+//        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int id) {
+//                // User clicked the "Keep editing" button, so dismiss the dialog
+//                // and continue editing the product.
+//                if (dialog != null) {
+//                    dialog.dismiss();
+//                }
+//            }
+//        });
+//
+//        // Create and show the AlertDialog
+//        AlertDialog alertDialog = builder.create();
+//        alertDialog.show();
+//    }
 
 
 //    private void startLoader() {
@@ -262,12 +359,12 @@ public class FiltersFragment extends Fragment {
 //        // Loader reset, so we can clear out our existing data.
 //        Log.i(LOG_TAG, "Loader reset, clear the data from adapter");
 //        loader.reset();
-//        bookAdapter.clear();
+//        profileAdapter.clear();
 //    }
 //
-//    public void openWebPage(Roomate book) {
-//        Uri bookUri = Uri.parse(book.getmInfoLink());
-//        Intent intent = new Intent(Intent.ACTION_VIEW, bookUri);
+//    public void openWebPage(Roomate profile) {
+//        Uri profileUri = Uri.parse(profile.getmInfoLink());
+//        Intent intent = new Intent(Intent.ACTION_VIEW, profileUri);
 //        if (intent.resolveActivity(getPackageManager()) != null) {
 //            startActivity(intent);
 //        }
@@ -281,21 +378,21 @@ public class FiltersFragment extends Fragment {
 //    }
 
 //    @Override
-//    public void onLoadFinished(android.content.Loader<List<Roomate>> loader, List<Roomate> books) {
+//    public void onLoadFinished(android.content.Loader<List<Roomate>> loader, List<Roomate> profiles) {
 //        loadingSpinner.setVisibility(View.GONE);
-//        bookListView.setEmptyView(emptyStateView);
-//        savedRoomates = new ArrayList<>(books);
-//        savedRoomates.addAll(books);
-//        // Clear the adapter of previous book data
-//        bookAdapter.clear();
+//        profileListView.setEmptyView(emptyStateView);
+//        savedRoomates = new ArrayList<>(profiles);
+//        savedRoomates.addAll(profiles);
+//        // Clear the adapter of previous profile data
+//        profileAdapter.clear();
 //
 //        // If there is a valid list of {@link Roomate}s, then add them to the adapter's
 //        // data set. This will trigger the ListView to update.
 //        Log.i(LOG_TAG, "Loading finished, add all Roomates to adapter so they can be displayed");
 //
-//        if (books != null && !books.isEmpty()) {
-//            bookAdapter.addAll(books);
-//            bookAdapter.notifyDataSetChanged();
+//        if (profiles != null && !profiles.isEmpty()) {
+//            profileAdapter.addAll(profiles);
+//            profileAdapter.notifyDataSetChanged();
 //        }
 //
 //        if (QueryUtils.badResponse) {

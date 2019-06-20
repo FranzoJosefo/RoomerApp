@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.franciscoolivero.android.roomerapp"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -34,5 +34,11 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
     implementation 'com.google.android.material:material:1.1.0-alpha06'
     implementation 'com.aurelhubert:ahbottomnavigation:2.3.4'
-    implementation 'com.android.support:design:28.0.2'
+    implementation 'com.google.android.material:material:1.0.0-beta01'
+    implementation 'com.firebaseui:firebase-ui-auth:5.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.9'
+    implementation 'com.google.firebase:firebase-auth:17.0.0'
+    implementation 'com.google.android.gms:play-services-gcm:16.1.0'
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    apply plugin: 'com.google.gms.google-services'
 }

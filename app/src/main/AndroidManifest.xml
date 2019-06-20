@@ -2,46 +2,82 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.franciscoolivero.android.roomerapp">
 
-    <application
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+
+    <application android:networkSecurityConfig="@xml/network_security_config"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_inventory_square"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_inventory"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+
+        <activity
+            android:name=".SignIn.SignInActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <data android:mimeType="text/plain" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SENDTO" />
-                <data android:scheme="mailto" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
 
         </activity>
+
+
         <activity
-            android:name=".ProfileActivity"
-            android:parentActivityName=".ProductsActivity"
+            android:name=".Profile.ProfileActivity"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/DetailTheme">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ProductsActivity" />
+                android:value=".MainActivity" />
         </activity>
 
+        <activity
+            android:name=".Filters.FiltersActivity"
+            android:parentActivityName=".Profile.ProfileActivity"
+            android:theme="@style/DetailTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Profile.ProfileActivity" />
+        </activity>
+
+        <activity android:name=".MainActivity"
+            android:theme="@style/DetailTheme"
+            android:label="Roomer App"
+            >
+        </activity>
+         <!--<activity -->
+         <!--android:name=".MainActivity" -->
+         <!--android:parentActivityName=".ProfileActivity" -->
+         <!--android:theme="@style/DetailTheme"> -->
+         <!--&lt;!&ndash; Parent activity meta-data to support 4.0 and lower &ndash;&gt; -->
+         <!--<meta-data -->
+         <!--android:name="android.support.PARENT_ACTIVITY" -->
+         <!--android:value=".ProfileActivity" /> -->
+         <!--</activity> -->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.SEND" />-->
+
+        <!--<data android:mimeType="text/plain" />-->
+
+        <!--<category android:name="android.intent.category.DEFAULT" />-->
+        <!--</intent-filter>-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.SENDTO" />-->
+
+        <!--<data android:scheme="mailto" />-->
+
+        <!--<category android:name="android.intent.category.DEFAULT" />-->
+        <!--</intent-filter>-->
         <provider
             android:name=".data.ProductProvider"
             android:authorities="com.franciscoolivero.android.roomerapp"
             android:exported="false" />
-
     </application>
 
 </manifest>

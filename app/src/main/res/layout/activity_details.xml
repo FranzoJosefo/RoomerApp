@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".ProfileActivity">
+    tools:context=".Profile.ProfileActivity">
 
 
     <LinearLayout
@@ -21,7 +21,7 @@
             <!-- Label -->
             <TextView
                 style="@style/CategoryStyle"
-                android:text="@string/category_overview" />
+                android:text="@string/category_contact" />
 
             <!-- Input fields -->
             <LinearLayout
@@ -33,16 +33,16 @@
 
                 <!-- Name field -->
                 <EditText
-                    android:id="@+id/edit_product_name"
+                    android:id="@+id/edit_user_name"
                     style="@style/DetailsFieldStyle"
-                    android:hint="@string/hint_product_name"
+                    android:hint="@string/hint_user_name"
                     android:inputType="textCapWords" />
 
                 <!-- Model field -->
                 <EditText
-                    android:id="@+id/edit_product_model"
+                    android:id="@+id/edit_user_last_name"
                     style="@style/DetailsFieldStyle"
-                    android:hint="@string/hint_product_model"
+                    android:hint="@string/hint_user_last_name"
                     android:inputType="textCapWords" />
 
                 <RelativeLayout
@@ -75,7 +75,7 @@
 
             <TextView
                 style="@style/CategoryStyle"
-                android:text="@string/category_stock" />
+                android:text="@string/category_contact" />
 
             <LinearLayout
                 android:layout_width="0dp"

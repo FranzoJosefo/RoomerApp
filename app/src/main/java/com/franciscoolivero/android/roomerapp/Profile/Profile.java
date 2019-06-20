@@ -1,7 +1,9 @@
-package com.franciscoolivero.android.roomerapp;
+package com.franciscoolivero.android.roomerapp.Profile;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.annotation.Nullable;
 
 public class Profile implements Parcelable {
     /**
@@ -35,11 +37,11 @@ public class Profile implements Parcelable {
     /**
      * Profile Picture of the roomate Id?
      */
-    private int mPicture;
+    private int mPicture = 0;
     /**
      * Roomate's description.
      */
-    private String mDescription;
+    private String mDescription = null;
 
     /**
      * Constructs a new {@link Profile} object.
@@ -54,7 +56,7 @@ public class Profile implements Parcelable {
      * @param mDescription Description of the roomate
      */
 
-    public Profile(String mName, String mLastName, String mGender, int mDni, int mPhone, int mAreaCode, int mAge, int mPicture, String mDescription) {
+    public Profile(String mName, String mLastName, String mGender, int mDni, int mPhone, int mAreaCode, int mAge, @Nullable int mPicture, @Nullable String mDescription) {
         this.mName = mName;
         this.mLastName = mLastName;
         this.mGender = mGender;
@@ -138,18 +140,15 @@ public class Profile implements Parcelable {
         this.mDescription = mDescription;
     }
 
-//    public boolean hasAuthor(){
-//        return mAuthors != null;
-//    }
-//
-//    public boolean isSaleable(){
-//        return mListPrice != null;
-//    }
-//
-//
-//    public boolean hasRating(){
-//        return !mRating.equals("");
-//    }
+    public boolean hasDescription(){
+        return mDescription != null;
+    }
+
+    public boolean hasPicture(){
+        return mPicture != 0;
+    }
+
+
 
 
     @Override

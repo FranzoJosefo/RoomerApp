@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "739467235704",
+    "firebase_url": "https://roomerapp.firebaseio.com",
+    "project_id": "roomerapp",
+    "storage_bucket": "roomerapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:739467235704:android:ed8303952269fffd",
+        "android_client_info": {
+          "package_name": "com.franciscoolivero.android.roomerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "739467235704-pmg92gn49nusofsodlmupgi4fs2fnjas.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.franciscoolivero.android.roomerapp",
+            "certificate_hash": "252b3071b7740b901c20ba6fb2f872b771703736"
+          }
+        },
+        {
+          "client_id": "739467235704-gfnhgbffagvv4mdcbhkr5hv9fkcbtqka.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDplJqysOcklYYkwhfwljppuo0tD_k5Nuk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "739467235704-gfnhgbffagvv4mdcbhkr5hv9fkcbtqka.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
