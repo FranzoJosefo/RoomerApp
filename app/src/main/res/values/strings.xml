@@ -142,7 +142,7 @@
     <string name="unit_pet_currency">AR$\u0020</string>
 
     <!-- In Stock label for List Item -->
-    <string name="in_stock_label_list_item">In Stock:\u0020</string>
+    <string name="age_label_list_item">Edad:\u0020</string>
 
     <!-- OUT OF STOCK label for cases in which quantity is 0 for List Item -->
     <string name="out_of_stock_label_list_item">OUT OF STOCK</string>

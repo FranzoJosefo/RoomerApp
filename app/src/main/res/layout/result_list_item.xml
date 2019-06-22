@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Layout for a single list item in the list of products -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item_parent_view"
     android:layout_width="match_parent"
@@ -8,23 +9,35 @@
     android:orientation="horizontal"
     android:padding="@dimen/activity_margin">
 
-    <ImageView
-        android:id="@+id/image_list_item"
-        android:layout_width="88dp"
-        android:layout_height="88dp"
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/image_card_view"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/placeholder_image" />
+        android:elevation="12dp"
+        app:cardCornerRadius="40dp">
+
+        <ImageView
+            android:id="@+id/image_list_item"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/placeholder_image" />
+    </androidx.cardview.widget.CardView>
+
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3"
+        android:gravity="center_vertical"
+
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/name_list_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -33,19 +46,19 @@
             android:scrollHorizontally="true"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="#2B3D4D"
-            tools:text="Apple TV" />
+            tools:text="Maria Nuñez" />
 
-        <TextView
-            android:id="@+id/model"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="sans-serif"
-            android:maxLines="1"
-            android:scrollHorizontally="true"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="@color/list_item_secondary_text_color"
-            tools:text="X2R7 7th Gen" />
+        <!--<TextView-->
+        <!--android:id="@+id/age"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:ellipsize="end"-->
+        <!--android:fontFamily="sans-serif"-->
+        <!--android:maxLines="1"-->
+        <!--android:scrollHorizontally="true"-->
+        <!--android:textAppearance="?android:textAppearanceSmall"-->
+        <!--android:textColor="@color/list_item_secondary_text_color"-->
+        <!--tools:text="X2R7 7th Gen" />-->
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -53,22 +66,20 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/in_stock_label"
+                android:id="@+id/age_label_list_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/in_stock_label_list_item"
+                android:text="@string/age_label_list_item"
                 android:textColor="@color/list_item_secondary_text_color" />
 
             <TextView
-                android:id="@+id/quantity"
+                android:id="@+id/age_list_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
                 android:fontFamily="sans-serif"
                 android:textAppearance="?android:textAppearanceSmall"
                 android:textColor="@color/list_item_secondary_text_color"
-                tools:text="15" />
+                tools:text="21" />
         </LinearLayout>
 
     </LinearLayout>
@@ -77,45 +88,21 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2.5"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:text="@string/unit_pet_currency"
-                android:textAppearance="?android:textAppearanceSmall"
-                android:textColor="@color/colorPrimaryDark" />
-
-            <TextView
-                android:id="@+id/price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:text="900 "
-                android:textAppearance="?android:textAppearanceSmall"
-                android:textColor="@color/colorPrimaryDark" />
-
-        </LinearLayout>
-
         <ImageButton
-            android:id="@+id/button_sale"
+            android:id="@+id/button_add_list_item"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="end|bottom"
-            android:layout_marginTop="22dp"
+            android:layout_marginEnd="22dp"
+            android:layout_marginRight="22dp"
             android:background="@android:color/transparent"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:scaleType="fitCenter"
-            android:src="@drawable/sell_1266844"
-            android:text="SALE" />
+            android:src="@drawable/round_person_add_black_48" />
 
     </LinearLayout>
 
