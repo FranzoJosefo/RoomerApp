@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@string/in_stock_label_list_item"
+                android:text="@string/age_label_list_item"
                 android:textColor="@color/list_item_secondary_text_color" />
 
             <TextView
