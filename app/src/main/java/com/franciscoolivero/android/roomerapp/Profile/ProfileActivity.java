@@ -104,11 +104,14 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
         return outputStream.toByteArray();
     }
 
+
+
     // OnTouchListener that listens for any user touches on a View, implying that they are modifying
     // the view, and we change the mProductHasChanged boolean to true.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);

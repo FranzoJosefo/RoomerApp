@@ -37,7 +37,7 @@ public class Profile implements Parcelable {
     /**
      * Profile Picture of the roomate Id?
      */
-    private int mPicture = 0;
+    private String mPicture = null;
     /**
      * Roomate's description.
      */
@@ -56,7 +56,7 @@ public class Profile implements Parcelable {
      * @param mDescription Description of the roomate
      */
 
-    public Profile(String mName, String mLastName, String mGender, int mDni, int mPhone, int mAreaCode, int mAge, @Nullable int mPicture, @Nullable String mDescription) {
+    public Profile(String mName, String mLastName, String mGender, int mDni, int mPhone, int mAreaCode, int mAge, @Nullable String mPicture, @Nullable String mDescription) {
         this.mName = mName;
         this.mLastName = mLastName;
         this.mGender = mGender;
@@ -124,11 +124,11 @@ public class Profile implements Parcelable {
         this.mAge = mAge;
     }
 
-    public int getmPicture() {
+    public String getmPicture() {
         return mPicture;
     }
 
-    public void setmPicture(int mPicture) {
+    public void setmPicture(String mPicture) {
         this.mPicture = mPicture;
     }
 
@@ -144,8 +144,8 @@ public class Profile implements Parcelable {
         return mDescription != null;
     }
 
-    public boolean hasPicture(){
-        return mPicture != 0;
+    public boolean hasImage(){
+        return mPicture != null;
     }
 
 
@@ -162,7 +162,7 @@ public class Profile implements Parcelable {
         dest.writeString(this.mName);
         dest.writeString(this.mLastName);
         dest.writeString(this.mGender);
-        dest.writeInt(this.mPicture);
+        dest.writeString(this.mPicture);
         dest.writeInt(this.mAge);
         dest.writeInt(this.mDni);
         dest.writeInt(this.mAreaCode);
@@ -174,7 +174,7 @@ public class Profile implements Parcelable {
         this.mName = in.readString();
         this.mLastName = in.readString();
         this.mGender = in.readString();
-        this.mPicture = in.readInt();
+        this.mPicture = in.readString();
         this.mAge = in.readInt();
         this.mDni = in.readInt();
         this.mAreaCode = in.readInt();
