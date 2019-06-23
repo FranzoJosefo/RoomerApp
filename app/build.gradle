@@ -31,6 +31,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
     implementation 'com.jakewharton:butterknife:10.0.0'
+    implementation 'com.squareup.picasso:picasso:2.71828'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
     implementation 'com.google.android.material:material:1.1.0-alpha06'
     implementation 'com.aurelhubert:ahbottomnavigation:2.3.4'
