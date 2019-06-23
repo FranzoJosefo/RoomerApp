@@ -8,17 +8,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 
 import com.franciscoolivero.android.roomerapp.Profile.Profile;
 import com.franciscoolivero.android.roomerapp.Profile.ProfileAdapter;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.loader.app.LoaderManager;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class ResultsFragment extends Fragment {
 
@@ -31,19 +34,20 @@ public class ResultsFragment extends Fragment {
     @BindView(R.id.profile_list_view)
     ListView profileListView;
     @BindView(R.id.empty_view)
-    TextView emptyStateView;
-    @BindView(R.id.spinner)
+    RelativeLayout emptyStateView;
+    @BindView(R.id.loading_spinner)
     View loadingSpinner;
 //    @BindView(R.id.toolbar)
 //    android.support.v7.widget.Toolbar toolbar;
 //    @BindView(R.id.text_home_default)
-//    TextView homeDefaultMessage;
+//TextView homeDefaultMessage;
 
     /**
      * Create a new {@link android.widget.ArrayAdapter} of profiles.
      */
     private ProfileAdapter profileAdapter;
     private ArrayList<Profile> savedProfiles;
+    private ArrayList<Profile> dummyProfiles;
     LoaderManager loaderManager;
 
     /**
@@ -57,6 +61,7 @@ public class ResultsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_results, container, false);
+        ButterKnife.bind(this, rootView);
 //        setSupportActionBar(toolbar);
         // Get a reference to the LoaderManager, in order to interact with loaders.
         loaderManager = androidx.loader.app.LoaderManager.getInstance(this);
@@ -69,13 +74,7 @@ public class ResultsFragment extends Fragment {
 
             savedProfiles = savedInstanceState.getParcelableArrayList("myKey");
 
-            //Test Dummy Profiles
-            ArrayList<Profile> dummyProfiles = new ArrayList<>();
-            generateDummyData(dummyProfiles);
 
-            profileAdapter.addAll(savedProfiles);
-            profileAdapter.notifyDataSetChanged();
-            profileListView.setAdapter(profileAdapter);
 
 
             //OPEN WEB PAGE
@@ -87,13 +86,21 @@ public class ResultsFragment extends Fragment {
 //                }
 //            });
         }
+//        //Test Dummy Profiles
+//        generateDummyData();
+//        profileAdapter = new ProfileAdapter(getActivity(), new ArrayList<>());
+//        profileAdapter.addAll(dummyProfiles);
+//        profileAdapter.notifyDataSetChanged();
+//        profileListView.setAdapter(profileAdapter);
 
 
         return rootView;
 
     }
 
-    private void generateDummyData(ArrayList<Profile> dummyProfiles) {
+
+    private void generateDummyData() {
+        dummyProfiles = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Profile currentProfile = new Profile("Alfredo_"+i,
                     "Rodriguez_"+i,
@@ -101,12 +108,29 @@ public class ResultsFragment extends Fragment {
                     36412953+i*300000,
                     68302719+i*30000,
                     54911,
-                    23+(i*3), 0, null);
+                    23+(i*3), "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg", null);
 
             dummyProfiles.add(currentProfile);
         }
     }
 
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        generateDummyData();
+        profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
+        profileAdapter.addAll(dummyProfiles);
+        profileAdapter.notifyDataSetChanged();
+        emptyStateView.setVisibility(View.GONE);
+        profileListView.setAdapter(profileAdapter);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {
