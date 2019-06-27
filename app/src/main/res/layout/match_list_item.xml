@@ -82,28 +82,45 @@
                 tools:text="21" />
         </LinearLayout>
 
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+            <TextView
+                android:id="@+id/mail_list_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/list_item_secondary_text_color"
+                tools:text="maria.nuñez@gmail.com"/>
 
-        <ImageButton
-            android:id="@+id/button_add_list_item"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="end|bottom"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="@android:color/transparent"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:scaleType="fitCenter"
-            android:src="@drawable/round_person_add_black_48" />
+            <TextView
+                android:id="@+id/phone_list_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:textColor="@color/list_item_secondary_text_color"
+                tools:text="1168302789" />
 
     </LinearLayout>
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_weight="1"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:orientation="vertical">-->
+
+        <!--<ImageButton-->
+            <!--android:id="@+id/button_add_list_item"-->
+            <!--android:layout_width="40dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:layout_gravity="end|bottom"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:layout_marginRight="8dp"-->
+            <!--android:background="@android:color/transparent"-->
+            <!--android:focusable="false"-->
+            <!--android:focusableInTouchMode="false"-->
+            <!--android:scaleType="fitCenter"-->
+            <!--android:src="@drawable/round_person_add_black_48" />-->
+
+    <!--</LinearLayout>-->
 
 </LinearLayout>

@@ -7,12 +7,12 @@ public class Match implements Parcelable {
 
 
     private String mName;
+    private String mLastName;
     private int mAge;
-    private int mImageResourceID;
+    private String mImageUrl = null;
     private String mMail;
     private String mPhone;
     private String mAreaCode;
-
 
 
 //
@@ -28,13 +28,22 @@ public class Match implements Parcelable {
 //     */
 
 
-    public Match(String mName, int mAge, int mImageResourceID, String mMail, String mPhone, String mAreaCode) {
+    public Match(String mName, String mLastName, int mAge, String mImageUrl, String mMail, String mPhone, String mAreaCode) {
         this.mName = mName;
+        this.mLastName = mLastName;
         this.mAge = mAge;
-        this.mImageResourceID = mImageResourceID;
+        this.mImageUrl = mImageUrl;
         this.mMail = mMail;
         this.mPhone = mPhone;
         this.mAreaCode = mAreaCode;
+    }
+
+    public String getmLastName() {
+        return mLastName;
+    }
+
+    public void setmLastName(String mLastName) {
+        this.mLastName = mLastName;
     }
 
     public String getmName() {
@@ -53,12 +62,12 @@ public class Match implements Parcelable {
         this.mAge = mAge;
     }
 
-    public int getmImageResourceID() {
-        return mImageResourceID;
+    public String getmImageUrl() {
+        return mImageUrl;
     }
 
-    public void setmImageResourceID(int mImageResourceID) {
-        this.mImageResourceID = mImageResourceID;
+    public void setmImageUrl(String mImageUrl) {
+        this.mImageUrl = mImageUrl;
     }
 
     public String getmMail() {
@@ -85,6 +94,10 @@ public class Match implements Parcelable {
         this.mAreaCode = mAreaCode;
     }
 
+    public boolean hasImage() {
+        return mImageUrl != null;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -93,8 +106,9 @@ public class Match implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.mName);
+        dest.writeString(this.mLastName);
         dest.writeInt(this.mAge);
-        dest.writeInt(this.mImageResourceID);
+        dest.writeString(this.mImageUrl);
         dest.writeString(this.mPhone);
         dest.writeString(this.mMail);
         dest.writeString(this.mAreaCode);
@@ -102,9 +116,10 @@ public class Match implements Parcelable {
 
     protected Match(Parcel in) {
         this.mName = in.readString();
+        this.mLastName = in.readString();
         this.mMail = in.readString();
         this.mAge = in.readInt();
-        this.mImageResourceID = in.readInt();
+        this.mImageUrl = in.readString();
         this.mPhone = in.readString();
         this.mAreaCode = in.readString();
     }

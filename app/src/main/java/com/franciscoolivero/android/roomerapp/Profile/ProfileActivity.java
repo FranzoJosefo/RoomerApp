@@ -58,13 +58,15 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
     private static final int PRODUCT_LOADER_ID = 0;
     // Find all relevant views that we will need to read user input from
     @BindView(R.id.edit_user_name)
-    EditText product_name;
+    EditText user_name;
     @BindView(R.id.edit_user_last_name)
-    EditText product_model;
+    EditText user_last_name;
     @BindView(R.id.edit_user_dni)
     EditText user_dni;
     @BindView(R.id.edit_user_age)
     EditText user_age;
+    @BindView(R.id.spinner_gender)
+    Spinner user_spinner_gender;
     @BindView(R.id.edit_user_area_code)
     EditText user_area_code;
     @BindView(R.id.edit_user_phone)
@@ -120,17 +122,21 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        product_name.setOnTouchListener(mTouchListener);
-        product_model.setOnTouchListener(mTouchListener);
-//        product_price.setOnTouchListener(mTouchListener);
-//        product_picture.setOnTouchListener(mTouchListener);
-//        supplier_name.setOnTouchListener(mTouchListener);
-//        supplier_email.setOnTouchListener(mTouchListener);
+        user_name.setOnTouchListener(mTouchListener);
+        user_last_name.setOnTouchListener(mTouchListener);
+        user_age.setOnTouchListener(mTouchListener);
+        user_dni.setOnTouchListener(mTouchListener);
+        user_phone.setOnTouchListener(mTouchListener);
+        user_spinner_gender.setOnTouchListener(mTouchListener);
+        user_area_code.setOnTouchListener(mTouchListener);
+        user_image.setOnTouchListener(mTouchListener);
+
 
         mCurrentProductUri = getIntent().getData();
 
         if (mCurrentProductUri == null) {
             setTitle(R.string.editor_activity_title_profile_create);
+            getActionBar().setDisplayHomeAsUpEnabled(false);
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a product that hasn't been created yet.)
             invalidateOptionsMenu();
@@ -142,14 +148,6 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
         }
 
 
-
-        // Spinner element
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-
-        // Spinner click listener
-//        spinner.setOnItemSelectedListener(this);
-
-        // Spinner Drop down elements
         List<String> categories = new ArrayList<String>();
         categories.add("Otro");
         categories.add("F");
@@ -162,7 +160,7 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // attaching data adapter to spinner
-        spinner.setAdapter(dataAdapter);
+        user_spinner_gender.setAdapter(dataAdapter);
 
 
     }
@@ -253,7 +251,7 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
                 return true;
             case R.id.action_buy:
 //                String[] emailAddress = {supplier_email.getText().toString()};
-                String emailSubject = getResources().getString(R.string.email_order_request_subject) + " " + product_name.getText().toString();
+                String emailSubject = getResources().getString(R.string.email_order_request_subject) + " " + user_name.getText().toString();
 //                composeEmail(emailAddress, emailSubject, createEmailBody());
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
@@ -361,8 +359,8 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
      */
 //    private void saveProduct() {
 //        long affectedRowOrId;
-//        String sProduct_name = product_name.getText().toString().trim();
-//        String sProduct_model = product_model.getText().toString().trim();
+//        String sProduct_name = user_name.getText().toString().trim();
+//        String sProduct_model = user_last_name.getText().toString().trim();
 //        String sProduct_price = String.valueOf(product_price.getText()).trim();
 //        String sProduct_quantity = String.valueOf(product_quantity.getText()).trim();
 //        //Convert Drawable to bitmap
@@ -519,8 +517,8 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
 
 //    public String createEmailBody() {
 //        String supplierName = supplier_name.getText().toString();
-//        String productName = product_name.getText().toString();
-//        String productModel = product_model.getText().toString();
+//        String productName = user_name.getText().toString();
+//        String productModel = user_last_name.getText().toString();
 //        String emailBody = "Hi, " + supplierName + "\n\n" +
 //                "I'm writing to you to place an order for the following product: " + "\n\n" +
 //                "Product Name: " + productName + "\n" +
@@ -630,8 +628,8 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
 
             // Extract out the value from the Cursor for the given column index
             // Update the views on the screen with the values from the database
-            product_name.setText(cursor.getString(productNameColumnIndex));
-            product_model.setText(cursor.getString(productModelColumnIndex));
+            user_name.setText(cursor.getString(productNameColumnIndex));
+            user_last_name.setText(cursor.getString(productModelColumnIndex));
 //            product_price.setText(priceRounded);
 //            product_quantity.setText(String.valueOf(cursor.getInt(productQuantityColumnIndex)));
 //            supplier_name.setText(cursor.getString(supplierNameColumnIndex));
@@ -645,8 +643,8 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         Log.v(LOG_TAG, "onLoaderReset triggered");
 
-        product_name.setText("");
-        product_model.setText("");
+        user_name.setText("");
+        user_last_name.setText("");
 //        product_price.setText("");
 //        product_quantity.setText("");
 //        product_picture.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.placeholder_image));
