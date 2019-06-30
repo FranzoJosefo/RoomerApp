@@ -160,10 +160,10 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
-
+    <string name="permission_rationale">"Contacts permissions are needed for providing email"</string>
+    <string name="client_id_gsi_debug">739467235704&#8211;4g2nm0n6mjeofabgbdg8j8fgql2dmec1.apps.googleusercontent.com</string>
+    <string name="client_secret_gsi_debug">"ADD CLIENT SECRET."</string>
+    <string name="client_id_gsi_release">739467235704-q3gdmrmvpagsl9q5ppkl4nr5vbjgaahj.apps.googleusercontent.com</string>
 
 
 </resources>

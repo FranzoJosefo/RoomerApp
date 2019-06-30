@@ -22,6 +22,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     private static final int RC_SIGN_IN = 1; //codigo asignado al sign in
     private final String TAG = getClass().getSimpleName();
+    /**
+     * CLIENT ID CHANGE FROM DEBUG TO RELEASE WHEN GENERATING SIGNED APK/BUNDLE
+     */
+    private final String CLIENT_ID_DEBUG = getString(R.string.client_id_gsi_debug);
+    private final String CLIENT_ID_RELEASE = getString(R.string.client_id_gsi_release);
     GoogleSignInClient mGoogleSignInClient;
     SignInButton signInButton;
 //    @BindView(R.id.sign_in_button)
@@ -35,7 +40,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         signInButton.setEnabled(true);
         signInButton.setSize(SignInButton.SIZE_WIDE);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("739467235704-kg1hhc46t9t8pjlt2a5i5tt4utlk833f.apps.googleusercontent.com")
+                .requestIdToken(CLIENT_ID_RELEASE)
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
