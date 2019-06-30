@@ -22,11 +22,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     private static final int RC_SIGN_IN = 1; //codigo asignado al sign in
     private final String TAG = getClass().getSimpleName();
-    /**
-     * CLIENT ID CHANGE FROM DEBUG TO RELEASE WHEN GENERATING SIGNED APK/BUNDLE
-     */
-    private final String CLIENT_ID_DEBUG = getString(R.string.client_id_gsi_debug);
-    private final String CLIENT_ID_RELEASE = getString(R.string.client_id_gsi_release);
+
+
     GoogleSignInClient mGoogleSignInClient;
     SignInButton signInButton;
 //    @BindView(R.id.sign_in_button)
@@ -36,13 +33,22 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in);
+
+        /**
+         * CLIENT ID CHANGE FROM DEBUG TO RELEASE WHEN GENERATING SIGNED APK/BUNDLE
+         */
+        final String CLIENT_ID_RELEASE = this.getResources().getString(R.string.client_id_gsi_release);
+        final String CLIENT_ID_DEBUG = this.getResources().getString(R.string.client_id_gsi_debug);
+
         signInButton = findViewById(R.id.sign_in_button);
         signInButton.setEnabled(true);
         signInButton.setSize(SignInButton.SIZE_WIDE);
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(CLIENT_ID_RELEASE)
                 .requestEmail()
                 .build();
+
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
     }
