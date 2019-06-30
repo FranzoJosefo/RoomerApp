@@ -35,10 +35,10 @@
     <string name="category_datos">Datos Personales *</string>
 
     <!-- Label for stock category in the editor [CHAR LIMIT=30] -->
-    <string name="category_contact">Info de Contacto</string>
+    <string name="category_contact">Info de Contacto *</string>
 
     <!-- Label for picture in the editor [CHAR LIMIT=30] -->
-    <string name="category_picture">Foto Perfil</string>
+    <string name="category_picture">Foto Perfil *</string>
 
     <!-- Label for supplier information in the editor [CHAR LIMIT=30] -->
     <string name="category_supplier_info">Supplier Info *</string>

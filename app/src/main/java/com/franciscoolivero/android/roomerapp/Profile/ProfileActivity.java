@@ -4,12 +4,11 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,32 +22,38 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.franciscoolivero.android.roomerapp.Filters.FiltersActivity;
 import com.franciscoolivero.android.roomerapp.R;
 import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 /**
  * Allows user to create a new product or edit an existing one.
  */
-public class ProfileActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener {
+public class ProfileActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     /**
      * Gender of the product. The possible values are:
@@ -74,7 +79,7 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
     @BindView(R.id.edit_user_picture)
     ImageButton user_image;
 
-//    @BindView(R.id.edit_product_quantity)
+    //    @BindView(R.id.edit_product_quantity)
 //    EditText product_quantity;
 //    @BindView(R.id.edit_product_picture)
 //    ImageView product_picture;
@@ -86,11 +91,18 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
 //    Button btn_inc_quantity;
 //    @BindView(R.id.btn_dec_quantity)
 //    Button btn_dec_quantity;
+    public String postUrl = "http://roomer-backend.herokuapp.com/apd/insertUsuario";
+
+
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private boolean mProductHasChanged = false;
     private String LOG_TAG = getClass().getSimpleName();
-    private Uri mCurrentProductUri;
+    private Uri mCurrentAccount;
     private Uri selectedImage;
-    GoogleSignInAccount account;
+    private String currentAccountGoogleEmail;
+    private String currentAccountImageURL;
+    private String userToken;
+    private GoogleSignInAccount account;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -105,7 +117,6 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
         return outputStream.toByteArray();
     }
-
 
 
     // OnTouchListener that listens for any user touches on a View, implying that they are modifying
@@ -132,23 +143,39 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
         user_image.setOnTouchListener(mTouchListener);
 
 
-        mCurrentProductUri = getIntent().getData();
+        account = getIntent().getParcelableExtra("account");
 
-        if (mCurrentProductUri == null) {
-            setTitle(R.string.editor_activity_title_profile_create);
-            getActionBar().setDisplayHomeAsUpEnabled(false);
+        //TODO add if something like mRedirectedFromLogin once Profile menu is implemented.
+        setTitle(R.string.editor_activity_title_profile_create);
+        if (account != null) {
+            user_name.setText(account.getGivenName());
+            user_last_name.setText(account.getFamilyName());
+            currentAccountGoogleEmail = account.getEmail();
+            currentAccountImageURL = account.getPhotoUrl().toString();
+            userToken = account.getEmail();
+            Log.v(LOG_TAG, "IdToken for email:" + account.getEmail() + "\nis "+ account.getIdToken());
+
+                    Glide.with(user_image.getContext())
+                            .load(currentAccountImageURL)
+                            .into(user_image);
+
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a product that hasn't been created yet.)
             invalidateOptionsMenu();
         } else {
             setTitle(R.string.editor_activity_title_profile_edit);
-            Log.v(LOG_TAG, mCurrentProductUri + " was passed as Intent Data to EditorActivity");
-            getSupportLoaderManager().initLoader(PRODUCT_LOADER_ID, null, this);
+            Log.v(LOG_TAG, account + " was passed as Intent Data to EditorActivity");
+            //TODO Delete
+//            getSupportLoaderManager().initLoader(PRODUCT_LOADER_ID, null, this);
+
+            //TODO Make a GET request
+//            http://roomer-backend.herokuapp.com/apd/getUsuariosPorToken?token=thisIsAtoken
 
         }
 
 
         List<String> categories = new ArrayList<String>();
+        categories.add("Seleccionar");
         categories.add("Otro");
         categories.add("F");
         categories.add("M");
@@ -185,7 +212,7 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         // If this is a new product, hide the "Delete" menu item.
-        if (mCurrentProductUri == null) {
+        if (mCurrentAccount == null) {
             MenuItem menuItemDel = menu.findItem(R.id.action_delete);
             menuItemDel.setVisible(false);
             MenuItem menuItemBuy = menu.findItem(R.id.action_buy);
@@ -193,9 +220,9 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
         }
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setHomeButtonEnabled(true);      // Disable the button
-            actionBar.setDisplayHomeAsUpEnabled(true); // Remove the left caret
-            actionBar.setDisplayShowHomeEnabled(true); // Remove the icon
+            actionBar.setHomeButtonEnabled(false);      // Disable the button
+            actionBar.setDisplayHomeAsUpEnabled(false); // Remove the left caret
+            actionBar.setDisplayShowHomeEnabled(false); // Remove the icon
         }
         return true;
     }
@@ -239,11 +266,10 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
             case R.id.action_save:
                 // Trigger saveProduct() method to save Product to DB.
                 //Could handle and validate errors here.
-//                saveProduct();
-                // Exit Activity
+                if (saveProduct()) {
+                    // Exit Activity
 
-                Intent intent = new Intent(this, FiltersActivity.class);
-                startActivity(intent);
+                }
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -357,72 +383,66 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
     /**
      * Insert or Update a product in the database.
      */
-//    private void saveProduct() {
-//        long affectedRowOrId;
-//        String sProduct_name = user_name.getText().toString().trim();
-//        String sProduct_model = user_last_name.getText().toString().trim();
-//        String sProduct_price = String.valueOf(product_price.getText()).trim();
-//        String sProduct_quantity = String.valueOf(product_quantity.getText()).trim();
+    private boolean saveProduct() {
+        String sUser_name = user_name.getText().toString().trim();
+        String sUser_last_name = user_last_name.getText().toString().trim();
+        String sUser_age = String.valueOf(user_age.getText()).trim();
+        String sUser_gender = user_spinner_gender.getSelectedItem().toString();
+        String sUser_phone = String.valueOf(user_phone.getText()).trim();
+        String sUser_area_code = String.valueOf(user_area_code.getText()).trim();
+        String sUser_dni = String.valueOf(user_dni.getText()).trim();
 //        //Convert Drawable to bitmap
-//        Bitmap bitmapPicture = ((BitmapDrawable) product_picture.getDrawable()).getBitmap();
+//        Bitmap bitmapPicture = ((BitmapDrawable) user_image.getDrawable()).getBitmap();
 //        //Create ByteArray from bitmap
 //        byte[] byteArrayPicture = getBitmapAsByteArray(bitmapPicture);
-//        String sSupplier_name = supplier_name.getText().toString().trim();
-//        String sSupplier_email = supplier_email.getText().toString().trim();
-//
-//        if (TextUtils.isEmpty(sProduct_name) || TextUtils.isEmpty(sProduct_model) || TextUtils.isEmpty(sProduct_price) || TextUtils.isEmpty(sSupplier_name) || TextUtils.isEmpty(sSupplier_email)) {
-//            Toast toast = Toast.makeText(this, "Missing required fields, Try again.", Toast.LENGTH_SHORT);
-//            toast.show();
-//
-//            return;
-//        }
-//
-//        float fProduct_price = 0;
-//        if (!TextUtils.isEmpty(sProduct_price)) {
-//            if (!isNumeric(sProduct_price)) {
-//                Toast toast = Toast.makeText(this, "Price must be a number, QA scum", Toast.LENGTH_SHORT);
-//                toast.show();
-//                return;
-//            }
-//            fProduct_price = Float.parseFloat(sProduct_price);
-//            if (fProduct_price == 0) {
-//                Toast toast = Toast.makeText(this, "Price cannot be 0", Toast.LENGTH_SHORT);
-//                toast.show();
-//                return;
-//            }
-//
-//        }
-//
-//        // If the quantity is not provided by the user, don't try to parse the string into an
-//        // integer value. Use 0 by default.
-//        int iProduct_quantity = 0;
-//
-//
-//        if (!TextUtils.isEmpty(sProduct_quantity)) {
-//            iProduct_quantity = Integer.parseInt(sProduct_quantity);
-//        }
-//
-//        // Create a new map of values, where column names are the keys
-//        ContentValues values = new ContentValues();
-//
-//        values.put(ProductEntry.COLUMN_PRODUCT_NAME, sProduct_name);
-//        values.put(ProductEntry.COLUMN_PRODUCT_MODEL, sProduct_model);
-//        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, fProduct_price);
-//        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, iProduct_quantity);
-//        values.put(ProductEntry.COLUMN_PRODUCT_PICTURE, byteArrayPicture);
-//        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME, sSupplier_name);
-//        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL, sSupplier_email);
-//
-//
-//        if (mCurrentProductUri == null) {
-//            affectedRowOrId = insertProduct(values);
-//        } else {
-//            affectedRowOrId = updateProduct(values);
-//        }
+
+        if (TextUtils.isEmpty(sUser_name)
+                || TextUtils.isEmpty(sUser_last_name)
+                || TextUtils.isEmpty(sUser_age)
+                || sUser_gender.equals("Seleccionar")
+                || TextUtils.isEmpty(sUser_phone)
+                || TextUtils.isEmpty(sUser_area_code)
+                || TextUtils.isEmpty(sUser_dni)) {
+            Toast toast = Toast.makeText(this, "Todos los campos son requeridos.", Toast.LENGTH_SHORT);
+            toast.show();
+
+            return false;
+        }
+
+        if (!TextUtils.isEmpty(sUser_age)) {
+            if (!isNumeric(sUser_age)) {
+                Toast toast = Toast.makeText(this, "Price must be a number, QA scum", Toast.LENGTH_SHORT);
+                toast.show();
+                return false;
+            }
+
+        }
+
+        String postBodyInsertarUsuario = "{\n" +
+                "    \"token\": \"" + userToken + "\",\n" +
+                "    \"nombre\": \"" + sUser_name + "\",\n" +
+                "    \"apellido\": \"" + sUser_last_name + "\",\n" +
+                "    \"sexo\": \"" + sUser_gender + "\",\n" +
+                "    \"edad\": \"" + sUser_age + "\",\n" +
+                "    \"dni\": \"" + sUser_dni + "\",\n" +
+                "    \"telefono\": \"" + sUser_phone + "\",\n" +
+                "    \"codArea\": \"" + sUser_area_code + "\",\n" +
+                "    \"foto\": \"" + currentAccountImageURL + "\",\n" +
+                "    \"descripcion\": \"Esto todavia esta bajo construccion\"\n" +
+                "}";
+
+        try {
+            postRequest(postUrl, postBodyInsertarUsuario);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 //        //Handles making a Toast in case of success and Error.
 //        makeToast(affectedRowOrId);
-//
-//    }
+        return true;
+
+    }
 
     public boolean isNumeric(String s) {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
@@ -442,15 +462,14 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
     /**
      * Update an existing product in the database.
      */
-    private long updateProduct(ContentValues values) {
-        return getContentResolver().update(mCurrentProductUri, values, null, null);
-    }
-
+//    private long updateProduct(ContentValues values) {
+//        return getContentResolver().update(mCurrentProductUri, values, null, null);
+//    }
     private void makeToast(long affectedRowOrId) {
         String success;
         String failure;
         String logMsg;
-        if (mCurrentProductUri == null) {
+        if (mCurrentAccount == null) {
             success = getString(R.string.editor_insert_product_successful);
             failure = getString(R.string.editor_insert_product_failed);
             logMsg = " with Row ID";
@@ -568,88 +587,52 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
 //    }
 
 
-    @NonNull
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-        Log.v(LOG_TAG, "onCreateLoader triggered");
+    public void postRequest(String postUrl, String postBody) throws IOException {
 
-        // Since the editor shows all product attributes, define a projection that contains
-        // all columns from the product table
-        String[] projection = {
-                ProductEntry._ID,
-                ProductEntry.COLUMN_PRODUCT_NAME,
-                ProductEntry.COLUMN_PRODUCT_MODEL,
-                ProductEntry.COLUMN_PRODUCT_QUANTITY,
-                ProductEntry.COLUMN_PRODUCT_PRICE,
-                ProductEntry.COLUMN_PRODUCT_PICTURE,
-                ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME,
-                ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL};
+        OkHttpClient client = new OkHttpClient();
 
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
-                mCurrentProductUri,                 // Query the content URI for the current product
-                projection,                     // Columns to include in the resulting Cursor
-                null,                  // No selection clause
-                null,               // No selection arguments
-                null);                 // Default sort order
-    }
+        RequestBody body = RequestBody.create(JSON, postBody);
 
-    @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        Log.v(LOG_TAG, "onLoadFinished triggered");
+        Request request = new Request.Builder()
+                .url(postUrl)
+                .post(body)
+                .build();
 
-        //Check if onLoadFinished was called even after the user updated fields in Edit mode, if so return earlier so that when the user returns from the Image Gallery the views aren't overwritten with DB info.
-        if (mProductHasChanged) {
-            return;
-        }
-        //Figure out the index of each column
-        if (cursor.getCount() <= 0) return;
-
-        // Proceed with moving to the first row of the cursor and reading data from it
-        // (This should be the only row in the cursor)
-        if (cursor.moveToFirst()) {
-            // Find the columns of product attributes that we're interested in
-            int productNameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
-            int productModelColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_MODEL);
-            int productQuantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_QUANTITY);
-            int productPriceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
-            int productPictureColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PICTURE);
-            int supplierNameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME);
-            int supplierEmailColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL);
-
-
-            String priceRounded = String.format("%.2f", cursor.getFloat(productPriceColumnIndex));
-
-            byte[] byteArrayPicture = cursor.getBlob(productPictureColumnIndex);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(byteArrayPicture, 0, byteArrayPicture.length);
-            if (bitmap != null) {
-//                product_picture.setImageBitmap(bitmap);
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
             }
 
-            // Extract out the value from the Cursor for the given column index
-            // Update the views on the screen with the values from the database
-            user_name.setText(cursor.getString(productNameColumnIndex));
-            user_last_name.setText(cursor.getString(productModelColumnIndex));
-//            product_price.setText(priceRounded);
-//            product_quantity.setText(String.valueOf(cursor.getInt(productQuantityColumnIndex)));
-//            supplier_name.setText(cursor.getString(supplierNameColumnIndex));
-//            supplier_email.setText(cursor.getString(supplierEmailColumnIndex));
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d("TAG", myResponse);
 
-        }
 
+                try {
+                    JSONObject json = new JSONObject(myResponse);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                ProfileActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateUIProfileSaved();
+
+//        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+
+                    }
+                });
+            }
+        });
     }
 
-    @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-        Log.v(LOG_TAG, "onLoaderReset triggered");
-
-        user_name.setText("");
-        user_last_name.setText("");
-//        product_price.setText("");
-//        product_quantity.setText("");
-//        product_picture.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.placeholder_image));
-//        supplier_name.setText("");
-//        supplier_email.setText("");
+    private void updateUIProfileSaved() {
+        Toast.makeText(this, "POST was succesfull", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, FiltersActivity.class);
+        startActivity(intent);
     }
 
 }

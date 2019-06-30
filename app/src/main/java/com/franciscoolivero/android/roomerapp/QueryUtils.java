@@ -3,6 +3,8 @@ package com.franciscoolivero.android.roomerapp;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.franciscoolivero.android.roomerapp.Profile.Profile;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,9 +39,9 @@ public final class QueryUtils {
     }
 
     /**
-     * Query the Google Roomates API and return an {@link List<Roomate>} object to represent a list of Roomates.
+     * Query the Google Roomates API and return an {@link List<Profile>} object to represent a list of Roomates.
      */
-    public static List<Roomate> fetchRoomateData(String requestUrl) {
+    public static List<Profile> fetchProfileData(String requestUrl) {
 
         //The following try catch block generates a 1.5 second delay until we make the request so that we can see the Loading Spinner.
         try {
@@ -61,12 +63,12 @@ public final class QueryUtils {
         /**
          * Extract relevant fields from the JSON response and create a {@link List<Roomate>} object
          */
-        List<Roomate> roomates = extractRoomates(jsonResponse);
+        List<Profile> profiles = extractProfiles(jsonResponse);
 
         /**
-         * Return the {@link List<Roomate>}
+         * Return the {@link List<Profile>}
          */
-        return roomates;
+        return profiles;
     }
 
 
@@ -141,7 +143,7 @@ public final class QueryUtils {
      * Return a list of {@link Roomate} objects that has been built up from
      * parsing a JSON response.
      */
-    private static List<Roomate> extractRoomates(String jsonResponse) {
+    private static List<Profile> extractProfiles(String jsonResponse) {
         List<Roomate> profiles = new ArrayList<Roomate>();
 
         //If the JSON string is empty or null, then return early.
@@ -194,7 +196,7 @@ public final class QueryUtils {
                 }
 
 
-//                Roomate profile = new Roomate(profileTitle, profileAuthors, profileInfoLink, profileAmount, profileCurrency, profileRating);
+//                Profile profile = new Roomate(profileTitle, profileAuthors, profileInfoLink, profileAmount, profileCurrency, profileRating);
 //                profiles.add(profile);
             }
 
@@ -203,7 +205,8 @@ public final class QueryUtils {
         }
 
         //Return the list of profiles
-        return profiles;
+//        return profiles;
+        return null;
     }
 
 }

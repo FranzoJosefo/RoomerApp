@@ -1,7 +1,6 @@
 package com.franciscoolivero.android.roomerapp.SignIn;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,14 +21,18 @@ import androidx.appcompat.app.AppCompatActivity;
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int RC_SIGN_IN = 1; //codigo asignado al sign in
+    private final String TAG = getClass().getSimpleName();
     GoogleSignInClient mGoogleSignInClient;
     SignInButton signInButton;
+//    @BindView(R.id.sign_in_button)
+//    Buttton
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in);
         signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setEnabled(true);
         signInButton.setSize(SignInButton.SIZE_WIDE);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("739467235704-kg1hhc46t9t8pjlt2a5i5tt4utlk833f.apps.googleusercontent.com")
@@ -44,13 +47,9 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         super.onStart();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
-            String personName = account.getDisplayName();
-            String personGivenName = account.getGivenName();
-            String personFamilyName = account.getFamilyName();
-            String personEmail = account.getEmail();
-            String personId = account.getId();
-            Uri personPhoto = account.getPhotoUrl();
-            Log.v("HELLO HELLO", "THIS IS A TEST"+personId);
+
+            //TODO Call Roomer API getUsersbyToken with account.getEmail
+            //TODO Call Roomer API getFilterbyToken
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("account", account);
             startActivity(intent);
@@ -59,16 +58,27 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void updateUI(GoogleSignInAccount account) {
-            Intent intent = new Intent(this, ProfileActivity.class);
+        //TODO Call Roomer API getUsersbyToken with account.getEmail
+        //TODO Call Roomer API getFilterbyToken
+//        Intent intent = new Intent(this, MainActivity.class);
+//        intent.putExtra("account", account);
+//        startActivity(intent);
+//        finish();
+        Intent intent = new Intent(this, ProfileActivity.class);
+        if (account != null) {
             intent.putExtra("account", account);
             startActivity(intent);
             finish();
+        } else {
+            //TODO
+        }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
+                signInButton.setEnabled(false);
                 signIn();
                 break;
             // ...
@@ -97,12 +107,14 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             // Signed in successfully, show authenticated UI.
-            updateUI(account);
+            if(account!=null){
+                updateUI(account);
+            }
         } catch (ApiException e) {
+            signInButton.setEnabled(true);
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            //Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            updateUI(null);
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
         }
     }
 }
