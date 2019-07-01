@@ -45,7 +45,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         signInButton.setSize(SignInButton.SIZE_WIDE);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(CLIENT_ID_RELEASE)
+                .requestIdToken("739467235704-4g2nm0n6mjeofabgbdg8j8fgql2dmec1.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 
