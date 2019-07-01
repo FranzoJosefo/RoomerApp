@@ -164,6 +164,7 @@
     <string name="client_id_gsi_debug">739467235704&#8211;4g2nm0n6mjeofabgbdg8j8fgql2dmec1.apps.googleusercontent.com</string>
     <string name="client_secret_gsi_debug">"ADD CLIENT SECRET."</string>
     <string name="client_id_gsi_release">739467235704-q3gdmrmvpagsl9q5ppkl4nr5vbjgaahj.apps.googleusercontent.com</string>
+    <string name="web_client_id_gsi">739467235704-kg1hhc46t9t8pjlt2a5i5tt4utlk833f.apps.googleusercontent.com</string>
 
 
 </resources>
