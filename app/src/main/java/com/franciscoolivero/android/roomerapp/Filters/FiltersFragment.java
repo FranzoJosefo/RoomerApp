@@ -12,9 +12,9 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.franciscoolivero.android.roomerapp.R;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +71,7 @@ public class FiltersFragment extends Fragment{
     private String LOG_TAG = getClass().getSimpleName();
     private Uri mCurrentProductUri;
     private Uri selectedImage;
+    private GoogleSignInAccount account;
 
     /**
      * Create a new {@link android.widget.ArrayAdapter} of profiles.
@@ -114,6 +115,7 @@ public class FiltersFragment extends Fragment{
 //        supplier_email.setOnTouchListener(mTouchListener);
 
         mCurrentProductUri = getActivity().getIntent().getData();
+        account = getActivity().getIntent().getParcelableExtra("account");
 
         // Spinner element
         Spinner spinner = (Spinner) rootView.findViewById(R.id.spinner);
@@ -127,11 +129,11 @@ public class FiltersFragment extends Fragment{
                                        int position, long id) {
                 Object item = adapterView.getItemAtPosition(position);
                 if (item != null) {
-                    Toast.makeText(getContext(), item.toString(),
-                            Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), item.toString(),
+//                            Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(getContext(), "Selected",
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Selected",
+//                        Toast.LENGTH_SHORT).show();
 
             }
 
@@ -149,11 +151,11 @@ public class FiltersFragment extends Fragment{
                                        int position, long id) {
                 Object item = adapterView.getItemAtPosition(position);
                 if (item != null) {
-                    Toast.makeText(getContext(), item.toString(),
-                            Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), item.toString(),
+//                            Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(getContext(), "Selected",
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Selected",
+//                        Toast.LENGTH_SHORT).show();
 
             }
 
@@ -222,11 +224,17 @@ public class FiltersFragment extends Fragment{
 //    public boolean onPrepareOptionsMenu(Menu menu) {
 //        super.onPrepareOptionsMenu(menu);
 //        // If this is a new product, hide the "Delete" menu item.
-//        if (mCurrentProductUri == null) {
+//        if ( == null) {
 //            MenuItem menuItemDel = menu.findItem(R.id.action_delete);
 //            menuItemDel.setVisible(false);
 //            MenuItem menuItemBuy = menu.findItem(R.id.action_buy);
 //            menuItemBuy.setVisible(false);
+//        }
+//        ActionBar actionBar = getSupportActionBar();
+//        if (actionBar != null) {
+//            actionBar.setHomeButtonEnabled(false);      // Disable the button
+//            actionBar.setDisplayHomeAsUpEnabled(false); // Remove the left caret
+//            actionBar.setDisplayShowHomeEnabled(false); // Remove the icon
 //        }
 //        return true;
 //    }

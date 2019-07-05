@@ -9,6 +9,10 @@ public class Profile implements Parcelable {
     /**
      * Name of the roomate
      */
+    private String mToken;
+    /**
+     * Name of the roomate
+     */
     private String mName;
     /**
      * Last name of the roomate
@@ -21,11 +25,11 @@ public class Profile implements Parcelable {
     /**
      * DNI of the roomate
      */
-    private int mDni;
+    private String mDni;
     /**
      * Phone of the roomate
      */
-    private int mPhone;
+    private String mPhone;
     /**
      * Area Code of the roomate
      */
@@ -45,18 +49,20 @@ public class Profile implements Parcelable {
 
     /**
      * Constructs a new {@link Profile} object.
-     * @param mName      Name of the roomate
-     * @param mLastName      Last name of the roomate
+     *  @param mToken
+     * @param mName        Name of the roomate
+     * @param mLastName    Last name of the roomate
+     * @param mGender      Gender of the roomate
+     * @param mDni         Dni of the roomate
+     * @param mPhone       Phone of the roomate
+     * @param mAreaCode    AreaCode of the roomate
      * @param mAge         Age of the roomate
-     * @param mGender  Gender of the roomate
-     * @param mDni Dni of the roomate
-     * @param mAreaCode AreaCode of the roomate
-     * @param mPhone Phone of the roomate
-     * @param mPicture Picture of the roomate
+     * @param mPicture     Picture of the roomate
      * @param mDescription Description of the roomate
      */
 
-    public Profile(String mName, String mLastName, String mGender, int mDni, int mPhone, int mAreaCode, int mAge, @Nullable String mPicture, @Nullable String mDescription) {
+    public Profile(String mToken, String mName, String mLastName, String mGender, String mDni, String mPhone, int mAreaCode, int mAge, @Nullable String mPicture, @Nullable String mDescription) {
+        this.mToken = mToken;
         this.mName = mName;
         this.mLastName = mLastName;
         this.mGender = mGender;
@@ -66,6 +72,14 @@ public class Profile implements Parcelable {
         this.mAge = mAge;
         this.mPicture = mPicture;
         this.mDescription = mDescription;
+    }
+
+    public String getmToken() {
+        return mToken;
+    }
+
+    public void setmToken(String mToken) {
+        this.mToken = mToken;
     }
 
     public String getmName() {
@@ -92,19 +106,19 @@ public class Profile implements Parcelable {
         this.mGender = mGender;
     }
 
-    public int getmDni() {
+    public String getmDni() {
         return mDni;
     }
 
-    public void setmDni(int mDni) {
+    public void setmDni(String mDni) {
         this.mDni = mDni;
     }
 
-    public int getmPhone() {
+    public String getmPhone() {
         return mPhone;
     }
 
-    public void setmPhone(int mPhone) {
+    public void setmPhone(String mPhone) {
         this.mPhone = mPhone;
     }
 
@@ -140,15 +154,13 @@ public class Profile implements Parcelable {
         this.mDescription = mDescription;
     }
 
-    public boolean hasDescription(){
+    public boolean hasDescription() {
         return mDescription != null;
     }
 
-    public boolean hasImage(){
+    public boolean hasImage() {
         return mPicture != null;
     }
-
-
 
 
     @Override
@@ -164,9 +176,9 @@ public class Profile implements Parcelable {
         dest.writeString(this.mGender);
         dest.writeString(this.mPicture);
         dest.writeInt(this.mAge);
-        dest.writeInt(this.mDni);
+        dest.writeString(this.mDni);
         dest.writeInt(this.mAreaCode);
-        dest.writeInt(this.mPhone);
+        dest.writeString(this.mPhone);
     }
 
     protected Profile(Parcel in) {
@@ -176,9 +188,9 @@ public class Profile implements Parcelable {
         this.mGender = in.readString();
         this.mPicture = in.readString();
         this.mAge = in.readInt();
-        this.mDni = in.readInt();
+        this.mDni = in.readString();
         this.mAreaCode = in.readInt();
-        this.mPhone = in.readInt();
+        this.mPhone = in.readString();
     }
 
     public static final Parcelable.Creator<Profile> CREATOR = new Parcelable.Creator<Profile>() {

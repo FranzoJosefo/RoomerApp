@@ -2,9 +2,12 @@ package com.franciscoolivero.android.roomerapp.Profile;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -19,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -38,7 +42,6 @@ import java.util.List;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NavUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.Call;
@@ -78,6 +81,8 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     EditText user_phone;
     @BindView(R.id.edit_user_picture)
     ImageButton user_image;
+    @BindView(R.id.loading_spinner_profile)
+    ProgressBar loading_spinner;
 
     //    @BindView(R.id.edit_product_quantity)
 //    EditText product_quantity;
@@ -266,10 +271,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
             case R.id.action_save:
                 // Trigger saveProduct() method to save Product to DB.
                 //Could handle and validate errors here.
-                if (saveProduct()) {
-                    // Exit Activity
-
-                }
+                saveProduct();
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -298,7 +300,9 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // User clicked "Discard" button, navigate to parent activity.
-                                NavUtils.navigateUpFromSameTask(ProfileActivity.this);
+                                finish();
+                                //Only use navigateUpFromSameTask if on the Edit Profile Activity mode.
+//                                NavUtils.navigateUpFromSameTask(ProfileActivity.this);
                             }
                         };
 
@@ -384,6 +388,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
      * Insert or Update a product in the database.
      */
     private boolean saveProduct() {
+
         String sUser_name = user_name.getText().toString().trim();
         String sUser_last_name = user_last_name.getText().toString().trim();
         String sUser_age = String.valueOf(user_age.getText()).trim();
@@ -418,6 +423,8 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
         }
 
+        //TODO implement internet error handling: Use BookListing as reference. BookListActivity isConnected()
+
         String postBodyInsertarUsuario = "{\n" +
                 "    \"token\": \"" + userToken + "\",\n" +
                 "    \"nombre\": \"" + sUser_name + "\",\n" +
@@ -431,10 +438,16 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
                 "    \"descripcion\": \"Esto todavia esta bajo construccion\"\n" +
                 "}";
 
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        loading_spinner.setVisibility(View.VISIBLE);
+
         try {
             postRequest(postUrl, postBodyInsertarUsuario);
         } catch (IOException e) {
             e.printStackTrace();
+            Toast.makeText(this, "Error guardando informacion, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+            return false;
         }
 
 
@@ -601,6 +614,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem posting Profile information to Backend", e);
                 call.cancel();
             }
 
@@ -629,10 +643,25 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         });
     }
 
+
+
     private void updateUIProfileSaved() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        loading_spinner.setVisibility(View.GONE);
         Toast.makeText(this, "POST was succesfull", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, FiltersActivity.class);
+        intent.putExtra("account", account);
         startActivity(intent);
+        finish();
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
     }
 
 }

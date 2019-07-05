@@ -20,12 +20,14 @@ import android.widget.Toast;
 import com.franciscoolivero.android.roomerapp.MainActivity;
 import com.franciscoolivero.android.roomerapp.R;
 import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 import androidx.fragment.app.Fragment;
@@ -70,6 +72,7 @@ public class FiltersActivity extends AppCompatActivity implements LoaderManager.
     private String LOG_TAG = getClass().getSimpleName();
     private Uri mCurrentProductUri;
     private Uri selectedImage;
+    private GoogleSignInAccount account;
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -109,6 +112,8 @@ public class FiltersActivity extends AppCompatActivity implements LoaderManager.
 ////        supplier_email.setOnTouchListener(mTouchListener);
 //
         mCurrentProductUri = getIntent().getData();
+        account = getIntent().getParcelableExtra("account");
+
 
         if (mCurrentProductUri == null) {
             setTitle(R.string.editor_activity_title_filters_create);
@@ -143,6 +148,12 @@ public class FiltersActivity extends AppCompatActivity implements LoaderManager.
             menuItemDel.setVisible(false);
             MenuItem menuItemBuy = menu.findItem(R.id.action_buy);
             menuItemBuy.setVisible(false);
+        }
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeButtonEnabled(false);      // Disable the button
+            actionBar.setDisplayHomeAsUpEnabled(false); // Remove the left caret
+            actionBar.setDisplayShowHomeEnabled(false); // Remove the icon
         }
         return true;
     }

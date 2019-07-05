@@ -5,6 +5,7 @@ import android.view.MenuItem;
 
 import com.franciscoolivero.android.roomerapp.Matches.MatchesFragment;
 import com.franciscoolivero.android.roomerapp.Filters.FiltersFragment;
+import com.franciscoolivero.android.roomerapp.Results.ResultsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;

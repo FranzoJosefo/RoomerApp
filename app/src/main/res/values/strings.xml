@@ -12,6 +12,9 @@
     <!-- Title for the activity to add a new product [CHAR LIMIT=20] -->
     <string name="editor_activity_title_profile_create">Crear Perfil</string>
 
+    <!-- Title text for the empty view in Results Screen [CHAR LIMIT=50] -->
+    <string name="generic_loading_tittle">Cargando&#8230;</string>
+
     <string name="editor_activity_title_filters_create">Elegir Filtros</string>
 
     <string name="editor_activity_title_profile_edit">Editar Perfil</string>
@@ -150,6 +153,8 @@
     <!-- Order request subject for Email intent in DetailsActivity -->
     <string name="email_order_request_subject">Order Request</string>
     <string name="title_activity_login">Sign in</string>
+
+
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
