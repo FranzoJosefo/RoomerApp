@@ -60,7 +60,11 @@ public class ParserService {
                         currentDescription
                 );
 
-                profileArray.add(currentProfile);
+
+                if(!ParserService.profileAlreadyAdded(profileArray, currentProfile)){
+                    profileArray.add(currentProfile);
+                }
+
                 Log.v(LOG_TAG + ": in extractProfiles()", "Profile with token {"+currentToken+"} added to profileArray");
             }
 
@@ -74,5 +78,14 @@ public class ParserService {
         Log.v(LOG_TAG + ": in extractProfiles()", "Return profileArray");
         Log.v(LOG_TAG + ": in extractProfiles()", profileArray.toString());
         return profileArray;
+    }
+
+    private static boolean profileAlreadyAdded(List<Profile> profileArray, Profile currentProfile){
+        for (Profile profileTemp:profileArray) {
+            if(currentProfile.getmToken().equals(profileTemp.getmToken())){
+                return true;
+            }
+        }
+        return false;
     }
 }

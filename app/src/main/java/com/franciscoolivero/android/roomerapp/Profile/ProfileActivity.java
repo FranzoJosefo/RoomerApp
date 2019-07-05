@@ -145,6 +145,9 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         user_phone.setOnTouchListener(mTouchListener);
         user_spinner_gender.setOnTouchListener(mTouchListener);
         user_area_code.setOnTouchListener(mTouchListener);
+
+        //TODO el usuario puede elegir foto? por Ahora desactivar button.
+        user_image.setEnabled(false);
         user_image.setOnTouchListener(mTouchListener);
 
 
