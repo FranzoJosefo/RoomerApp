@@ -41,19 +41,19 @@ public class MainActivity extends AppCompatActivity {
             Fragment fragment;
             switch (item.getItemId()) {
                 case R.id.navigation_busquedas:
-                    toolbar.setTitle("Busquedas");
                     fragment = new ResultsFragment();
                     loadFragment(fragment);
+                    toolbar.setTitle("Busquedas");
                     return true;
                 case R.id.navigation_filtros:
-                    toolbar.setTitle("Filtros");
                     fragment = new FiltersFragment();
                     loadFragment(fragment);
+                    toolbar.setTitle("Filtros");
                     return true;
                 case R.id.navigation_matches:
-                    toolbar.setTitle("Matches");
                     fragment = new MatchesFragment();
                     loadFragment(fragment);
+                    toolbar.setTitle("Matches");
                     return true;
 
             }
