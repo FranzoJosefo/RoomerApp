@@ -9,7 +9,6 @@ import com.franciscoolivero.android.roomerapp.Results.ResultsFragment;
 import com.franciscoolivero.android.roomerapp.SignIn.SignInActivity;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 import okhttp3.Call;
@@ -38,11 +37,6 @@ public final class QueryUtils {
      * directly from the class named QueryUtils (and an object instance of QueryUtils is not needed).
      */
     private QueryUtils() {
-    }
-
-    private static WeakReference<Activity> mActivityRef;
-    public static void updateActivity(Activity activity) {
-        mActivityRef = new WeakReference<Activity>(activity);
     }
 
     public static void getUsuariosHTTPRequest(String url, String mToken, Activity activity) throws IOException {
@@ -87,9 +81,10 @@ public final class QueryUtils {
                         public void run() {
                             if(activity.getClass().getSimpleName().equals(MainActivity.class.getSimpleName())){
                                 Log.v(LOG_TAG, "ENTRO Results Fragment");
-                                ResultsFragment.updateProfileAdapter(profiles);
+                                ResultsFragment resultsFragment = ResultsFragment.getInstance();
+                                resultsFragment.updateProfileAdapter(profiles);
                             } else if(activity.getClass().getSimpleName().equals(SignInActivity.class.getSimpleName())) {
-                                //TODO handle in Sign In when user already created Pass Profiles and ask for null.
+                                //TODO handle in Sign In when user already created -> Pass Profiles and ask for null.
                             } else if(activity.getClass().getSimpleName().equals(ProfileActivity.class.getSimpleName())){
                                 Log.v(LOG_TAG, "ENTRO Results Fragment");
                                 ProfileActivity profileActivity = ProfileActivity.getInstance();

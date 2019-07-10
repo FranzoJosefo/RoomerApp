@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -86,6 +85,7 @@ public class ResultsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_results, container, false);
         ButterKnife.bind(this, rootView);
+        resultsFragmentInstance = this;
 //        setSupportActionBar(toolbar);
         // Get a reference to the LoaderManager, in order to interact with loaders.
 //        loaderManager = androidx.loader.app.LoaderManager.getInstance(this);
@@ -123,6 +123,10 @@ public class ResultsFragment extends Fragment {
 
     }
 
+    public static ResultsFragment getInstance() {
+        return resultsFragmentInstance;
+    }
+
 
     private void generateDummyData() {
         dummyProfiles = new ArrayList<>();
@@ -151,12 +155,12 @@ public class ResultsFragment extends Fragment {
         userToken = ((MainActivity) getActivity()).getUserToken();
         loadingSpinner.setVisibility(View.VISIBLE);
         fetchProfileData(ROOMER_API_GET_RESULTS, getActivity(), getContext());
-        loadingSpinner.setVisibility(View.GONE);
 
 //        generateDummyData();
         profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
         profileListView.setAdapter(profileAdapter);
-        emptyStateView.setVisibility(View.GONE);
+        loadingSpinner.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -228,6 +232,7 @@ public class ResultsFragment extends Fragment {
             e.printStackTrace();
         }
         try {
+            //TODO reimplement getUsuariosHttpRequest within this class. Can't reuse after all Memory Leak issues.
 //            getUsuariosHTTPRequest(requestUrl, activity);
             QueryUtils.getUsuariosHTTPRequest(requestUrl, userToken, activity);
 
@@ -245,11 +250,17 @@ public class ResultsFragment extends Fragment {
 
 
 
-    public static void updateProfileAdapter(List<Profile> profileList){
+    public void updateProfileAdapter(List<Profile> profileList){
         profileAdapter.clear();
-        profileAdapter.addAll(profileList);
-        profileAdapter.notifyDataSetChanged();
-        Log.v(LOG_TAG, "AGREGO TODO AL PROFILE ADAPTER");
+        if(profileList.isEmpty()){
+            emptyStateView.setVisibility(View.VISIBLE);
+            profileAdapter.notifyDataSetChanged();
+        } else {
+            emptyStateView.setVisibility(View.GONE);
+            profileAdapter.addAll(profileList);
+            profileAdapter.notifyDataSetChanged();
+            Log.v(LOG_TAG, "AGREGO TODO AL PROFILE ADAPTER");
+        }
     }
 
 
