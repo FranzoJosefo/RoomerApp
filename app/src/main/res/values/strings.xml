@@ -26,10 +26,10 @@
     <string name="action_save">Save</string>
 
     <!-- Label for editor overflow menu option that deletes the current product [CHAR LIMIT=20] -->
-    <string name="action_delete">Delete</string>
+    <string name="nav_profile">Perfil</string>
 
     <!-- Label for editor overflow menu option that starts intent to order the current product [CHAR LIMIT=20] -->
-    <string name="action_order">Order Product</string>
+    <string name="action_logout">Cerrar sesión</string>
 
     <!-- Titulo del Spinner (dropdown) para seleccionar el sexo -->
     <string name="spinner_title_sexo">Sexo</string>

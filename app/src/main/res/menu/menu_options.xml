@@ -14,12 +14,12 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_delete"
-        android:title="@string/action_delete"
+        android:id="@+id/nav_profile"
+        android:title="@string/nav_profile"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_buy"
-        android:title="@string/action_order"
+        android:id="@+id/action_logout"
+        android:title="@string/action_logout"
         app:showAsAction="never" />
 </menu>

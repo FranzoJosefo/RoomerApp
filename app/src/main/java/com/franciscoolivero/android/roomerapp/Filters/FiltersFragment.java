@@ -267,7 +267,7 @@ public class FiltersFragment extends Fragment{
 //    public onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu options from the res/menu/menu_editor.xml file.
 //        // This adds menu items to the app bar.
-//        getMenuInflater().inflate(R.menu.menu_details, menu);
+//        getMenuInflater().inflate(R.menu.menu_options, menu);
 //        return true;
 //    }
 

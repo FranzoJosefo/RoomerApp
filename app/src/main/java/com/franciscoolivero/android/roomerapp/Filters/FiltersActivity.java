@@ -123,7 +123,7 @@ public class FiltersActivity extends AppCompatActivity implements LoaderManager.
         } else {
             setTitle(R.string.editor_activity_title_filters_create);
             Log.v(LOG_TAG, mCurrentProductUri + " was passed as Intent Data to EditorActivity");
-            getSupportLoaderManager().initLoader(PRODUCT_LOADER_ID, null, this);
+//            getSupportLoaderManager().initLoader(PRODUCT_LOADER_ID, null, this);
 
         }
 
@@ -144,9 +144,9 @@ public class FiltersActivity extends AppCompatActivity implements LoaderManager.
         super.onPrepareOptionsMenu(menu);
         // If this is a new product, hide the "Delete" menu item.
         if (mCurrentProductUri == null) {
-            MenuItem menuItemDel = menu.findItem(R.id.action_delete);
+            MenuItem menuItemDel = menu.findItem(R.id.nav_profile);
             menuItemDel.setVisible(false);
-            MenuItem menuItemBuy = menu.findItem(R.id.action_buy);
+            MenuItem menuItemBuy = menu.findItem(R.id.action_logout);
             menuItemBuy.setVisible(false);
         }
         ActionBar actionBar = getSupportActionBar();
@@ -185,7 +185,7 @@ public class FiltersActivity extends AppCompatActivity implements LoaderManager.
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_editor.xml file.
         // This adds menu items to the app bar.
-        getMenuInflater().inflate(R.menu.menu_details, menu);
+        getMenuInflater().inflate(R.menu.menu_options, menu);
         return true;
     }
 
@@ -204,14 +204,15 @@ public class FiltersActivity extends AppCompatActivity implements LoaderManager.
                 finish();
                 return true;
             // Respond to a click on the "Delete" menu option
-            case R.id.action_delete:
+            case R.id.nav_profile:
 //                showDeleteConfirmationDialog();
                 return true;
-//            case R.id.action_buy:
+            case R.id.action_logout:
+                //TODO HANDLE LOGOUT
 //                String[] emailAddress = {supplier_email.getText().toString()};
 //                String emailSubject = getResources().getString(R.string.email_order_request_subject) + " " + product_name.getText().toString();
 //                composeEmail(emailAddress, emailSubject, createEmailBody());
-//                return true;
+                return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
                 // If the product hasn't changed, continue with navigating up to parent activity

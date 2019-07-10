@@ -221,9 +221,9 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         super.onPrepareOptionsMenu(menu);
         // If this is a new product, hide the "Delete" menu item.
         if (mCurrentAccount == null) {
-            MenuItem menuItemDel = menu.findItem(R.id.action_delete);
+            MenuItem menuItemDel = menu.findItem(R.id.nav_profile);
             menuItemDel.setVisible(false);
-            MenuItem menuItemBuy = menu.findItem(R.id.action_buy);
+            MenuItem menuItemBuy = menu.findItem(R.id.action_logout);
             menuItemBuy.setVisible(false);
         }
         ActionBar actionBar = getSupportActionBar();
@@ -262,7 +262,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_editor.xml file.
         // This adds menu items to the app bar.
-        getMenuInflater().inflate(R.menu.menu_details, menu);
+        getMenuInflater().inflate(R.menu.menu_options, menu);
         return true;
     }
 
@@ -277,10 +277,10 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
                 saveProduct();
                 return true;
             // Respond to a click on the "Delete" menu option
-            case R.id.action_delete:
+            case R.id.nav_profile:
                 showDeleteConfirmationDialog();
                 return true;
-            case R.id.action_buy:
+            case R.id.action_logout:
 //                String[] emailAddress = {supplier_email.getText().toString()};
                 String emailSubject = getResources().getString(R.string.email_order_request_subject) + " " + user_name.getText().toString();
 //                composeEmail(emailAddress, emailSubject, createEmailBody());
