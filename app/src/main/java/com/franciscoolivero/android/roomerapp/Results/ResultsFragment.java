@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -51,7 +50,7 @@ public class ResultsFragment extends Fragment {
     @BindView(R.id.empty_view)
     RelativeLayout emptyStateView;
     @BindView(R.id.loading_spinner_container_profile)
-    ProgressBar loadingSpinner;
+    View loadingSpinner;
 //    @BindView(R.id.toolbar)
 //    android.support.v7.widget.Toolbar toolbar;
 //    @BindView(R.id.text_home_default)
