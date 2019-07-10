@@ -233,6 +233,7 @@ public class ResultsFragment extends Fragment {
 
 
     private static void updateProfileAdapter(List<Profile> profileList){
+        profileAdapter.clear();
         profileAdapter.addAll(profileList);
         profileAdapter.notifyDataSetChanged();
         Log.v(LOG_TAG, "AGREGO TODO AL PROFILE ADAPTER");
