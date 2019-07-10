@@ -308,9 +308,9 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Trigger saveProduct() method to save Product to DB.
+                // Trigger saveProfile() method to save Product to DB.
                 //Could handle and validate errors here.
-                saveProduct();
+                saveProfile();
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.nav_profile:
@@ -426,7 +426,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     /**
      * Insert or Update a product in the database.
      */
-    private boolean saveProduct() {
+    private boolean saveProfile() {
 
         String sUser_name = user_name.getText().toString().trim();
         String sUser_last_name = user_last_name.getText().toString().trim();
@@ -479,7 +479,9 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        container_profile_layout.setVisibility(View.INVISIBLE);
         loading_spinner.setVisibility(View.VISIBLE);
+
 
         try {
             postRequest(postUrl, postBodyInsertarUsuario);
@@ -730,6 +732,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     private void updateUIProfileSaved() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         loading_spinner.setVisibility(View.GONE);
+        container_profile_layout.setVisibility(View.VISIBLE);
         Toast.makeText(this, "Perfil guardado!", Toast.LENGTH_LONG).show();
         if(intentFromActivity.equals(SignInActivity.class.getSimpleName())) {
             Intent intent = new Intent(this, FiltersActivity.class);
