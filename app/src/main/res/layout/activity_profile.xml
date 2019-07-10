@@ -11,10 +11,12 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/container_profile_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/activity_margin">
+            android:padding="@dimen/activity_margin"
+            android:visibility="invisible">
             <!-- Overview category -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -179,7 +181,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <!--TODO Update para imagen mas acorde-->
 
@@ -187,8 +189,8 @@
                 android:id="@+id/empty_title_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_below="@+id/loading_spinner_profile"
+                android:layout_centerHorizontal="true"
                 android:fontFamily="sans-serif-medium"
                 android:paddingTop="16dp"
                 android:text="@string/generic_loading_tittle"
@@ -198,7 +200,7 @@
                 android:id="@+id/loading_spinner_profile"
                 android:layout_width="73dp"
                 android:layout_height="52dp"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true" />
 
         </RelativeLayout>
 

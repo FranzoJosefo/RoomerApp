@@ -63,7 +63,7 @@
             android:layout_width="73dp"
             android:layout_height="52dp"
             android:layout_centerInParent="true"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
     </RelativeLayout>
 

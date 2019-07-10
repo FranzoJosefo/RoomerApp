@@ -77,6 +77,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         Intent intent = new Intent(this, ProfileActivity.class);
         if (account != null) {
             intent.putExtra("account", account);
+            intent.putExtra("intentFromActivity", this.getClass().getSimpleName());
             startActivity(intent);
             finish();
         } else {

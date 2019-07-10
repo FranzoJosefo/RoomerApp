@@ -22,15 +22,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.franciscoolivero.android.roomerapp.Filters.FiltersActivity;
+import com.franciscoolivero.android.roomerapp.MainActivity;
+import com.franciscoolivero.android.roomerapp.QueryUtils;
 import com.franciscoolivero.android.roomerapp.R;
+import com.franciscoolivero.android.roomerapp.SignIn.SignInActivity;
 import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,6 +61,7 @@ import okhttp3.Response;
  */
 public class ProfileActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+    static ProfileActivity profileActivityInstance;
     /**
      * Gender of the product. The possible values are:
      * 0 for unknown gender, 1 for male, 2 for female.
@@ -81,8 +85,11 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     EditText user_phone;
     @BindView(R.id.edit_user_picture)
     ImageButton user_image;
-    @BindView(R.id.loading_spinner_profile)
-    ProgressBar loading_spinner;
+    @BindView(R.id.loading_spinner_container_profile)
+    View loading_spinner;
+    @BindView(R.id.container_profile_layout)
+    View container_profile_layout;
+
 
     //    @BindView(R.id.edit_product_quantity)
 //    EditText product_quantity;
@@ -97,10 +104,19 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 //    @BindView(R.id.btn_dec_quantity)
 //    Button btn_dec_quantity;
     public String postUrl = "http://roomer-backend.herokuapp.com/apd/insertUsuario";
+    public String getProfileDataUrl = "http://roomer-backend.herokuapp.com/apd/getUsuariosPorToken";
+
+    private final int GENDER_OTRO_INDEX = 1;
+    private final int GENDER_F_INDEX = 2;
+    private final int GENDER_M_INDEX = 3;
+    private final String GENDER_OTRO_STRING = "Otro";
+    private final String GENDER_F_STRING = "F";
+    private final String GENDER_M_STRING = "M";
 
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private boolean mProductHasChanged = false;
+    private String intentFromActivity;
     private String LOG_TAG = getClass().getSimpleName();
     private Uri mCurrentAccount;
     private Uri selectedImage;
@@ -131,8 +147,10 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        profileActivityInstance = this;
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
+        container_profile_layout.setVisibility(View.INVISIBLE);
 
         //Avoid keyboard from opening focused on first EditText
         getWindow().setSoftInputMode(
@@ -152,31 +170,48 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
 
         account = getIntent().getParcelableExtra("account");
+        if(account!=null){
+            userToken = account.getEmail();
+        }
+        intentFromActivity = getIntent().getStringExtra("intentFromActivity");
+
 
         //TODO add if something like mRedirectedFromLogin once Profile menu is implemented.
         setTitle(R.string.editor_activity_title_profile_create);
-        if (account != null) {
-            user_name.setText(account.getGivenName());
-            user_last_name.setText(account.getFamilyName());
-            currentAccountGoogleEmail = account.getEmail();
-            currentAccountImageURL = account.getPhotoUrl().toString();
-            userToken = account.getEmail();
-            Log.v(LOG_TAG, "IdToken for email:" + account.getEmail() + "\nis "+ account.getIdToken());
+        if (intentFromActivity.equals(SignInActivity.class.getSimpleName())) {
+            if (account != null) {
+                user_name.setText(account.getGivenName());
+                user_last_name.setText(account.getFamilyName());
+                currentAccountGoogleEmail = account.getEmail();
+                currentAccountImageURL = account.getPhotoUrl().toString();
+                Log.v(LOG_TAG, "IdToken for email:" + account.getEmail() + "\nis " + account.getIdToken());
 
-                    Glide.with(user_image.getContext())
-                            .load(currentAccountImageURL)
-                            .into(user_image);
-
-            // Invalidate the options menu, so the "Delete" menu option can be hidden.
-            // (It doesn't make sense to delete a product that hasn't been created yet.)
-            invalidateOptionsMenu();
-        } else {
+                Glide.with(user_image.getContext())
+                        .load(currentAccountImageURL)
+                        .into(user_image);
+                container_profile_layout.setVisibility(View.VISIBLE);
+                // Invalidate the options menu, so the "Delete" menu option can be hidden.
+                // (It doesn't make sense to delete a product that hasn't been created yet.)
+                invalidateOptionsMenu();
+            }
+        } else if (intentFromActivity.equals(MainActivity.class.getSimpleName())){
             setTitle(R.string.editor_activity_title_profile_edit);
-            Log.v(LOG_TAG, account + " was passed as Intent Data to EditorActivity");
+            currentAccountImageURL = account.getPhotoUrl().toString();
+            Log.v(LOG_TAG, "Entra en Perfil en modo Editar");
             //TODO Delete
 //            getSupportLoaderManager().initLoader(PRODUCT_LOADER_ID, null, this);
 
             //TODO Make a GET request
+            loading_spinner.setVisibility(View.VISIBLE);
+            try {
+                QueryUtils.getUsuariosHTTPRequest(getProfileDataUrl, userToken, this);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error guardando informacion, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+                loading_spinner.setVisibility(View.GONE);
+            }
+
+
 //            http://roomer-backend.herokuapp.com/apd/getUsuariosPorToken?token=thisIsAtoken
 
         }
@@ -184,9 +219,9 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
         List<String> categories = new ArrayList<String>();
         categories.add("Seleccionar");
-        categories.add("Otro");
-        categories.add("F");
-        categories.add("M");
+        categories.add(GENDER_OTRO_STRING);
+        categories.add(GENDER_F_STRING);
+        categories.add(GENDER_M_STRING);
 
         // Creating adapter for spinner
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
@@ -199,6 +234,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
 
     }
+
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -647,14 +683,59 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     }
 
 
+    public static ProfileActivity getInstance() {
+        return profileActivityInstance;
+    }
+
+
+    public void updateUIProfileLoaded(List<Profile> profileList) {
+        if (!profileList.isEmpty()) {
+            Log.v(LOG_TAG, "Profile List is NOT Empty");
+            Profile userProfile = profileList.get(0);
+            setProfileDataViews(userProfile);
+            loading_spinner.setVisibility(View.GONE);
+            container_profile_layout.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    private void setProfileDataViews(Profile userProfile) {
+        user_name.setText(userProfile.getmName());
+        user_last_name.setText(userProfile.getmLastName());
+        user_dni.setText(userProfile.getmDni());
+        user_age.setText(String.valueOf(userProfile.getmAge()));
+        user_area_code.setText(String.valueOf(userProfile.getmAreaCode()));
+        user_phone.setText(userProfile.getmPhone());
+
+        if (userProfile.hasImage()) {
+            Picasso.get().load(userProfile.getmPicture()).into(user_image);
+        }
+
+
+        switch (userProfile.getmGender()) {
+            case GENDER_OTRO_STRING:
+                user_spinner_gender.setSelection(GENDER_OTRO_INDEX);
+                break;
+            case GENDER_F_STRING:
+                user_spinner_gender.setSelection(GENDER_F_INDEX);
+                break;
+            case GENDER_M_STRING:
+                user_spinner_gender.setSelection(GENDER_M_INDEX);
+                break;
+        }
+
+    }
+
 
     private void updateUIProfileSaved() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         loading_spinner.setVisibility(View.GONE);
-        Toast.makeText(this, "POST was succesfull", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, FiltersActivity.class);
-        intent.putExtra("account", account);
-        startActivity(intent);
+        Toast.makeText(this, "Perfil guardado!", Toast.LENGTH_LONG).show();
+        if(intentFromActivity.equals(SignInActivity.class.getSimpleName())) {
+            Intent intent = new Intent(this, FiltersActivity.class);
+            intent.putExtra("account", account);
+            startActivity(intent);
+        }
         finish();
     }
 

@@ -10,12 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.franciscoolivero.android.roomerapp.MainActivity;
 import com.franciscoolivero.android.roomerapp.ParserService;
 import com.franciscoolivero.android.roomerapp.Profile.Profile;
 import com.franciscoolivero.android.roomerapp.Profile.ProfileAdapter;
+import com.franciscoolivero.android.roomerapp.QueryUtils;
 import com.franciscoolivero.android.roomerapp.R;
 
 import java.io.IOException;
@@ -48,11 +51,13 @@ public class ResultsFragment extends Fragment {
     @BindView(R.id.empty_view)
     RelativeLayout emptyStateView;
     @BindView(R.id.loading_spinner)
-    View loadingSpinner;
+    ProgressBar loadingSpinner;
 //    @BindView(R.id.toolbar)
 //    android.support.v7.widget.Toolbar toolbar;
 //    @BindView(R.id.text_home_default)
 //TextView homeDefaultMessage;
+
+    public String userToken;
 
     /**
      * Create a new {@link android.widget.ArrayAdapter} of profiles.
@@ -142,7 +147,12 @@ public class ResultsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        userToken = ((MainActivity) getActivity()).getUserToken();
+        loadingSpinner.setVisibility(View.VISIBLE);
         fetchProfileData(ROOMER_API_GET_RESULTS, getActivity(), getContext());
+        loadingSpinner.setVisibility(View.GONE);
+
 //        generateDummyData();
         profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
         profileListView.setAdapter(profileAdapter);
@@ -218,7 +228,10 @@ public class ResultsFragment extends Fragment {
             e.printStackTrace();
         }
         try {
-            getUsuariosHTTPRequest(requestUrl, activity);
+//            getUsuariosHTTPRequest(requestUrl, activity);
+            QueryUtils.getUsuariosHTTPRequest(requestUrl, userToken, activity);
+
+
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error with request: "+requestUrl, e);
             e.printStackTrace();
@@ -232,7 +245,7 @@ public class ResultsFragment extends Fragment {
 
 
 
-    private static void updateProfileAdapter(List<Profile> profileList){
+    public static void updateProfileAdapter(List<Profile> profileList){
         profileAdapter.clear();
         profileAdapter.addAll(profileList);
         profileAdapter.notifyDataSetChanged();
