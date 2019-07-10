@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -49,7 +50,7 @@ public class ResultsFragment extends Fragment {
     ListView profileListView;
     @BindView(R.id.empty_view)
     RelativeLayout emptyStateView;
-    @BindView(R.id.loading_spinner)
+    @BindView(R.id.loading_spinner_container_profile)
     ProgressBar loadingSpinner;
 //    @BindView(R.id.toolbar)
 //    android.support.v7.widget.Toolbar toolbar;
@@ -57,6 +58,8 @@ public class ResultsFragment extends Fragment {
 //TextView homeDefaultMessage;
 
     public String userToken;
+
+    private static ResultsFragment resultsFragmentInstance;
 
     /**
      * Create a new {@link android.widget.ArrayAdapter} of profiles.
