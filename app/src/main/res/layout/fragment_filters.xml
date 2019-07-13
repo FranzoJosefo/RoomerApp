@@ -126,7 +126,6 @@
                             android:layout_marginRight="16dp"
                             android:background="@android:color/transparent"
                             android:text="No puede ser menor a 18"
-                            android:textAlignment="center"
                             android:textColor="@android:color/holo_red_light" />
 
                     </LinearLayout>
@@ -179,7 +178,6 @@
                             android:layout_marginRight="16dp"
                             android:background="@android:color/transparent"
                             android:text="No puede ser mayor a 50"
-                            android:textAlignment="center"
                             android:textColor="@android:color/holo_red_light" />
 
                     </LinearLayout>
