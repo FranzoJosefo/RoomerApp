@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     results_selected = false;
                     fragment = new FiltersFragment();
                     loadFragment(fragment, "filtros");
-                    toolbar.setTitle("Filtros");
+                    toolbar.setTitle("Editar Filtros");
                     invalidateOptionsMenu();
                     return true;
                 case R.id.navigation_matches:

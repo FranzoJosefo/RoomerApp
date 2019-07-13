@@ -273,14 +273,16 @@ public class FiltersFragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        container_spinner_filter.setVisibility(View.GONE);//ONLY FOR NOW
         if(getActivity()!=null){
             if(getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName())){
                 userToken = ((MainActivity) getActivity()).getUserToken();
-                container_spinner_filter.setVisibility(View.GONE);//ONLY FOR NOW
                 //TODO IMPLEMENT CALLING FILTER DATA SO THAT USER VIEWS HIS PREVIOUS FILTERS.
+
 
             }
         }
+
 
         //Check
 //        userToken = ((MainActivity) getActivity()).getUserToken();
