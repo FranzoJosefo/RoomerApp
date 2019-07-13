@@ -98,7 +98,6 @@ public class ResultsFragment extends Fragment {
 
         if (savedInstanceState != null && savedInstanceState.<Profile>getParcelableArrayList("myKey") != null) {
 //            homeDefaultMessage.setVisibility(View.GONE);
-            profileAdapter = new ProfileAdapter(getContext(), new ArrayList<>());
 
 
             savedProfiles = savedInstanceState.getParcelableArrayList("myKey");
@@ -153,14 +152,33 @@ public class ResultsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         userToken = ((MainActivity) getActivity()).getUserToken();
         loadingSpinner.setVisibility(View.VISIBLE);
-        fetchProfileData(ROOMER_API_GET_RESULTS, getActivity(), getContext());
-
-//        generateDummyData();
         profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
         profileListView.setAdapter(profileAdapter);
+        if(isConnected()){
+            fetchProfileData(ROOMER_API_GET_RESULTS, getActivity(), getContext());
+        } else {
+            Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
+        }
+
+        loadingSpinner.setVisibility(View.GONE);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        userToken = ((MainActivity) getActivity()).getUserToken();
+        loadingSpinner.setVisibility(View.VISIBLE);
+        profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
+        profileListView.setAdapter(profileAdapter);
+        if(isConnected()){
+            fetchProfileData(ROOMER_API_GET_RESULTS, getActivity(), getContext());
+        } else {
+            Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
+        }
+
         loadingSpinner.setVisibility(View.GONE);
 
     }

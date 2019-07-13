@@ -90,19 +90,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     @BindView(R.id.container_profile_layout)
     View container_profile_layout;
 
-
-    //    @BindView(R.id.edit_product_quantity)
-//    EditText product_quantity;
-//    @BindView(R.id.edit_product_picture)
-//    ImageView product_picture;
-//    @BindView(R.id.edit_supplier_name)
-//    EditText supplier_name;
-//    @BindView(R.id.edit_supplier_email)
-//    EditText supplier_email;
-//    @BindView(R.id.btn_inc_quantity)
-//    Button btn_inc_quantity;
-//    @BindView(R.id.btn_dec_quantity)
-//    Button btn_dec_quantity;
     public String postUrl = "http://roomer-backend.herokuapp.com/apd/insertUsuario";
     public String getProfileDataUrl = "http://roomer-backend.herokuapp.com/apd/getUsuariosPorToken";
 
@@ -170,7 +157,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
 
         account = getIntent().getParcelableExtra("account");
-        if(account!=null){
+        if (account != null) {
             userToken = account.getEmail();
         }
         intentFromActivity = getIntent().getStringExtra("intentFromActivity");
@@ -180,6 +167,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         setTitle(R.string.editor_activity_title_profile_create);
         if (intentFromActivity.equals(SignInActivity.class.getSimpleName())) {
             if (account != null) {
+                loading_spinner.setVisibility(View.GONE);
                 user_name.setText(account.getGivenName());
                 user_last_name.setText(account.getFamilyName());
                 currentAccountGoogleEmail = account.getEmail();
@@ -194,7 +182,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
                 // (It doesn't make sense to delete a product that hasn't been created yet.)
                 invalidateOptionsMenu();
             }
-        } else if (intentFromActivity.equals(MainActivity.class.getSimpleName())){
+        } else if (intentFromActivity.equals(MainActivity.class.getSimpleName())) {
             setTitle(R.string.editor_activity_title_profile_edit);
             currentAccountImageURL = account.getPhotoUrl().toString();
             Log.v(LOG_TAG, "Entra en Perfil en modo Editar");
@@ -310,7 +298,13 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
             case R.id.action_save:
                 // Trigger saveProfile() method to save Product to DB.
                 //Could handle and validate errors here.
-                saveProfile();
+                if (isConnected()) {
+                    saveProfile();
+                } else {
+                    Toast noInternetToast = Toast.makeText(this, "Revise su conexion a Internet", Toast.LENGTH_SHORT);
+                    noInternetToast.show();
+                }
+
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.nav_profile:
@@ -453,9 +447,9 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
             return false;
         }
 
-        if (!TextUtils.isEmpty(sUser_age)) {
-            if (!isNumeric(sUser_age)) {
-                Toast toast = Toast.makeText(this, "Price must be a number, QA scum", Toast.LENGTH_SHORT);
+        if (!TextUtils.isEmpty(sUser_age) && !TextUtils.isEmpty(sUser_phone) && !TextUtils.isEmpty(sUser_dni)) {
+            if (!isNumeric(sUser_age) || !isNumeric(sUser_phone) || !isNumeric(sUser_dni)) {
+                Toast toast = Toast.makeText(this, "Edad/Dni/Telefono deben ser numericos", Toast.LENGTH_SHORT);
                 toast.show();
                 return false;
             }
@@ -469,10 +463,10 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
                 "    \"nombre\": \"" + sUser_name + "\",\n" +
                 "    \"apellido\": \"" + sUser_last_name + "\",\n" +
                 "    \"sexo\": \"" + sUser_gender + "\",\n" +
-                "    \"edad\": \"" + sUser_age + "\",\n" +
+                "    \"edad\": " + sUser_age + ",\n" +
                 "    \"dni\": \"" + sUser_dni + "\",\n" +
                 "    \"telefono\": \"" + sUser_phone + "\",\n" +
-                "    \"codArea\": \"" + sUser_area_code + "\",\n" +
+                "    \"codArea\": " + sUser_area_code + ",\n" +
                 "    \"foto\": \"" + currentAccountImageURL + "\",\n" +
                 "    \"descripcion\": \"Esto todavia esta bajo construccion\"\n" +
                 "}";
@@ -734,7 +728,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         loading_spinner.setVisibility(View.GONE);
         container_profile_layout.setVisibility(View.VISIBLE);
         Toast.makeText(this, "Perfil guardado!", Toast.LENGTH_LONG).show();
-        if(intentFromActivity.equals(SignInActivity.class.getSimpleName())) {
+        if (intentFromActivity.equals(SignInActivity.class.getSimpleName())) {
             Intent intent = new Intent(this, FiltersActivity.class);
             intent.putExtra("account", account);
             startActivity(intent);
