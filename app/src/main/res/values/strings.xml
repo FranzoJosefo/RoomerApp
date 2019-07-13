@@ -35,7 +35,7 @@
     <string name="spinner_title_sexo">Sexo</string>
 
     <!-- Label for overview category of attributes in the editor [CHAR LIMIT=30] -->
-    <string name="category_datos">Datos Personales *</string>
+    <string name="category_datos">Info de Usuario *</string>
 
     <!-- Label for stock category in the editor [CHAR LIMIT=30] -->
     <string name="category_contact">Info de Contacto *</string>
@@ -59,10 +59,10 @@
     <string name="hint_user_age">Edad</string>
 
     <!-- Text hint for model field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_user_phone">Teléfono</string>
+    <string name="hint_user_phone">Teléfono (Ej:. 1168302914)</string>
 
     <!-- Text hint for model field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_user_area_code">Cód. Area</string>
+    <string name="hint_user_area_code">Cód. Area (Ej:. 549)</string>
 
     <!-- Text hint for price field in the editor [CHAR LIMIT=30] -->
     <string name="hint_product_price">Price</string>

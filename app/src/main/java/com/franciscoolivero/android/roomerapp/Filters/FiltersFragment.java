@@ -2,6 +2,8 @@ package com.franciscoolivero.android.roomerapp.Filters;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,17 +13,33 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.franciscoolivero.android.roomerapp.MainActivity;
 import com.franciscoolivero.android.roomerapp.R;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class FiltersFragment extends Fragment{
 
@@ -35,6 +53,7 @@ public class FiltersFragment extends Fragment{
      * 0 for unknown gender, 1 for male, 2 for female.
      */
     private static final int PICK_IMAGE_REQUEST = 100;
+    private String userToken;
 
 //    @Override
 //    public void onLoadFinished(@NonNull Loader<List<String>> loader, List<String> data) {
@@ -46,26 +65,43 @@ public class FiltersFragment extends Fragment{
 //
 //    }
 
-    private static final int PRODUCT_LOADER_ID = 0;
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     // Find all relevant views that we will need to read user input from
-//    @BindView(R.id.edit_user_name)
-//    EditText product_name;
-//    @BindView(R.id.edit_user_last_name)
-//    EditText product_model;
-//    @BindView(R.id.edit_product_price)
-//    EditText product_price;
-//    @BindView(R.id.edit_product_quantity)
-//    EditText product_quantity;
-//    @BindView(R.id.edit_product_picture)
-//    ImageView product_picture;
-//    @BindView(R.id.edit_supplier_name)
-//    EditText supplier_name;
-//    @BindView(R.id.edit_supplier_email)
-//    EditText supplier_email;
-//    @BindView(R.id.btn_inc_quantity)
-//    Button btn_inc_quantity;
-//    @BindView(R.id.btn_dec_quantity)
-//    Button btn_dec_quantity;
+    @BindView(R.id.spinner)
+    Spinner spinner_barrio;
+    @BindView(R.id.edit_edad_min)
+    EditText text_edad_min;
+    @BindView(R.id.edit_edad_max)
+    EditText text_edad_max;
+    @BindView(R.id.edit_plata_min)
+    EditText text_plata_min;
+    @BindView(R.id.edit_plata_max)
+    EditText text_plata_max;
+    @BindView(R.id.spinnerSexo)
+    Spinner spinner_sexo;
+    @BindView(R.id.edad_min_error)
+    View edad_min_error;
+    @BindView(R.id.edad_max_error)
+    View edad_max_error;
+    @BindView(R.id.dinero_min_error)
+    View dinero_min_error;
+    @BindView(R.id.dinero_max_error)
+    View dinero_max_error;
+    @BindView(R.id.container_filter_layout)
+    View container_filter_layout;
+    @BindView(R.id.loading_spinner_container_filter)
+    View container_spinner_filter;
+
+    public String postUrl = "http://roomer-backend.herokuapp.com/apd/insertFiltro";
+    public String getFilterDataUrl = "http://roomer-backend.herokuapp.com/apd/getFiltrosPorToken";
+
+    public boolean ismProductHasChanged() {
+        return mProductHasChanged;
+    }
+
+    public void setmProductHasChanged(boolean mProductHasChanged) {
+        this.mProductHasChanged = mProductHasChanged;
+    }
 
     private boolean mProductHasChanged = false;
     private String LOG_TAG = getClass().getSimpleName();
@@ -73,25 +109,10 @@ public class FiltersFragment extends Fragment{
     private Uri selectedImage;
     private GoogleSignInAccount account;
 
-    /**
-     * Create a new {@link android.widget.ArrayAdapter} of profiles.
-     */
-//    private RoomateAdapter profileAdapter;
-//    private ArrayList<Roomate> savedRoomates;
-    android.app.LoaderManager loaderManager;
-
-    /**
-     * Constant value for the profile loader ID. We can choose any integer.
-     * This really only comes into play if you're using multiple loaders.
-     */
-    private static final int BOOK_LOADER_ID = 1;
-    private static final String GOOGLE_BOOKS_BASE_URL = "https://www.googleapis.com/profiles/v1/volumes?q=";
-    private String userQuery;
-
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            mProductHasChanged = true;
+            setmProductHasChanged(true);
             return false;
         }
     };
@@ -102,17 +123,18 @@ public class FiltersFragment extends Fragment{
         ButterKnife.bind(this, rootView);
 
 
+        setmProductHasChanged(false);
 
         //Avoid keyboard from opening focused on first EditText
         getActivity().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-//        product_name.setOnTouchListener(mTouchListener);
-//        product_model.setOnTouchListener(mTouchListener);
-//        product_price.setOnTouchListener(mTouchListener);
-//        product_picture.setOnTouchListener(mTouchListener);
-//        supplier_name.setOnTouchListener(mTouchListener);
-//        supplier_email.setOnTouchListener(mTouchListener);
+        spinner_barrio.setOnTouchListener(mTouchListener);
+        text_edad_min.setOnTouchListener(mTouchListener);
+        text_edad_max.setOnTouchListener(mTouchListener);
+        text_plata_min.setOnTouchListener(mTouchListener);
+        text_plata_max.setOnTouchListener(mTouchListener);
+        spinner_sexo.setOnTouchListener(mTouchListener);
 
         mCurrentProductUri = getActivity().getIntent().getData();
         account = getActivity().getIntent().getParcelableExtra("account");
@@ -168,6 +190,7 @@ public class FiltersFragment extends Fragment{
 
         // Spinner Drop down elements
         List<String> categories = new ArrayList<String>();
+        categories.add("Seleccionar");
         categories.add("Otro");
         categories.add("F");
         categories.add("M");
@@ -184,9 +207,55 @@ public class FiltersFragment extends Fragment{
 
         // Spinner Drop down elements
         List<String> categoriesBarrios = new ArrayList<String>();
+        categoriesBarrios.add("Seleccionar");
+        categoriesBarrios.add("Agronomía");
+        categoriesBarrios.add("Almagro");
+        categoriesBarrios.add("Balvanera");
+        categoriesBarrios.add("Barracas");
         categoriesBarrios.add("Belgrano");
-        categoriesBarrios.add("Avellaneda");
+        categoriesBarrios.add("Boedo");
+        categoriesBarrios.add("Caballito");
+        categoriesBarrios.add("Chacarita");
+        categoriesBarrios.add("Coghlan");
+        categoriesBarrios.add("Colegiales");
+        categoriesBarrios.add("Constitución");
+        categoriesBarrios.add("Flores");
+        categoriesBarrios.add("Floresta");
+        categoriesBarrios.add("La Boca");
+        categoriesBarrios.add("La Paternal");
+        categoriesBarrios.add("Liniers");
+        categoriesBarrios.add("Mataderos");
+        categoriesBarrios.add("Montserrat");
+        categoriesBarrios.add("Monte Castro");
+        categoriesBarrios.add("Nueva Pompeya");
+        categoriesBarrios.add("Núñez");
         categoriesBarrios.add("Palermo");
+        categoriesBarrios.add("Parque Avellaneda");
+        categoriesBarrios.add("Parque Chacabuco");
+        categoriesBarrios.add("Parque Chas");
+        categoriesBarrios.add("Parque Patricios");
+        categoriesBarrios.add("Puerto Madero");
+        categoriesBarrios.add("Recoleta");
+        categoriesBarrios.add("Retiro");
+        categoriesBarrios.add("Saavedra");
+        categoriesBarrios.add("San Cristóbal");
+        categoriesBarrios.add("San Nicolás");
+        categoriesBarrios.add("San Telmo");
+        categoriesBarrios.add("Vélez Sarsfield");
+        categoriesBarrios.add("Versalles");
+        categoriesBarrios.add("Villa Crespo");
+        categoriesBarrios.add("Villa del Parque");
+        categoriesBarrios.add("Villa Devoto");
+        categoriesBarrios.add("Villa Gral. Mitre");
+        categoriesBarrios.add("Villa Lugano");
+        categoriesBarrios.add("Villa Luro");
+        categoriesBarrios.add("Villa Ortúzar");
+        categoriesBarrios.add("Villa Pueyrredón");
+        categoriesBarrios.add("Villa Real");
+        categoriesBarrios.add("Villa Riachuelo");
+        categoriesBarrios.add("Villa Santa Rita");
+        categoriesBarrios.add("Villa Soldati");
+        categoriesBarrios.add("Villa Urquiza");
 
         // Creating adapter for spinner
         ArrayAdapter<String> dataAdapterSpinnerBarrio = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, categoriesBarrios);
@@ -197,19 +266,34 @@ public class FiltersFragment extends Fragment{
         // attaching data adapter to spinner
         spinner.setAdapter(dataAdapterSpinnerBarrio);
 
-//        if (mCurrentProductUri == null) {
-//            getActivity().setTitle(R.string.editor_activity_title_new_product);
-//            // Invalidate the options menu, so the "Delete" menu option can be hidden.
-//            // (It doesn't make sense to delete a product that hasn't been created yet.)
-//            getActivity().invalidateOptionsMenu();
-//        } else {
-//            getActivity().setTitle(R.string.editor_activity_title_edit_product);
-//            Log.v(LOG_TAG, mCurrentProductUri + " was passed as Intent Data to EditorActivity");
-//            getActivity().getSupportLoaderManager().initLoader(PRODUCT_LOADER_ID, null, getActivity().this);
-//
-//        }
-
         return rootView;
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(getActivity()!=null){
+            if(getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName())){
+                userToken = ((MainActivity) getActivity()).getUserToken();
+                container_spinner_filter.setVisibility(View.GONE);//ONLY FOR NOW
+                //TODO IMPLEMENT CALLING FILTER DATA SO THAT USER VIEWS HIS PREVIOUS FILTERS.
+
+            }
+        }
+
+        //Check
+//        userToken = ((MainActivity) getActivity()).getUserToken();
+//        loadingSpinner.setVisibility(View.VISIBLE);
+//        profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
+//        profileListView.setAdapter(profileAdapter);
+//        if(isConnected()){
+//            fetchProfileData(ROOMER_API_GET_RESULTS, getActivity(), getContext());
+//        } else {
+//            Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
+//        }
+//
+//        loadingSpinner.setVisibility(View.GONE);
 
     }
 
@@ -219,198 +303,155 @@ public class FiltersFragment extends Fragment{
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-//    @Override
-//    //Gets fired after calling invalidateOptionsMenu()
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        super.onPrepareOptionsMenu(menu);
-//        // If this is a new product, hide the "Delete" menu item.
-//        if ( == null) {
-//            MenuItem menuItemDel = menu.findItem(R.id.action_delete);
-//            menuItemDel.setVisible(false);
-//            MenuItem menuItemBuy = menu.findItem(R.id.action_buy);
-//            menuItemBuy.setVisible(false);
-//        }
-//        ActionBar actionBar = getSupportActionBar();
-//        if (actionBar != null) {
-//            actionBar.setHomeButtonEnabled(false);      // Disable the button
-//            actionBar.setDisplayHomeAsUpEnabled(false); // Remove the left caret
-//            actionBar.setDisplayShowHomeEnabled(false); // Remove the icon
-//        }
-//        return true;
-//    }
+    public boolean saveFilters(){
+
+        edad_min_error.setVisibility(View.GONE);
+        edad_max_error.setVisibility(View.GONE);
+        dinero_min_error.setVisibility(View.GONE);
+        dinero_max_error.setVisibility(View.GONE);
+
+        String sFilter_barrio = spinner_barrio.getSelectedItem().toString();
+        String sFilter_edad_min = String.valueOf(text_edad_min.getText()).trim();
+        String sFilter_edad_max = String.valueOf(text_edad_max.getText()).trim();
+        String sFilter_plata_min = String.valueOf(text_plata_min.getText()).trim();
+        String sFilter_plata_max = String.valueOf(text_plata_max.getText()).trim();
+        String sFilter_sexo = spinner_sexo.getSelectedItem().toString();
+
+        if (sFilter_barrio.equals("Seleccionar")
+                || TextUtils.isEmpty(sFilter_edad_min)
+                || TextUtils.isEmpty(sFilter_edad_max)
+                || TextUtils.isEmpty(sFilter_plata_min)
+                || TextUtils.isEmpty(sFilter_plata_max)
+                || sFilter_sexo.equals("Seleccionar")) {
+            Toast toast = Toast.makeText(getContext(), "Todos los campos son requeridos.", Toast.LENGTH_SHORT);
+            toast.show();
+
+            return false;
+        }
+
+        if (!TextUtils.isEmpty(sFilter_edad_min)
+                &&!TextUtils.isEmpty(sFilter_edad_max)
+                &&!TextUtils.isEmpty(sFilter_edad_min)
+                &&!TextUtils.isEmpty(sFilter_plata_min)
+                &&!TextUtils.isEmpty(sFilter_plata_max)) {
+            if (!isNumeric(sFilter_edad_max)
+                    ||!isNumeric(sFilter_edad_min)
+                    ||!isNumeric(sFilter_plata_max)
+                    ||!isNumeric(sFilter_plata_min)) {
+                Toast toast = Toast.makeText(getContext(), "Edades/Dinero deben ser numericos", Toast.LENGTH_SHORT);
+                toast.show();
+                return false;
+            }
+
+        }
+
+        if(Integer.valueOf(text_edad_min.getText().toString())<18
+                ||Integer.valueOf(text_edad_max.getText().toString())>50
+                ||Integer.valueOf(text_plata_min.getText().toString())<5000
+                ||Integer.valueOf(text_plata_max.getText().toString())>50000){
+            if(Integer.valueOf(text_edad_min.getText().toString())<18){
+                edad_min_error.setVisibility(View.VISIBLE);
+            }
+
+            if(Integer.valueOf(text_edad_max.getText().toString())>50){
+                edad_max_error.setVisibility(View.VISIBLE);
+            }
+
+            if(Integer.valueOf(text_plata_min.getText().toString())<5000){
+                dinero_min_error.setVisibility(View.VISIBLE);
+            }
+
+            if(Integer.valueOf(text_plata_max.getText().toString())>50000){
+                dinero_max_error.setVisibility(View.VISIBLE);
+            }
+            return false;
+        }
 
 
-//    @Override
-//    public void onBackPressed() {
-//        // If the product hasn't changed, continue with handling back button press
-//        if (!mProductHasChanged) {
-//            super.onBackPressed();
-//            return;
-//        }
-//
-//        // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-//        // Create a click listener to handle the user confirming that changes should be discarded.
-//        DialogInterface.OnClickListener discardButtonClickListener =
-//                new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        // User clicked "Discard" button, close the current activity.
-//                        finish();
-//                    }
-//                };
-//
-//        // Show dialog that there are unsaved changes
-//        showUnsavedChangesDialog(discardButtonClickListener);
-//    }
 
-//    @Override
-//    public onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu options from the res/menu/menu_editor.xml file.
-//        // This adds menu items to the app bar.
-//        getMenuInflater().inflate(R.menu.menu_options, menu);
-//        return true;
-//    }
+        String postBodyInsertarFiltros = "{\n" +
+                "    \"token\": \"" + userToken + "\",\n" +
+                "    \"barrio\": \"" + sFilter_barrio + "\",\n" +
+                "    \"dineroMin\": " + sFilter_plata_min + ",\n" +
+                "    \"dineroMax\": " + sFilter_plata_max + ",\n" +
+                "    \"edadMin\": " + sFilter_edad_min + ",\n" +
+                "    \"edadMax\": " + sFilter_edad_max + ",\n" +
+                "    \"sexo\": \"" + sFilter_sexo + "\"\n" +
+                "}";
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // User clicked on a menu option in the app bar overflow menu
-//        switch (item.getItemId()) {
-//            // Respond to a click on the "Save" menu option
-//            case R.id.action_save:
-//                // Trigger saveProduct() method to save Product to DB.
-//                //Could handle and validate errors here.
-////                saveProduct();
-//                // Exit Activity
-////                finish();
-//                Intent intent = new Intent(getActivity(), MainActivity.class);
-//                startActivity(intent);
-//                return true;
-//            // Respond to a click on the "Delete" menu option
-//            case R.id.action_delete:
-////                showDeleteConfirmationDialog();
-//                return true;
-////            case R.id.action_buy:
-////                String[] emailAddress = {supplier_email.getText().toString()};
-////                String emailSubject = getResources().getString(R.string.email_order_request_subject) + " " + product_name.getText().toString();
-////                composeEmail(emailAddress, emailSubject, createEmailBody());
-////                return true;
-//            // Respond to a click on the "Up" arrow button in the app bar
-//            case android.R.id.home:
-//                // If the product hasn't changed, continue with navigating up to parent activity
-//                // which is the {@link CatalogActivity}.
-//                if (!mProductHasChanged) {
-//                    NavUtils.navigateUpFromSameTask(getActivity());
-//
-//                }
-//
-//                // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-//                // Create a click listener to handle the user confirming that
-//                // changes should be discarded.
-//                DialogInterface.OnClickListener discardButtonClickListener =
-//                        new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                // User clicked "Discard" button, navigate to parent activity.
-//                                NavUtils.navigateUpFromSameTask(getActivity());
-//                            }
-//                        };
-//
-//                // Show a dialog that notifies the user they have unsaved changes
-//                showUnsavedChangesDialog(discardButtonClickListener);
-//                return true;
-//
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-//
-//    private void showUnsavedChangesDialog(
-//            DialogInterface.OnClickListener discardButtonClickListener) {
-//        // Create an AlertDialog.Builder and set the message, and click listeners
-//        // for the positive and negative buttons on the dialog.
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setMessage(R.string.unsaved_changes_dialog_msg);
-//        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
-//        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int id) {
-//                // User clicked the "Keep editing" button, so dismiss the dialog
-//                // and continue editing the product.
-//                if (dialog != null) {
-//                    dialog.dismiss();
-//                }
-//            }
-//        });
-//
-//        // Create and show the AlertDialog
-//        AlertDialog alertDialog = builder.create();
-//        alertDialog.show();
-//    }
+        container_spinner_filter.setVisibility(View.VISIBLE);
+        container_filter_layout.setVisibility(View.GONE);
+        try {
+            postRequest(postUrl, postBodyInsertarFiltros);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error guardando filtros, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
+    }
 
 
-//    private void startLoader() {
-//
-//        // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-//        // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-//        // because this activity implements the LoaderCallbacks interface).
-//        Log.i(LOG_TAG, "Loader will be initialized. If it doesn't exist, create loader, if else reuse.");
-//        if (loaderManager == null) {
-//            loaderManager.initLoader(BOOK_LOADER_ID, null, this).forceLoad();
-//        } else {
-//            loaderManager.restartLoader(BOOK_LOADER_ID, null, this);
-//        }
-//
-//        Log.i(LOG_TAG, "Loader Initialized.");
-//    }
+
+    public boolean isNumeric(String s) {
+        return s != null && s.matches("[-+]?\\d*\\.?\\d+");
+    }
+
+    public void postRequest(String postUrl, String postBody) throws IOException {
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(JSON, postBody);
+
+        Request request = new Request.Builder()
+                .url(postUrl)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem posting Profile information to Backend", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d("TAG", myResponse);
 
 
-//    @Override
-//    public void onLoaderReset(android.content.Loader<List<Roomate>> loader) {
-//        // Loader reset, so we can clear out our existing data.
-//        Log.i(LOG_TAG, "Loader reset, clear the data from adapter");
-//        loader.reset();
-//        profileAdapter.clear();
-//    }
-//
-//    public void openWebPage(Roomate profile) {
-//        Uri profileUri = Uri.parse(profile.getmInfoLink());
-//        Intent intent = new Intent(Intent.ACTION_VIEW, profileUri);
-//        if (intent.resolveActivity(getPackageManager()) != null) {
-//            startActivity(intent);
-//        }
-//    }
-//
-//    @Override
-//    public android.content.Loader<List<Filter>> onCreateLoader(int i, Bundle bundle) {
-//        Log.i(LOG_TAG, "No Loader was previously created OR loader was restarted, creating new RoomateLoader.");
-////        return new RoomateLoader(this, userQuery);
-//        return new;
-//    }
+                try {
+                    JSONObject json = new JSONObject(myResponse);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
-//    @Override
-//    public void onLoadFinished(android.content.Loader<List<Roomate>> loader, List<Roomate> profiles) {
-//        loadingSpinner.setVisibility(View.GONE);
-//        profileListView.setEmptyView(emptyStateView);
-//        savedRoomates = new ArrayList<>(profiles);
-//        savedRoomates.addAll(profiles);
-//        // Clear the adapter of previous profile data
-//        profileAdapter.clear();
-//
-//        // If there is a valid list of {@link Roomate}s, then add them to the adapter's
-//        // data set. This will trigger the ListView to update.
-//        Log.i(LOG_TAG, "Loading finished, add all Roomates to adapter so they can be displayed");
-//
-//        if (profiles != null && !profiles.isEmpty()) {
-//            profileAdapter.addAll(profiles);
-//            profileAdapter.notifyDataSetChanged();
-//        }
-//
-//        if (QueryUtils.badResponse) {
-//            emptyStateView.setText(R.string.bad_response);
-//            //Set badResponse to false again, to avoid constantly entering into this If statement after the user received a bad response.
-//            QueryUtils.badResponse = false;
-//        } else {
-//            emptyStateView.setText(R.string.empty_state);
-//        }
-//    }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateUIFilterSaved();
+
+//        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+
+                    }
+                });
+            }
+        });
+    }
+
+
+
+    private void updateUIFilterSaved(){
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        container_spinner_filter.setVisibility(View.GONE);
+        container_filter_layout.setVisibility(View.VISIBLE);
+        Toast.makeText(getContext(), "Filtros guardados!", Toast.LENGTH_LONG).show();
+    }
+
+
+
 
 }
 

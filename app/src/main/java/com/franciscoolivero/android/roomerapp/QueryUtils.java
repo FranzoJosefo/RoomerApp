@@ -86,7 +86,6 @@ public final class QueryUtils {
                             } else if(activity.getClass().getSimpleName().equals(SignInActivity.class.getSimpleName())) {
                                 //TODO handle in Sign In when user already created -> Pass Profiles and ask for null.
                             } else if(activity.getClass().getSimpleName().equals(ProfileActivity.class.getSimpleName())){
-                                Log.v(LOG_TAG, "ENTRO Results Fragment");
                                 ProfileActivity profileActivity = ProfileActivity.getInstance();
                                 profileActivity.updateUIProfileLoaded(profiles);
 

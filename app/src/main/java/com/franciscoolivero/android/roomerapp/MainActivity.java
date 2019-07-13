@@ -1,9 +1,18 @@
 package com.franciscoolivero.android.roomerapp;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.franciscoolivero.android.roomerapp.Filters.FiltersFragment;
 import com.franciscoolivero.android.roomerapp.Matches.MatchesFragment;
@@ -15,7 +24,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NavUtils;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -23,19 +31,15 @@ import androidx.fragment.app.FragmentTransaction;
 public class MainActivity extends AppCompatActivity {
 
     private ActionBar toolbar;
-
     private boolean filter_selected = false;
-
     private boolean results_selected = false;
-
     private boolean matches_selected = false;
-
     private String userToken;
     private GoogleSignInAccount account;
 
 
     public String getUserToken() {
-        return userToken;
+        return account.getEmail();
     }
 
     public void setUserToken(String userToken) {
@@ -48,7 +52,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.layout_nav_bar);
 
         account = getIntent().getParcelableExtra("account");
-        userToken = account.getEmail();
+        if (account != null) {
+            userToken = account.getEmail();
+        }
 
         toolbar = getSupportActionBar();
 
@@ -56,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         toolbar.setTitle("Busquedas");
-        loadFragment(new ResultsFragment());
+        loadFragment(new ResultsFragment(), "busquedas");
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -71,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     matches_selected = false;
                     results_selected = true;
                     fragment = new ResultsFragment();
-                    loadFragment(fragment);
+                    loadFragment(fragment, "busquedas");
                     toolbar.setTitle("Busquedas");
                     invalidateOptionsMenu();
                     return true;
@@ -80,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     matches_selected = false;
                     results_selected = false;
                     fragment = new FiltersFragment();
-                    loadFragment(fragment);
+                    loadFragment(fragment, "filtros");
                     toolbar.setTitle("Filtros");
                     invalidateOptionsMenu();
                     return true;
@@ -89,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     matches_selected = true;
                     results_selected = false;
                     fragment = new MatchesFragment();
-                    loadFragment(fragment);
+                    loadFragment(fragment, "matches");
                     toolbar.setTitle("Matches");
                     invalidateOptionsMenu();
                     return true;
@@ -98,8 +104,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
-
-
 
 
     //TODO IMPLEMENT MENU WITH OPTIONS : PROFILE / LOGOUT / HELP ?
@@ -115,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     //Gets fired after calling invalidateOptionsMenu()
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if(!filter_selected) {
+        if (!filter_selected) {
             MenuItem menuSave = menu.findItem(R.id.action_save);
             menuSave.setVisible(false);
         }
@@ -129,20 +133,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        // If the product hasn't changed, continue with handling back button press
+        FiltersFragment fragment = (FiltersFragment) getSupportFragmentManager().findFragmentByTag("filtros");
+        if (fragment != null && fragment.isVisible()) {
+            if (fragment.ismProductHasChanged()) {
+                // Otherwise if there are unsaved changes, setup a dialog to warn the user.
+                // Create a click listener to handle the user confirming that changes should be discarded.
+                DialogInterface.OnClickListener discardButtonClickListener =
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // User clicked "Discard" button, close the current activity.
+                                filter_selected = false;
+                                matches_selected = false;
+                                results_selected = true;
+                                ResultsFragment resultsFragment;
+                                resultsFragment = new ResultsFragment();
+                                loadFragment(resultsFragment, "busquedas");
+                                toolbar.setTitle("Busquedas");
+                                invalidateOptionsMenu();
+                            }
+                        };
+
+                // Show dialog that there are unsaved changes
+                showUnsavedChangesDialog(discardButtonClickListener);
+            }
+        }
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                //TODO HANDLE FILTER SAVE (HOW DO I CALL SAVE FROM HERE TO FILTERS? :(
-                // Trigger saveProduct() method to save Product to DB.
-//                //Could handle and validate errors here.
-////                saveProduct();
-//                Intent intent = new Intent(this, MainActivity.class);
-//                startActivity(intent);
-                // Exit Activity
+                hideKeyboard(this);
+                if(isConnected()){
+                    FiltersFragment fragment = (FiltersFragment) getSupportFragmentManager().findFragmentByTag("filtros");
+                    fragment.saveFilters();
+                } else {
+                    Toast noInternetToast = Toast.makeText(this, "Revise su conexion a Internet", Toast.LENGTH_SHORT);
+                    noInternetToast.show();
+                }
+
                 return true;
-            // Respond to a click on the "Delete" menu option
             case R.id.action_logout:
 //                showDeleteConfirmationDialog();
                 return true;
@@ -157,10 +201,10 @@ public class MainActivity extends AppCompatActivity {
                 // If the product hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}.
 //                if (!mProductHasChanged) {
-                    NavUtils.navigateUpFromSameTask(MainActivity.this);
-                    return true;
+//                    NavUtils.navigateUpFromSameTask(MainActivity.this);
+//                    return true;
 //                }
-
+//
 //                // Otherwise if there are unsaved changes, setup a dialog to warn the user.
 //                // Create a click listener to handle the user confirming that
 //                // changes should be discarded.
@@ -169,26 +213,66 @@ public class MainActivity extends AppCompatActivity {
 //                            @Override
 //                            public void onClick(DialogInterface dialogInterface, int i) {
 //                                // User clicked "Discard" button, navigate to parent activity.
-//                                NavUtils.navigateUpFromSameTask(FiltersActivity.this);
+//                                filter_selected = false;
+//                                matches_selected = false;
+//                                results_selected = true;
+//                                ResultsFragment fragment;
+//                                fragment = new ResultsFragment();
+//                                loadFragment(fragment, "busquedas");
+//                                toolbar.setTitle("Busquedas");
+//                                invalidateOptionsMenu();
 //                            }
 //                        };
 //
 //                // Show a dialog that notifies the user they have unsaved changes
 //                showUnsavedChangesDialog(discardButtonClickListener);
-//                return true;
+                return true;
 
         }
         return super.onOptionsItemSelected(item);
     }
 
 
-    private void loadFragment(Fragment fragment) {
+    private void loadFragment(Fragment fragment, String tag) {
         // load fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.frame_container, fragment);
+        transaction.replace(R.id.frame_container, fragment, tag);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void showUnsavedChangesDialog(
+            DialogInterface.OnClickListener discardButtonClickListener) {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.unsaved_changes_dialog_msg);
+        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
+        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Keep editing" button, so dismiss the dialog
+                // and continue editing the product.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 }

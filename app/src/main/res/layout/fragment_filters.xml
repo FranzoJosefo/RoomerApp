@@ -1,144 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Layout for the Detail/Add Product screen -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/activity_margin">
-        <!-- Overview category -->
+        android:orientation="vertical">
+
         <LinearLayout
+            android:id="@+id/container_filter_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <!-- Label -->
-            <TextView
-                style="@style/CategoryStyle"
-                android:text="Barrio" />
-
-            <!-- Input fields -->
+            android:orientation="vertical"
+            android:padding="@dimen/activity_margin">
+            <!-- Overview category -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:orientation="vertical"
-                android:paddingLeft="4dp">
+                android:orientation="horizontal">
 
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="fill_parent"
+                <!-- Label -->
+                <TextView
+                    style="@style/CategoryStyle"
+                    android:text="Barrio" />
+
+                <!-- Input fields -->
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="10dip">
+                    android:layout_weight="2"
+                    android:orientation="vertical">
 
-                    <Spinner
-                        android:id="@+id/spinner"
-                        android:layout_width="match_parent"
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:prompt="@string/spinner_title_sexo"
-                        android:tooltipText="Seleccione Barrios" />
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <Spinner
+                            android:id="@+id/spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:prompt="@string/spinner_title_sexo"
+                            android:tooltipText="Seleccione Barrios" />
+                    </LinearLayout>
+
                 </LinearLayout>
-
             </LinearLayout>
-        </LinearLayout>
-        <!-- Stock Category -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="32dp">
-
-            <TextView
-                style="@style/CategoryStyle"
-                android:text="Rango de Edades" />
-
+            <!-- Stock Category -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="start"
-                android:orientation="vertical">
+                android:orientation="horizontal"
 
-                <!--<Button-->
+                android:paddingTop="32dp">
+
+                <TextView
+                    style="@style/CategoryStyle"
+                    android:text="Rango de Edades" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="2"
+                    android:gravity="start"
+                    android:orientation="vertical">
+
+                    <!--<Button-->
                     <!--android:id="@+id/btn_dec_quantity"-->
                     <!--android:layout_width="@dimen/quantity_buttons_size"-->
                     <!--android:layout_height="@dimen/quantity_buttons_size"-->
                     <!--android:layout_margin="8dp"-->
                     <!--android:onClick="decreaseQuantity"-->
                     <!--android:text="-" />-->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/edad_min_title"
-                        style="@style/DetailsFieldStyle"
-                        android:text="Minimo"
+                        <TextView
+                            android:id="@+id/edad_min_title"
+                            style="@style/DetailsFieldStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:background="@android:color/transparent"
+                            android:text="Minimo"
+                            android:textAlignment="center" />
+
+                        <EditText
+                            android:id="@+id/edit_edad_min"
+                            style="@style/DetailsFieldStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:background="@android:color/transparent"
+                            android:hint="18"
+                            android:inputType="number"
+                            android:maxLength="2"
+                            android:textAlignment="center" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/edad_min_error"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@android:color/transparent"
-                        android:textAlignment="center" />
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
-                    <EditText
-                        android:id="@+id/edit_edad_min"
-                        style="@style/DetailsFieldStyle"
+                        <TextView
+                            style="@style/DetailsFieldStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:background="@android:color/transparent"
+                            android:text="No puede ser menor a 18"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/holo_red_light" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@android:color/transparent"
-                        android:hint="22"
-                        android:inputType="number"
-                        android:maxLength="4"
-                        android:textAlignment="center" />
+                        android:orientation="horizontal">
 
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/edad_max_title"
+                            style="@style/DetailsFieldStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:background="@android:color/transparent"
+                            android:text="Maximo"
+                            android:textAlignment="center" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                        <EditText
+                            android:id="@+id/edit_edad_max"
+                            style="@style/DetailsFieldStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:background="@android:color/transparent"
+                            android:hint="50"
+                            android:inputType="number"
+                            android:maxLength="2"
+                            android:textAlignment="center" />
 
-                    <TextView
-                        android:id="@+id/edad_max_title"
-                        style="@style/DetailsFieldStyle"
-                        android:text="Maximo"
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/edad_max_error"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@android:color/transparent"
-                        android:textAlignment="center" />
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
-                    <EditText
-                        android:id="@+id/edit_edad_max"
-                        style="@style/DetailsFieldStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@android:color/transparent"
-                        android:hint="32"
-                        android:inputType="number"
-                        android:maxLength="4"
-                        android:textAlignment="center" />
+                        <TextView
+                            style="@style/DetailsFieldStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:background="@android:color/transparent"
+                            android:text="No puede ser mayor a 50"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/holo_red_light" />
 
-                </LinearLayout>
+                    </LinearLayout>
 
 
-
-                <!--<Button-->
+                    <!--<Button-->
                     <!--android:id="@+id/btn_inc_quantity"-->
                     <!--android:layout_width="@dimen/quantity_buttons_size"-->
                     <!--android:layout_height="@dimen/quantity_buttons_size"-->
@@ -146,173 +193,256 @@
                     <!--android:onClick="increaseQuantity"-->
                     <!--android:text="+" />-->
 
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="32dp">
-
-            <TextView
-                style="@style/CategoryStyle"
-                android:text="Rango de Dinero" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="start"
-                android:orientation="vertical">
-
-                <!--<Button-->
-                <!--android:id="@+id/btn_dec_quantity"-->
-                <!--android:layout_width="@dimen/quantity_buttons_size"-->
-                <!--android:layout_height="@dimen/quantity_buttons_size"-->
-                <!--android:layout_margin="8dp"-->
-                <!--android:onClick="decreaseQuantity"-->
-                <!--android:text="-" />-->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/plata_min_title"
-                        style="@style/DetailsFieldStyle"
-                        android:text="Minimo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@android:color/transparent"
-                        android:textAlignment="center" />
-
-                    <EditText
-                        android:id="@+id/plata_edad_min"
-                        style="@style/DetailsFieldStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@android:color/transparent"
-                        android:hint="5000"
-                        android:inputType="number"
-                        android:maxLength="4"
-                        android:textAlignment="center" />
-
-                    <TextView
-                        android:id="@+id/label_weight_units"
-                        style="@style/DetailUnitsStyle"
-                        android:text="@string/unit_pet_currency"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginEnd="16dp"
-                        tools:text="@string/unit_pet_currency" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/plata_max_title"
-                        style="@style/DetailsFieldStyle"
-                        android:text="Maximo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@android:color/transparent"
-                        android:textAlignment="center" />
-
-                    <EditText
-                        android:id="@+id/plata_edad_max"
-                        style="@style/DetailsFieldStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@android:color/transparent"
-                        android:hint="30000"
-                        android:inputType="number"
-                        android:maxLength="4"
-                        android:textAlignment="center" />
-
-                    <TextView
-                        android:id="@+id/label_weight_units_2"
-                        style="@style/DetailUnitsStyle"
-                        android:text="@string/unit_pet_currency"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginEnd="16dp"
-                        tools:text="@string/unit_pet_currency" />
-
                 </LinearLayout>
 
 
-
-                <!--<Button-->
-                <!--android:id="@+id/btn_inc_quantity"-->
-                <!--android:layout_width="@dimen/quantity_buttons_size"-->
-                <!--android:layout_height="@dimen/quantity_buttons_size"-->
-                <!--android:layout_margin="8dp"-->
-                <!--android:onClick="increaseQuantity"-->
-                <!--android:text="+" />-->
-
             </LinearLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="32dp">
-
-            <!-- Label -->
-            <TextView
-                style="@style/CategoryStyle"
-                android:text="Sexo" />
-
-            <!-- Input fields -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:orientation="vertical"
-                android:paddingLeft="4dp">
+                android:orientation="horizontal"
+                android:paddingTop="32dp">
 
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="fill_parent"
+                <TextView
+                    style="@style/CategoryStyle"
+                    android:text="Rango de Dinero" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="10dp">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight="2"
+                    android:gravity="start"
+                    android:orientation="vertical">
 
-                    <Spinner
-                        android:id="@+id/spinnerSexo"
+                    <!--<Button-->
+                    <!--android:id="@+id/btn_dec_quantity"-->
+                    <!--android:layout_width="@dimen/quantity_buttons_size"-->
+                    <!--android:layout_height="@dimen/quantity_buttons_size"-->
+                    <!--android:layout_margin="8dp"-->
+                    <!--android:onClick="decreaseQuantity"-->
+                    <!--android:text="-" />-->
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:id="@+id/minimo_dinero_container_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/plata_min_title"
+                                style="@style/DetailsFieldStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginRight="16dp"
+                                android:background="@android:color/transparent"
+                                android:text="Minimo"
+                                android:textAlignment="center" />
+
+                            <EditText
+                                android:id="@+id/edit_plata_min"
+                                style="@style/DetailsFieldStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginRight="16dp"
+                                android:background="@android:color/transparent"
+                                android:hint="5000"
+                                android:inputType="number"
+                                android:maxLength="4"
+                                android:textAlignment="center" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/dinero_min_error"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/minimo_dinero_container_layout"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <TextView
+                                style="@style/DetailsFieldStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginRight="16dp"
+                                android:background="@android:color/transparent"
+                                android:text="No puede ser menor a 5000"
+                                android:textAlignment="center"
+                                android:textColor="@android:color/holo_red_light" />
+
+                        </LinearLayout>
+
+
+                        <TextView
+                            android:id="@+id/label_weight_units"
+                            style="@style/DetailUnitsStyle"
+                            android:layout_gravity="end"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginRight="8dp"
+                            android:paddingTop="4dp"
+                            android:text="@string/unit_pet_currency"
+                            tools:text="@string/unit_pet_currency" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/maximo_dinero_container_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:prompt="@string/spinner_title_sexo"
-                        android:hint="ALGO"
-                        android:tooltipText="Seleccione Barrios" />
+                        android:layout_below="@+id/minimo_dinero_container_layout"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/plata_max_title"
+                            style="@style/DetailsFieldStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:background="@android:color/transparent"
+                            android:text="Maximo"
+                            android:textAlignment="center" />
+
+                        <EditText
+                            android:id="@+id/edit_plata_max"
+                            style="@style/DetailsFieldStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_toRightOf="@id/plata_max_title"
+                            android:background="@android:color/transparent"
+                            android:hint="50000"
+                            android:inputType="number"
+                            android:maxLength="5"
+                            android:textAlignment="center" />
+
+                        <TextView
+                            android:id="@+id/label_weight_units_2"
+                            style="@style/DetailUnitsStyle"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginRight="8dp"
+                            android:paddingTop="4dp"
+                            android:text="@string/unit_pet_currency"
+                            tools:text="@string/unit_pet_currency" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/dinero_max_error"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <TextView
+                            style="@style/DetailsFieldStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:background="@android:color/transparent"
+                            android:text="No puede ser mayor a 50000"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/holo_red_light" />
+
+                    </LinearLayout>
+
+
+                    <!--<Button-->
+                    <!--android:id="@+id/btn_inc_quantity"-->
+                    <!--android:layout_width="@dimen/quantity_buttons_size"-->
+                    <!--android:layout_height="@dimen/quantity_buttons_size"-->
+                    <!--android:layout_margin="8dp"-->
+                    <!--android:onClick="increaseQuantity"-->
+                    <!--android:text="+" />-->
+
                 </LinearLayout>
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="32dp">
+
+                <!-- Label -->
+                <TextView
+                    style="@style/CategoryStyle"
+                    android:text="Sexo" />
+
+                <!-- Input fields -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="vertical">
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <Spinner
+                            android:id="@+id/spinnerSexo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="ALGO"
+                            android:prompt="@string/spinner_title_sexo"
+                            android:tooltipText="Seleccione Barrios" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+
         </LinearLayout>
 
+    </ScrollView>
+
+    <!-- Empty view for the list -->
+    <RelativeLayout
+        android:id="@+id/loading_spinner_container_filter"
+        android:layout_centerVertical="true"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:visibility="visible">
+
+        <!--TODO Update para imagen mas acorde-->
+
+        <ProgressBar
+            android:id="@+id/loading_spinner_filter"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_height="52dp"
+            android:layout_width="73dp" />
 
 
-    </LinearLayout>
+        <TextView
+            android:fontFamily="sans-serif-medium"
+            android:id="@+id/empty_title_text"
+            android:layout_below="@+id/loading_spinner_filter"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingTop="16dp"
+            android:text="@string/generic_loading_tittle"
+            android:textAppearance="?android:textAppearanceMedium" />
 
-</ScrollView>
+    </RelativeLayout>
 
+</RelativeLayout>
