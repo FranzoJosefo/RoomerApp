@@ -94,6 +94,27 @@
                             android:inputType="number"
                             android:maxLength="2" />
 
+                        <LinearLayout
+                            android:id="@+id/edad_min_error"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <TextView
+                                style="@style/DetailsFieldStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginRight="16dp"
+                                android:background="@android:color/transparent"
+                                android:text="No puede ser menor de 18"
+                                android:textAlignment="center"
+                                android:textColor="@android:color/holo_red_light" />
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </LinearLayout>

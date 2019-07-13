@@ -91,6 +91,8 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     View loading_spinner;
     @BindView(R.id.container_profile_layout)
     View container_profile_layout;
+    @BindView(R.id.edad_min_error)
+    View edad_min_error;
 
     public String postUrl = "http://roomer-backend.herokuapp.com/apd/insertUsuario";
     public String getProfileDataUrl = "http://roomer-backend.herokuapp.com/apd/getUsuariosPorToken";
@@ -425,6 +427,8 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
      */
     private boolean saveProfile() {
 
+        edad_min_error.setVisibility(View.GONE);
+
         String sUser_name = user_name.getText().toString().trim();
         String sUser_last_name = user_last_name.getText().toString().trim();
         String sUser_age = String.valueOf(user_age.getText()).trim();
@@ -459,7 +463,9 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
         }
 
-        //TODO implement internet error handling: Use BookListing as reference. BookListActivity isConnected()
+        if(Integer.valueOf(user_age.getText().toString())<18){
+            edad_min_error.setVisibility(View.VISIBLE);
+        }
 
         String postBodyInsertarUsuario = "{\n" +
                 "    \"token\": \"" + userToken + "\",\n" +
