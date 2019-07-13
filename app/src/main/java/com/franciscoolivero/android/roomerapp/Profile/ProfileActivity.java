@@ -1,5 +1,6 @@
 package com.franciscoolivero.android.roomerapp.Profile;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -296,6 +298,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
+                hideKeyboard(this);
                 // Trigger saveProfile() method to save Product to DB.
                 //Could handle and validate errors here.
                 if (isConnected()) {
@@ -743,6 +746,17 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
         return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 }
