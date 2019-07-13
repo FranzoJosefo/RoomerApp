@@ -465,6 +465,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
         if(Integer.valueOf(user_age.getText().toString())<18){
             edad_min_error.setVisibility(View.VISIBLE);
+            return false;
         }
 
         String postBodyInsertarUsuario = "{\n" +
