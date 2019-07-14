@@ -1,5 +1,8 @@
 package com.franciscoolivero.android.roomerapp.Filters;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,7 +21,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.franciscoolivero.android.roomerapp.MainActivity;
+import com.franciscoolivero.android.roomerapp.ParserService;
 import com.franciscoolivero.android.roomerapp.R;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import org.json.JSONException;
@@ -35,13 +40,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class FiltersFragment extends Fragment{
+public class FiltersFragment extends Fragment {
 
     public FiltersFragment() {
         //Required empty constructor
@@ -54,6 +60,13 @@ public class FiltersFragment extends Fragment{
      */
     private static final int PICK_IMAGE_REQUEST = 100;
     private String userToken;
+    private final int GENDER_OTRO_INDEX = 1;
+    private final int GENDER_F_INDEX = 2;
+    private final int GENDER_M_INDEX = 3;
+    private final String GENDER_OTRO_STRING = "Otro";
+    private final String GENDER_F_STRING = "F";
+    private final String GENDER_M_STRING = "M";
+    private List<String> categoriesBarrios;
 
 //    @Override
 //    public void onLoadFinished(@NonNull Loader<List<String>> loader, List<String> data) {
@@ -92,8 +105,6 @@ public class FiltersFragment extends Fragment{
     @BindView(R.id.loading_spinner_container_filter)
     View container_spinner_filter;
 
-    public String postUrl = "http://roomer-backend.herokuapp.com/apd/insertFiltro";
-    public String getFilterDataUrl = "http://roomer-backend.herokuapp.com/apd/getFiltrosPorToken";
 
     public boolean ismProductHasChanged() {
         return mProductHasChanged;
@@ -108,6 +119,13 @@ public class FiltersFragment extends Fragment{
     private Uri mCurrentProductUri;
     private Uri selectedImage;
     private GoogleSignInAccount account;
+
+    public final OkHttpClient client = new OkHttpClient();
+    private static final String ROOMER_API_HOST = "roomer-backend.herokuapp.com";
+    private static final String ROOMER_API_PATH_APD = "apd";
+    private static final String ROOMER_API_PATH_GET_FILTROS_TOKEN = "getFiltrosPorToken";
+    private static final String ROOMER_API_POST_FILTERS = "http://roomer-backend.herokuapp.com/apd/insertFiltro";
+
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -206,7 +224,7 @@ public class FiltersFragment extends Fragment{
 
 
         // Spinner Drop down elements
-        List<String> categoriesBarrios = new ArrayList<String>();
+        categoriesBarrios = new ArrayList<String>();
         categoriesBarrios.add("Seleccionar");
         categoriesBarrios.add("Agronomía");
         categoriesBarrios.add("Almagro");
@@ -273,11 +291,17 @@ public class FiltersFragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        account = GoogleSignIn.getLastSignedInAccount(getContext());
         container_spinner_filter.setVisibility(View.GONE);//ONLY FOR NOW
-        if(getActivity()!=null){
-            if(getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName())){
-                userToken = ((MainActivity) getActivity()).getUserToken();
+        if (getActivity() != null) {
+            if (getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName())) {
+                userToken = account.getEmail();
                 //TODO IMPLEMENT CALLING FILTER DATA SO THAT USER VIEWS HIS PREVIOUS FILTERS.
+                if(isConnected()){
+                    fetchFilterData();
+                } else {
+                    Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
+                }
 
 
             }
@@ -305,7 +329,7 @@ public class FiltersFragment extends Fragment{
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    public boolean saveFilters(){
+    public boolean saveFilters() {
 
         edad_min_error.setVisibility(View.GONE);
         edad_max_error.setVisibility(View.GONE);
@@ -332,14 +356,14 @@ public class FiltersFragment extends Fragment{
         }
 
         if (!TextUtils.isEmpty(sFilter_edad_min)
-                &&!TextUtils.isEmpty(sFilter_edad_max)
-                &&!TextUtils.isEmpty(sFilter_edad_min)
-                &&!TextUtils.isEmpty(sFilter_plata_min)
-                &&!TextUtils.isEmpty(sFilter_plata_max)) {
+                && !TextUtils.isEmpty(sFilter_edad_max)
+                && !TextUtils.isEmpty(sFilter_edad_min)
+                && !TextUtils.isEmpty(sFilter_plata_min)
+                && !TextUtils.isEmpty(sFilter_plata_max)) {
             if (!isNumeric(sFilter_edad_max)
-                    ||!isNumeric(sFilter_edad_min)
-                    ||!isNumeric(sFilter_plata_max)
-                    ||!isNumeric(sFilter_plata_min)) {
+                    || !isNumeric(sFilter_edad_min)
+                    || !isNumeric(sFilter_plata_max)
+                    || !isNumeric(sFilter_plata_min)) {
                 Toast toast = Toast.makeText(getContext(), "Edades/Dinero deben ser numericos", Toast.LENGTH_SHORT);
                 toast.show();
                 return false;
@@ -347,28 +371,27 @@ public class FiltersFragment extends Fragment{
 
         }
 
-        if(Integer.valueOf(text_edad_min.getText().toString())<18
-                ||Integer.valueOf(text_edad_max.getText().toString())>50
-                ||Integer.valueOf(text_plata_min.getText().toString())<5000
-                ||Integer.valueOf(text_plata_max.getText().toString())>50000){
-            if(Integer.valueOf(text_edad_min.getText().toString())<18){
+        if (Integer.valueOf(text_edad_min.getText().toString()) < 18
+                || Integer.valueOf(text_edad_max.getText().toString()) > 50
+                || Integer.valueOf(text_plata_min.getText().toString()) < 5000
+                || Integer.valueOf(text_plata_max.getText().toString()) > 50000) {
+            if (Integer.valueOf(text_edad_min.getText().toString()) < 18) {
                 edad_min_error.setVisibility(View.VISIBLE);
             }
 
-            if(Integer.valueOf(text_edad_max.getText().toString())>50){
+            if (Integer.valueOf(text_edad_max.getText().toString()) > 50) {
                 edad_max_error.setVisibility(View.VISIBLE);
             }
 
-            if(Integer.valueOf(text_plata_min.getText().toString())<5000){
+            if (Integer.valueOf(text_plata_min.getText().toString()) < 5000) {
                 dinero_min_error.setVisibility(View.VISIBLE);
             }
 
-            if(Integer.valueOf(text_plata_max.getText().toString())>50000){
+            if (Integer.valueOf(text_plata_max.getText().toString()) > 50000) {
                 dinero_max_error.setVisibility(View.VISIBLE);
             }
             return false;
         }
-
 
 
         String postBodyInsertarFiltros = "{\n" +
@@ -384,7 +407,7 @@ public class FiltersFragment extends Fragment{
         container_spinner_filter.setVisibility(View.VISIBLE);
         container_filter_layout.setVisibility(View.GONE);
         try {
-            postRequest(postUrl, postBodyInsertarFiltros);
+            postRequest(ROOMER_API_POST_FILTERS, postBodyInsertarFiltros);
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(getContext(), "Error guardando filtros, pruebe de nuevo!", Toast.LENGTH_LONG).show();
@@ -394,7 +417,24 @@ public class FiltersFragment extends Fragment{
         return true;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        account = GoogleSignIn.getLastSignedInAccount(getContext());
+        container_spinner_filter.setVisibility(View.VISIBLE);
+        if (getActivity() != null) {
+            if (getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName())) {
+                userToken = account.getEmail();
+                if(isConnected()){
+                    fetchFilterData();
+                } else {
+                    Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
+                }
 
+
+            }
+        }
+    }
 
     public boolean isNumeric(String s) {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
@@ -444,15 +484,116 @@ public class FiltersFragment extends Fragment{
     }
 
 
-
-    private void updateUIFilterSaved(){
+    private void updateUIFilterSaved() {
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         container_spinner_filter.setVisibility(View.GONE);
         container_filter_layout.setVisibility(View.VISIBLE);
         Toast.makeText(getContext(), "Filtros guardados!", Toast.LENGTH_LONG).show();
     }
 
+    private void getFiltrosbyTokenHttpRequest(String mToken) throws IOException {
+        Log.v(LOG_TAG, "mToken: " + mToken);
 
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme("http")
+                .host(ROOMER_API_HOST)
+                .addPathSegment(ROOMER_API_PATH_APD)
+                .addPathSegment(ROOMER_API_PATH_GET_FILTROS_TOKEN)
+                .addQueryParameter("token", mToken)
+                .build();
+        String url = httpUrl.toString();
+        Log.v(LOG_TAG, "URL FOR GET FILTROS BY TOKEN: " + url);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem retrieving the FILTROS JSON results", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String resultsResponse = response.body().string();
+                Log.v(LOG_TAG, resultsResponse);
+                List<Filter> filters = ParserService.extractFilters(resultsResponse);
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUIProfileLoaded(filters);
+                            Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    public void updateUIProfileLoaded(List<Filter> filterList) {
+        if (!filterList.isEmpty()) {
+            Log.v(LOG_TAG, "Filter List is NOT Empty");
+            Filter userFilters = filterList.get(0);
+            setProfileDataViews(userFilters);
+            container_spinner_filter.setVisibility(View.GONE);
+            container_filter_layout.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    private void setProfileDataViews(Filter userFilters) {
+        text_edad_min.setText(String.valueOf(userFilters.getmMinAge()));
+        text_edad_max.setText(String.valueOf(userFilters.getmMaxAge()));
+        text_plata_min.setText(String.valueOf(userFilters.getmMinMoney()));
+        text_plata_max.setText(String.valueOf(userFilters.getmMaxMoney()));
+
+
+        for(int i = 0; i < categoriesBarrios.size(); i++){
+            if(categoriesBarrios.get(i).equals(userFilters.getmHood())){
+                spinner_barrio.setSelection(i);
+                i = categoriesBarrios.size();
+            }
+        }
+        switch (userFilters.getmGender()) {
+            case GENDER_OTRO_STRING:
+                spinner_sexo.setSelection(GENDER_OTRO_INDEX);
+                break;
+            case GENDER_F_STRING:
+                spinner_sexo.setSelection(GENDER_F_INDEX);
+                break;
+            case GENDER_M_STRING:
+                spinner_sexo.setSelection(GENDER_M_INDEX);
+                break;
+        }
+
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
+    }
+
+    private void fetchFilterData() {
+        container_filter_layout.setVisibility(View.GONE);
+        container_spinner_filter.setVisibility(View.VISIBLE);
+        try {
+            getFiltrosbyTokenHttpRequest(userToken);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            //Todo Retry
+            Toast.makeText(getContext(), "Hubo un error al cargar, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+        }
+    }
 
 
 }

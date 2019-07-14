@@ -35,6 +35,14 @@
         <item name="android:maxLength">40</item>
     </style>
 
+    <!-- Style for error TextViews field in the profile and filter screen -->
+    <style name="ErrorTextFieldStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textAppearance">?android:textAppearanceSmall</item>
+    </style>
+
     <!-- Style for the measurement units for an EditText field in the details screen -->
     <style name="DetailUnitsStyle">
         <item name="android:layout_height">wrap_content</item>

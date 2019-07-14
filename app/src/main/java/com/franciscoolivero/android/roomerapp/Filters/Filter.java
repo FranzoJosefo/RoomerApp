@@ -9,25 +9,28 @@ import androidx.annotation.NonNull;
 
 public class Filter implements Parcelable {
 
+    private String mToken;
     private String mHood;
     private int mMinMoney;
     private int mMaxMoney;
     private int mMinAge;
     private int mMaxAge;
-    private int mGender;
+    private String mGender;
 
 
     /**
      * Constructs a new {@link Profile} object.
+     * @param mToken
      * @param mHood      Neighbourhood selected by the user.
-     * @param mMinMoney      Min Money selected by the user.
      * @param mMaxMoney  Max Money selected by the user.
      * @param mMinAge Min Age selected by the user.
      * @param mMaxAge Max Age selecetd by the user.
      * @param mGender Gender selected by the user.
+     * @param mMinMoney      Min Money selected by the user.
      */
 
-    public Filter(@NonNull String mHood, @NonNull int mMinMoney, @NonNull int mMaxMoney, @NonNull int mMinAge, @NonNull int mMaxAge, @NonNull int mGender) {
+    public Filter(String mToken, @NonNull String mHood, @NonNull int mMaxMoney, @NonNull int mMinAge, @NonNull int mMaxAge, @NonNull String mGender, @NonNull int mMinMoney) {
+        this.mToken = mToken;
         this.mHood = mHood;
         this.mMinMoney = mMinMoney;
         this.mMaxMoney = mMaxMoney;
@@ -38,6 +41,15 @@ public class Filter implements Parcelable {
 
     public String getmHood() {
         return mHood;
+    }
+
+
+    public String getmToken() {
+        return mToken;
+    }
+
+    public void setmToken(String mToken) {
+        this.mToken = mToken;
     }
 
     public void setmHood(String mHood) {
@@ -76,11 +88,11 @@ public class Filter implements Parcelable {
         this.mMaxAge = mMaxAge;
     }
 
-    public int getmGender() {
+    public String getmGender() {
         return mGender;
     }
 
-    public void setmGender(int mGender) {
+    public void setmGender(String mGender) {
         this.mGender = mGender;
     }
 
@@ -106,21 +118,23 @@ public class Filter implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.mToken);
         dest.writeString(this.mHood);
         dest.writeInt(this.mMinMoney);
         dest.writeInt(this.mMaxMoney);
         dest.writeInt(this.mMinAge);
         dest.writeInt(this.mMaxAge);
-        dest.writeInt(this.mGender);
+        dest.writeString(this.mGender);
     }
 
     protected Filter(Parcel in) {
+        this.mToken = in.readString();
         this.mHood = in.readString();
         this.mMinMoney = in.readInt();
         this.mMaxMoney = in.readInt();
         this.mMinAge = in.readInt();
         this.mMaxAge = in.readInt();
-        this.mGender = in.readInt();
+        this.mGender = in.readString();
     }
 
     public static final Parcelable.Creator<Filter> CREATOR = new Parcelable.Creator<Filter>() {
