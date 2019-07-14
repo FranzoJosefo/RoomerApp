@@ -30,7 +30,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.franciscoolivero.android.roomerapp.Filters.FiltersActivity;
 import com.franciscoolivero.android.roomerapp.MainActivity;
-import com.franciscoolivero.android.roomerapp.QueryUtils;
+import com.franciscoolivero.android.roomerapp.ParserService;
 import com.franciscoolivero.android.roomerapp.R;
 import com.franciscoolivero.android.roomerapp.SignIn.SignInActivity;
 import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
@@ -51,6 +51,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -70,32 +71,13 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
      */
     private static final int PICK_IMAGE_REQUEST = 100;
     private static final int PRODUCT_LOADER_ID = 0;
-    // Find all relevant views that we will need to read user input from
-    @BindView(R.id.edit_user_name)
-    EditText user_name;
-    @BindView(R.id.edit_user_last_name)
-    EditText user_last_name;
-    @BindView(R.id.edit_user_dni)
-    EditText user_dni;
-    @BindView(R.id.edit_user_age)
-    EditText user_age;
-    @BindView(R.id.spinner_gender)
-    Spinner user_spinner_gender;
-    @BindView(R.id.edit_user_area_code)
-    EditText user_area_code;
-    @BindView(R.id.edit_user_phone)
-    EditText user_phone;
-    @BindView(R.id.edit_user_picture)
-    ImageButton user_image;
-    @BindView(R.id.loading_spinner_container_profile)
-    View loading_spinner;
-    @BindView(R.id.container_profile_layout)
-    View container_profile_layout;
-    @BindView(R.id.edad_min_error)
-    View edad_min_error;
-
+    public final OkHttpClient client = new OkHttpClient();
+    private static final String ROOMER_API_HOST = "roomer-backend.herokuapp.com";
+    private static final String ROOMER_API_PATH_APD = "apd";
+    private static final String ROOMER_API_PATH_GET_USUARIOS_TOKEN = "getUsuariosPorToken";
     public String postUrl = "http://roomer-backend.herokuapp.com/apd/insertUsuario";
     public String getProfileDataUrl = "http://roomer-backend.herokuapp.com/apd/getUsuariosPorToken";
+
 
     private final int GENDER_OTRO_INDEX = 1;
     private final int GENDER_F_INDEX = 2;
@@ -133,6 +115,31 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
     // OnTouchListener that listens for any user touches on a View, implying that they are modifying
     // the view, and we change the mProductHasChanged boolean to true.
+
+
+    // Find all relevant views that we will need to read user input from
+    @BindView(R.id.edit_user_name)
+    EditText user_name;
+    @BindView(R.id.edit_user_last_name)
+    EditText user_last_name;
+    @BindView(R.id.edit_user_dni)
+    EditText user_dni;
+    @BindView(R.id.edit_user_age)
+    EditText user_age;
+    @BindView(R.id.spinner_gender)
+    Spinner user_spinner_gender;
+    @BindView(R.id.edit_user_area_code)
+    EditText user_area_code;
+    @BindView(R.id.edit_user_phone)
+    EditText user_phone;
+    @BindView(R.id.edit_user_picture)
+    ImageButton user_image;
+    @BindView(R.id.loading_spinner_container_profile)
+    View loading_spinner;
+    @BindView(R.id.container_profile_layout)
+    View container_profile_layout;
+    @BindView(R.id.edad_min_error)
+    View edad_min_error;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,7 +203,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
             //TODO Make a GET request
             loading_spinner.setVisibility(View.VISIBLE);
             try {
-                QueryUtils.getUsuariosHTTPRequest(getProfileDataUrl, userToken, this);
+                getUsuariosbyTokenHTTPRequest(userToken);
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Error guardando informacion, pruebe de nuevo!", Toast.LENGTH_LONG).show();
@@ -463,7 +470,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
         }
 
-        if(Integer.valueOf(user_age.getText().toString())<18){
+        if (Integer.valueOf(user_age.getText().toString()) < 18) {
             edad_min_error.setVisibility(View.VISIBLE);
             return false;
         }
@@ -647,8 +654,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
     public void postRequest(String postUrl, String postBody) throws IOException {
 
-        OkHttpClient client = new OkHttpClient();
-
         RequestBody body = RequestBody.create(JSON, postBody);
 
         Request request = new Request.Builder()
@@ -736,7 +741,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     private void updateUIProfileSaved() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         loading_spinner.setVisibility(View.GONE);
-        container_profile_layout.setVisibility(View.VISIBLE);
+//        container_profile_layout.setVisibility(View.VISIBLE);
         Toast.makeText(this, "Perfil guardado!", Toast.LENGTH_LONG).show();
         if (intentFromActivity.equals(SignInActivity.class.getSimpleName())) {
             Intent intent = new Intent(this, FiltersActivity.class);
@@ -764,6 +769,56 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
             view = new View(activity);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+
+    public void getUsuariosbyTokenHTTPRequest(String mToken) throws IOException {
+        Log.v(LOG_TAG, "mToken: " + mToken);
+
+        String url;
+
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme("http")
+                .host(ROOMER_API_HOST)
+                .addPathSegment(ROOMER_API_PATH_APD)
+                .addPathSegment(ROOMER_API_PATH_GET_USUARIOS_TOKEN)
+                .addQueryParameter("token", mToken)
+                .build();
+        url = httpUrl.toString();
+        Log.v(LOG_TAG, "URL FOR GET USUARIOS BY TOKEN: " + url);
+
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem retrieving the Usuarios JSON results", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String resultsResponse = response.body().string();
+                Log.v(LOG_TAG, resultsResponse);
+                //CALL NEW ResultParser method
+                List<Profile> profiles = ParserService.extractProfiles(resultsResponse);
+                //Null Check in case fragment gets detached from activity for long running operations.
+                if (getInstance() != null) {
+                    getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUIProfileLoaded(profiles);
+                            Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
+                        }
+                    });
+                }
+
+            }
+        });
     }
 
 }
