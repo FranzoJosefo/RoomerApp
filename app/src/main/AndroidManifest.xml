@@ -19,7 +19,8 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".SignIn.SignInActivity">
+            android:name=".SignIn.SignInActivity"
+            android:screenOrientation="portrait">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +34,8 @@
         <activity
             android:name=".Profile.ProfileActivity"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/DetailTheme">
+            android:theme="@style/DetailTheme"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
@@ -42,7 +44,8 @@
         <activity
             android:name=".Filters.FiltersActivity"
             android:parentActivityName=".Profile.ProfileActivity"
-            android:theme="@style/DetailTheme">
+            android:theme="@style/DetailTheme"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Profile.ProfileActivity" />
@@ -51,31 +54,9 @@
         <activity android:name=".MainActivity"
             android:theme="@style/DetailTheme"
             android:label="Roomer App"
-            >
+            android:screenOrientation="portrait">
         </activity>
-         <!--<activity -->
-         <!--android:name=".MainActivity" -->
-         <!--android:parentActivityName=".ProfileActivity" -->
-         <!--android:theme="@style/DetailTheme"> -->
-         <!--&lt;!&ndash; Parent activity meta-data to support 4.0 and lower &ndash;&gt; -->
-         <!--<meta-data -->
-         <!--android:name="android.support.PARENT_ACTIVITY" -->
-         <!--android:value=".ProfileActivity" /> -->
-         <!--</activity> -->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.SEND" />-->
 
-        <!--<data android:mimeType="text/plain" />-->
-
-        <!--<category android:name="android.intent.category.DEFAULT" />-->
-        <!--</intent-filter>-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.SENDTO" />-->
-
-        <!--<data android:scheme="mailto" />-->
-
-        <!--<category android:name="android.intent.category.DEFAULT" />-->
-        <!--</intent-filter>-->
         <provider
             android:name=".data.ProductProvider"
             android:authorities="com.franciscoolivero.android.roomerapp"
