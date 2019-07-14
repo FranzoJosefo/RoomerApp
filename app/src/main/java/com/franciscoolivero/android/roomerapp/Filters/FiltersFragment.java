@@ -292,7 +292,6 @@ public class FiltersFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         account = GoogleSignIn.getLastSignedInAccount(getContext());
-        container_spinner_filter.setVisibility(View.GONE);//ONLY FOR NOW
         if (getActivity() != null) {
             if (getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName())) {
                 userToken = account.getEmail();
@@ -302,8 +301,6 @@ public class FiltersFragment extends Fragment {
                 } else {
                     Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         }
 
@@ -421,7 +418,6 @@ public class FiltersFragment extends Fragment {
     public void onResume() {
         super.onResume();
         account = GoogleSignIn.getLastSignedInAccount(getContext());
-        container_spinner_filter.setVisibility(View.VISIBLE);
         if (getActivity() != null) {
             if (getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName())) {
                 userToken = account.getEmail();
