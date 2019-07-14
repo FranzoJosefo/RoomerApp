@@ -13,12 +13,12 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.franciscoolivero.android.roomerapp.MainActivity;
 import com.franciscoolivero.android.roomerapp.ParserService;
 import com.franciscoolivero.android.roomerapp.Profile.Profile;
 import com.franciscoolivero.android.roomerapp.Profile.ProfileAdapter;
-import com.franciscoolivero.android.roomerapp.QueryUtils;
 import com.franciscoolivero.android.roomerapp.R;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class ResultsFragment extends Fragment {
     ListView profileListView;
     @BindView(R.id.empty_view)
     RelativeLayout emptyStateView;
-    @BindView(R.id.loading_spinner_container_profile)
+    @BindView(R.id.loading_spinner_container_results)
     View loadingSpinner;
 //    @BindView(R.id.toolbar)
 //    android.support.v7.widget.Toolbar toolbar;
@@ -59,6 +59,7 @@ public class ResultsFragment extends Fragment {
     public String userToken;
 
     private static ResultsFragment resultsFragmentInstance;
+    public static final OkHttpClient client = new OkHttpClient();
 
     /**
      * Create a new {@link android.widget.ArrayAdapter} of profiles.
@@ -77,6 +78,7 @@ public class ResultsFragment extends Fragment {
     private static final String ROOMER_API_GET_RESULTS = "http://roomer-backend.herokuapp.com/apd/getUsuarios";
     private String userQuery;
     private static String LOG_TAG = ResultsFragment.class.getSimpleName();
+    private GoogleSignInAccount account;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -152,8 +154,10 @@ public class ResultsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        userToken = ((MainActivity) getActivity()).getUserToken();
-        loadingSpinner.setVisibility(View.VISIBLE);
+        account = GoogleSignIn.getLastSignedInAccount(getActivity());
+        if(account!=null){
+            userToken = account.getEmail();
+        }
         profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
         profileListView.setAdapter(profileAdapter);
         if(isConnected()){
@@ -161,16 +165,15 @@ public class ResultsFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
         }
-
-        loadingSpinner.setVisibility(View.GONE);
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        userToken = ((MainActivity) getActivity()).getUserToken();
-        loadingSpinner.setVisibility(View.VISIBLE);
+        account = GoogleSignIn.getLastSignedInAccount(getActivity());
+        if(account!=null){
+            userToken = account.getEmail();
+        }
         profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
         profileListView.setAdapter(profileAdapter);
         if(isConnected()){
@@ -178,9 +181,6 @@ public class ResultsFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
         }
-
-        loadingSpinner.setVisibility(View.GONE);
-
     }
 
     @Override
@@ -205,7 +205,7 @@ public class ResultsFragment extends Fragment {
         return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
     }
 
-    public void getUsuariosHTTPRequest(String url, Activity activity) throws IOException {
+    public void getUsuariosHTTPRequest(String url) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
 
@@ -247,14 +247,8 @@ public class ResultsFragment extends Fragment {
     private void fetchProfileData(String requestUrl, Activity activity, Context context) {
         //The following try catch block generates a 1.5 second delay until we make the request so that we can see the Loading Spinner.
         try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        try {
-            //TODO reimplement getUsuariosHttpRequest within this class. Can't reuse after all Memory Leak issues.
-//            getUsuariosHTTPRequest(requestUrl, activity);
-            QueryUtils.getUsuariosHTTPRequest(requestUrl, userToken, activity);
+            loadingSpinner.setVisibility(View.VISIBLE);
+            getUsuariosHTTPRequest(requestUrl);
 
 
         } catch (IOException e) {
@@ -270,139 +264,24 @@ public class ResultsFragment extends Fragment {
 
 
 
-    public void updateProfileAdapter(List<Profile> profileList){
+    private void updateProfileAdapter(List<Profile> profileList){
         profileAdapter.clear();
         if(profileList.isEmpty()){
+            loadingSpinner.setVisibility(View.GONE);
             emptyStateView.setVisibility(View.VISIBLE);
+            profileListView.setVisibility(View.VISIBLE);
             profileAdapter.notifyDataSetChanged();
         } else {
             emptyStateView.setVisibility(View.GONE);
+            loadingSpinner.setVisibility(View.GONE);
             profileAdapter.addAll(profileList);
+            profileListView.setVisibility(View.VISIBLE);
             profileAdapter.notifyDataSetChanged();
             Log.v(LOG_TAG, "AGREGO TODO AL PROFILE ADAPTER");
         }
     }
 
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the options menu from XML
-//        MenuInflater inflater = getContext().getMenuInflater();
-//        inflater.inflate(R.menu.menu_toolbar, menu);
-//
-//        // Get the SearchView
-//        final android.support.v7.widget.SearchView searchView = (android.support.v7.widget.SearchView) menu.findItem(R.id.action_search).getActionView();
-//        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-//
-//        searchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
-//
-//            @Override
-//            public boolean onQueryTextSubmit(String s) {
-//                searchView.clearFocus();
-//                // Create a new adapter that takes an empty list of Profiles as input
-//                profileAdapter = new ProfileAdapter(getApplicationContext(), new ArrayList<Profile>());
-//
-//                homeDefaultMessage.setVisibility(View.GONE);
-//                loadingSpinner.setVisibility(View.VISIBLE);
-//                if (!isConnected()) {
-//                    loadingSpinner.setVisibility(View.GONE);
-//                    profileListView.setEmptyView(emptyStateView);
-//                    emptyStateView.setText(R.string.no_inet);
-//
-//                } else {
-//                    // Set the adapter on the {@link ListView}
-//                    // so the list can be populated in the user interface
-//                    profileListView.setAdapter(profileAdapter);
-//
-//                    profileListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                        @Override
-//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                            Profile currentProfile = profileAdapter.getItem(position);
-//                            openWebPage(currentProfile);
-//                        }
-//                    });
-//                    s = s.replaceAll(" ", "%20");
-//                    userQuery = GOOGLE_BOOKS_BASE_URL + s + "&maxResults=40";
-//
-//                    startLoader();
-//
-//                }
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String s) {
-//                return false;
-//            }
-//        });
-//
-//        return true;
-//    }
-
-//    private void startLoader() {
-//
-//        // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-//        // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-//        // because this activity implements the LoaderCallbacks interface).
-//        Log.i(LOG_TAG, "Loader will be initialized. If it doesn't exist, create loader, if else reuse.");
-//        if (loaderManager == null) {
-//            loaderManager.initLoader(BOOK_LOADER_ID, null, this).forceLoad();
-//        } else {
-//            loaderManager.restartLoader(BOOK_LOADER_ID, null, this);
-//        }
-//
-//        Log.i(LOG_TAG, "Loader Initialized.");
-//    }
-
-
-//    @Override
-//    public void onLoaderReset(android.content.Loader<List<Profile>> loader) {
-//        // Loader reset, so we can clear out our existing data.
-//        Log.i(LOG_TAG, "Loader reset, clear the data from adapter");
-//        loader.reset();
-//        profileAdapter.clear();
-//    }
-//
-//    public void openWebPage(Profile profile) {
-//        Uri profileUri = Uri.parse(profile.getmInfoLink());
-//        Intent intent = new Intent(Intent.ACTION_VIEW, profileUri);
-//        if (intent.resolveActivity(getPackageManager()) != null) {
-//            startActivity(intent);
-//        }
-//    }
-//
-//    @Override
-//    public android.content.Loader<List<Profile>> onCreateLoader(int i, Bundle bundle) {
-//        Log.i(LOG_TAG, "No Loader was previously created OR loader was restarted, creating new ProfileLoader.");
-//        return new ProfileLoader(this, userQuery);
-//    }
-//
-//    @Override
-//    public void onLoadFinished(android.content.Loader<List<Profile>> loader, List<Profile> profiles) {
-//        loadingSpinner.setVisibility(View.GONE);
-//        profileListView.setEmptyView(emptyStateView);
-//        savedProfiles = new ArrayList<>(profiles);
-//        savedProfiles.addAll(profiles);
-//        // Clear the adapter of previous profile data
-//        profileAdapter.clear();
-//
-//        // If there is a valid list of {@link Profile}s, then add them to the adapter's
-//        // data set. This will trigger the ListView to update.
-//        Log.i(LOG_TAG, "Loading finished, add all Profiles to adapter so they can be displayed");
-//
-//        if (profiles != null && !profiles.isEmpty()) {
-//            profileAdapter.addAll(profiles);
-//            profileAdapter.notifyDataSetChanged();
-//        }
-//
-//        if (QueryUtils.badResponse) {
-//            emptyStateView.setText(R.string.bad_response);
-//            //Set badResponse to false again, to avoid constantly entering into this If statement after the user received a bad response.
-//            QueryUtils.badResponse = false;
-//        } else {
-//            emptyStateView.setText(R.string.empty_state);
-//        }
-//    }
 }
 
 
