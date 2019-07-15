@@ -200,7 +200,6 @@ public class FiltersActivity extends AppCompatActivity{
                         intent.putExtra("account", account);
                         startActivity(intent);
                         // Exit Activity
-                        finish();
                     }
                 } else {
                     Toast noInternetToast = Toast.makeText(this, "Revise su conexion a Internet", Toast.LENGTH_SHORT);
