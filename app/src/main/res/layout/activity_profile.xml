@@ -48,8 +48,7 @@
                             android:id="@+id/edit_user_name"
                             style="@style/DetailsFieldStyle"
                             android:hint="@string/hint_user_name"
-                            android:inputType="textCapWords"
-                            android:tooltipText="@string/empty_view_matches_subtitle_text" />
+                            android:inputType="textCapWords" />
 
                         <!-- Model field -->
                         <EditText

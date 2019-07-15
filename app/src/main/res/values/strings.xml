@@ -35,7 +35,7 @@
     <string name="spinner_title_sexo">Sexo</string>
 
     <!-- Label for overview category of attributes in the editor [CHAR LIMIT=30] -->
-    <string name="category_datos">Info de Usuario *</string>
+    <string name="category_datos">Info Personal *</string>
 
     <!-- Label for stock category in the editor [CHAR LIMIT=30] -->
     <string name="category_contact">Info de Contacto *</string>
