@@ -292,9 +292,11 @@ public class FiltersFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         account = GoogleSignIn.getLastSignedInAccount(getContext());
+        if(account!=null){
+            userToken = account.getEmail();
+        }
         if (getActivity() != null) {
             if (getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName())) {
-                userToken = account.getEmail();
                 //TODO IMPLEMENT CALLING FILTER DATA SO THAT USER VIEWS HIS PREVIOUS FILTERS.
                 if(isConnected()){
                     fetchFilterData();
