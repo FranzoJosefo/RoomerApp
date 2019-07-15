@@ -61,7 +61,7 @@
 
                 <TextView
                     style="@style/CategoryStyle"
-                    android:text="Rango de Edad *" />
+                    android:text="Rango Edad *" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -204,7 +204,7 @@
 
                 <TextView
                     style="@style/CategoryStyle"
-                    android:text="Rango de Dinero *" />
+                    android:text="Rango Dinero *" />
 
                 <LinearLayout
                     android:layout_width="0dp"
