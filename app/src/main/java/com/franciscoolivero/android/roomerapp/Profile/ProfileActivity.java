@@ -761,7 +761,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
                 final String resultsResponse = response.body().string();
                 Log.v(LOG_TAG, resultsResponse);
                 //CALL NEW ResultParser method
-                List<Profile> profiles = ParserService.extractProfiles(resultsResponse, userToken);
+                List<Profile> profiles = ParserService.extractMyProfile(resultsResponse, userToken);
                 //Null Check in case fragment gets detached from activity for long running operations.
                 if (getInstance() != null) {
                     getInstance().runOnUiThread(new Runnable() {

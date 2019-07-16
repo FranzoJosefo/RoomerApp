@@ -522,7 +522,7 @@ public class FiltersFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateUIProfileLoaded(filters);
+                            updateUIFilterLoaded(filters);
                             Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
                         }
                     });
@@ -532,7 +532,7 @@ public class FiltersFragment extends Fragment {
         });
     }
 
-    public void updateUIProfileLoaded(List<Filter> filterList) {
+    public void updateUIFilterLoaded(List<Filter> filterList) {
         if (!filterList.isEmpty()) {
             Log.v(LOG_TAG, "Filter List is NOT Empty");
             Filter userFilters = filterList.get(0);

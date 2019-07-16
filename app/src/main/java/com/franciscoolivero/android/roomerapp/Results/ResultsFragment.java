@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.franciscoolivero.android.roomerapp.Filters.Filter;
 import com.franciscoolivero.android.roomerapp.ParserService;
 import com.franciscoolivero.android.roomerapp.Profile.Profile;
 import com.franciscoolivero.android.roomerapp.Profile.ProfileAdapter;
@@ -76,6 +77,16 @@ public class ResultsFragment extends Fragment {
     private static final String ROOMER_API_PATH_GET_LIKES_TOKEN = "getLikesPorToken";
     private static final String ROOMER_API_POST_LIKE = "http://roomer-backend.herokuapp.com/apd/insertLike";
     private static final String ROOMER_API_POST_MATCH = "http://roomer-backend.herokuapp.com/apd/insertMatch";
+    private static final String ROOMER_API_PATH_GET_USUARIOS_TOKEN = "getUsuariosPorToken";
+    private static final String ROOMER_API_PATH_GET_FILTROS_TOKEN = "getFiltrosPorToken";
+    private static final String ROOMER_API_GET_FILTERS = "http://roomer-backend.herokuapp.com/apd/getFiltros";
+
+    private Profile myProfile;
+    private Filter myFilter;
+    private List<String> myLikes;
+    private List<Profile> allProfiles;
+    private List<Filter> allFilters;
+
     private String addedUserToken;
 
 
@@ -194,14 +205,16 @@ public class ResultsFragment extends Fragment {
                 final String resultsResponse = response.body().string();
                 Log.v(LOG_TAG, resultsResponse);
                 //CALL NEW ResultParser method
-                List<Profile> profiles = ParserService.extractProfiles(resultsResponse, userToken);
+//                List<Profile> profiles = ParserService.extractProfiles(resultsResponse, userToken);
+                allProfiles = ParserService.extractProfiles(resultsResponse, userToken);
                 //Null Check in case fragment gets detached from activity for long running operations.
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Log.v(LOG_TAG, "ENTRO EN EL RUN DE UI THREAD");
-                            updateProfileAdapter(profiles);
+//                            updateProfileAdapter(profiles);
+                            fetchMyFilters();
                             Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
                         }
                     });
@@ -211,22 +224,110 @@ public class ResultsFragment extends Fragment {
         });
     }
 
-    private void updateProfileAdapter(List<Profile> profileList) {
-        profileAdapter.clear();
-        if (profileList.isEmpty()) {
-            loadingSpinner.setVisibility(View.GONE);
-            emptyStateView.setVisibility(View.VISIBLE);
-            profileListView.setVisibility(View.VISIBLE);
-            profileAdapter.notifyDataSetChanged();
-        } else {
-            emptyStateView.setVisibility(View.GONE);
-            loadingSpinner.setVisibility(View.GONE);
-            profileAdapter.addAll(profileList);
-            profileListView.setVisibility(View.VISIBLE);
-            profileAdapter.notifyDataSetChanged();
-            Log.v(LOG_TAG, "AGREGO TODO AL PROFILE ADAPTER");
+    private void fetchMyFilters() {
+        try {
+            getFiltrosbyTokenHttpRequest(userToken);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            //Todo Retry
+            Toast.makeText(getContext(), "Hubo un error al cargar, pruebe de nuevo!", Toast.LENGTH_LONG).show();
         }
     }
+
+    private void getFiltrosbyTokenHttpRequest(String mToken) throws IOException {
+        Log.v(LOG_TAG, "mToken: " + mToken);
+
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme("http")
+                .host(ROOMER_API_HOST)
+                .addPathSegment(ROOMER_API_PATH_APD)
+                .addPathSegment(ROOMER_API_PATH_GET_FILTROS_TOKEN)
+                .addQueryParameter("token", mToken)
+                .build();
+        String url = httpUrl.toString();
+        Log.v(LOG_TAG, "URL FOR GET FILTROS BY TOKEN: " + url);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem retrieving the FILTROS JSON results", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String resultsResponse = response.body().string();
+                Log.v(LOG_TAG, resultsResponse);
+                List<Filter> myFilters = ParserService.extractFilters(resultsResponse);
+                myFilter = myFilters.get(0);
+                allProfiles = ParserService.extractProfilesComparedWithMyFilters(myFilter, allProfiles);
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            fetchAllFilters();
+                            Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void fetchAllFilters() {
+        try {
+            getFiltrosHTTPRequest(ROOMER_API_GET_FILTERS);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            //Todo Retry
+            Toast.makeText(getContext(), "Hubo un error al cargar, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void getFiltrosHTTPRequest(String url) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem retrieving the Usuarios JSON results", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String resultsResponse = response.body().string();
+                Log.v(LOG_TAG, resultsResponse);
+                //CALL NEW ResultParser method
+                allFilters = ParserService.extractFilters(resultsResponse);
+                allProfiles = ParserService.extractProfilesMyFiltersUsersFilters(allFilters, myFilter, allProfiles);
+                //Null Check in case fragment gets detached from activity for long running operations.
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.v(LOG_TAG, "ENTRO EN EL RUN DE UI THREAD");
+                            fetchMyProfile();
+                            Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
 
     public boolean insertLike(String mAddedUserToken) {
         addedUserToken = mAddedUserToken;
@@ -408,6 +509,144 @@ public class ResultsFragment extends Fragment {
                 });
             }
         });
+    }
+
+    private void fetchMyLikes() {
+        try {
+            getLikesbyTokenHTTPRequest(userToken);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "Error guardando informacion, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void getLikesbyTokenHTTPRequest(String token) throws IOException {
+        Log.v(LOG_TAG, "token: " + token);
+
+        String url;
+
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme("http")
+                .host(ROOMER_API_HOST)
+                .addPathSegment(ROOMER_API_PATH_APD)
+                .addPathSegment(ROOMER_API_PATH_GET_LIKES_TOKEN)
+                .addQueryParameter("token", token)
+                .build();
+        url = httpUrl.toString();
+        Log.v(LOG_TAG, "URL FOR GET Added User LIKES BY TOKEN: " + url);
+
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem retrieving the Added User LIKES JSON results", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String resultsResponse = response.body().string();
+                Log.v(LOG_TAG, resultsResponse);
+                //CALL NEW ResultParser method
+                List<String> addedUserLikes = ParserService.extractAddedUserLikes(resultsResponse);
+                //Null Check in case fragment gets detached from activity for long running operations.
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            myLikes = addedUserLikes;
+                            Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void fetchMyProfile() {
+        try {
+            getUsuariosbyTokenHTTPRequest(userToken);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "Error guardando informacion, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    public void getUsuariosbyTokenHTTPRequest(String mToken) throws IOException {
+        Log.v(LOG_TAG, "mToken: " + mToken);
+
+        String url;
+
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme("http")
+                .host(ROOMER_API_HOST)
+                .addPathSegment(ROOMER_API_PATH_APD)
+                .addPathSegment(ROOMER_API_PATH_GET_USUARIOS_TOKEN)
+                .addQueryParameter("token", mToken)
+                .build();
+        url = httpUrl.toString();
+        Log.v(LOG_TAG, "URL FOR GET USUARIOS BY TOKEN: " + url);
+
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem retrieving the Usuarios JSON results", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String resultsResponse = response.body().string();
+                Log.v(LOG_TAG, resultsResponse);
+                //CALL NEW ResultParser method
+                List<Profile> profiles = ParserService.extractMyProfile(resultsResponse, userToken);
+                myProfile = profiles.get(0);
+                allProfiles = ParserService.extractProfilesComparedWithUsersFilters(allFilters, allProfiles, myProfile);
+                //Null Check in case fragment gets detached from activity for long running operations.
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateProfileAdapter(allProfiles);
+                            Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+
+    private void updateProfileAdapter(List<Profile> profileList) {
+        profileAdapter.clear();
+        if (profileList.isEmpty()) {
+            loadingSpinner.setVisibility(View.GONE);
+            emptyStateView.setVisibility(View.VISIBLE);
+            profileListView.setVisibility(View.VISIBLE);
+            profileAdapter.notifyDataSetChanged();
+        } else {
+            emptyStateView.setVisibility(View.GONE);
+            loadingSpinner.setVisibility(View.GONE);
+            profileAdapter.addAll(profileList);
+            profileListView.setVisibility(View.VISIBLE);
+            profileAdapter.notifyDataSetChanged();
+            Log.v(LOG_TAG, "AGREGO TODO AL PROFILE ADAPTER");
+        }
     }
 }
 

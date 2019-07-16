@@ -69,6 +69,68 @@ public class ParserService {
                     profileArray.add(currentProfile);
                 }
 
+
+                Log.v(LOG_TAG + ": in extractProfiles()", "Profile with token {" + currentToken + "} added to profileArray");
+            }
+
+
+        } catch (JSONException e) {
+            Log.e(LOG_TAG + ": in extractProfiles()", "ERROR Parsing JSON");
+            e.printStackTrace();
+            //TODO error handling maybe return exception? throws... etc
+        }
+
+        Log.v(LOG_TAG + ": in extractProfiles()", "Return profileArray");
+        Log.v(LOG_TAG + ": in extractProfiles()", profileArray.toString());
+        return profileArray;
+    }
+
+    public static List<Profile> extractMyProfile(String jsonResponse, String userToken) {
+        List<Profile> profileArray = new ArrayList<>();
+        Log.v(LOG_TAG + ": in extractProfiles()", "profileArray<Profile> created");
+
+        if (TextUtils.isEmpty(jsonResponse)) {
+            return null;
+        }
+
+        try {
+            JSONArray jsonRootArray = new JSONArray(jsonResponse);
+            Log.v(LOG_TAG + ": in extractProfiles()", "jsonRootArray created");
+
+            //Recorrer Array de abajo hacia arriba asi siempre leemos primero los ultimos en agregarse
+            final int numberOfUsers = jsonRootArray.length() - 1;
+            for (int i = numberOfUsers; i >= 0; i--) {
+                JSONObject currentProfileJSONObject = jsonRootArray.getJSONObject(i);
+
+                String currentToken = currentProfileJSONObject.optString("token");
+                String currentName = currentProfileJSONObject.optString("nombre");
+                String currentLastName = currentProfileJSONObject.optString("apellido");
+                String currentGender = currentProfileJSONObject.optString("sexo");
+                int currentAge = currentProfileJSONObject.optInt("edad");
+                String currentDNI = currentProfileJSONObject.optString("dni");
+                String currentPhone = currentProfileJSONObject.optString("telefono");
+                int currentAreaCode = currentProfileJSONObject.optInt("codArea");
+                String currentPictureUrl = currentProfileJSONObject.optString("foto");
+                String currentDescription = currentProfileJSONObject.optString("descripcion");
+
+                Profile currentProfile = new Profile(
+                        currentToken,
+                        currentName,
+                        currentLastName,
+                        currentGender,
+                        currentDNI,
+                        currentPhone,
+                        currentAreaCode,
+                        currentAge,
+                        currentPictureUrl,
+                        currentDescription
+                );
+
+
+                if (!ParserService.profileAlreadyAdded(profileArray, currentProfile)) {
+                    profileArray.add(currentProfile);
+                }
+
                 Log.v(LOG_TAG + ": in extractProfiles()", "Profile with token {" + currentToken + "} added to profileArray");
             }
 
@@ -297,4 +359,71 @@ public class ParserService {
         Log.v(LOG_TAG + ": in extAddedUsrLikes()", addedUserLikesArray.toString());
         return addedUserLikesArray;
     }
+
+    public static List<Profile> extractProfilesComparedWithMyFilters(Filter myFilters, List<Profile> profilesList) {
+        List<Profile> profileListFilteredByUserFilter = new ArrayList<>();
+        for (Profile currentProfile : profilesList) {
+            if (currentProfile.getmGender().equals(myFilters.getmGender())
+                    && (currentProfile.getmAge() >= myFilters.getmMinAge())
+                    && (currentProfile.getmAge() <= myFilters.getmMaxAge())) {
+                profileListFilteredByUserFilter.add(currentProfile);
+            }
+        }
+        return profileListFilteredByUserFilter;
+    }
+
+    public static List<Profile> extractProfilesMyFiltersUsersFilters(List<Filter> allFilters, Filter myFilters, List<Profile> allProfiles) {
+        List<Profile> profileListFilteredByUserFilter = new ArrayList<>();
+        List<Filter> validFilters = extractNeededFiltersOnly(allProfiles, allFilters);
+        for (Filter currentValidFilter : validFilters) {
+            if (currentValidFilter.getmHood().equals(myFilters.getmHood())
+                    && currentValidFilter.getmMaxMoney() > myFilters.getmMinMoney()
+                    && currentValidFilter.getmMinMoney() < myFilters.getmMaxMoney()) {
+                Profile tempProfile = getProfileByToken(currentValidFilter.getmToken(), allProfiles);
+                if (tempProfile != null) {
+                    profileListFilteredByUserFilter.add(tempProfile);
+                }
+            }
+        }
+        return profileListFilteredByUserFilter;
+    }
+
+    private static List<Filter> extractNeededFiltersOnly(List<Profile> profiles, List<Filter> filters) {
+        List<Filter> parsedFilters = new ArrayList<>();
+        for (int i = 0; i < profiles.size(); i++) {
+            for (int z = 0; z < filters.size(); z++) {
+                if (profiles.get(i).getmToken().equals(filters.get(z).getmToken())) {
+                    parsedFilters.add(filters.get(z));
+                }
+            }
+        }
+        return parsedFilters;
+    }
+
+    private static Profile getProfileByToken(String token, List<Profile> profiles) {
+        for (Profile currentProfile : profiles) {
+            if (currentProfile.getmToken().equals(token)) {
+                return currentProfile;
+            }
+        }
+        return null;
+    }
+
+    public static List<Profile> extractProfilesComparedWithUsersFilters(List<Filter> allFilters, List<Profile> allProfiles, Profile myProfile) {
+        List<Profile> profileListFilteredByUsersFiltersVsMyProfile = new ArrayList<>();
+        List<Filter> validFilters = extractNeededFiltersOnly(allProfiles, allFilters);
+        for (Filter currentValidFilter : validFilters) {
+            if (currentValidFilter.getmGender().equals(myProfile.getmGender())
+                    && (myProfile.getmAge() >= currentValidFilter.getmMinAge())
+                    && (myProfile.getmAge() <= currentValidFilter.getmMaxAge())) {
+                profileListFilteredByUsersFiltersVsMyProfile.add(getProfileByToken(currentValidFilter.getmToken(), allProfiles));
+            }
+        }
+        return profileListFilteredByUsersFiltersVsMyProfile;
+    }
+
+    //Todo call method to check if the
+    //validFilters = extractNeededFiltersOnly(allProfiles, profileListFilteredbyUserFilter);
+    //
+
 }
