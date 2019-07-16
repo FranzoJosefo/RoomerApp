@@ -1,6 +1,7 @@
 package com.franciscoolivero.android.roomerapp.Profile;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.franciscoolivero.android.roomerapp.R;
+import com.franciscoolivero.android.roomerapp.Results.ResultsFragment;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -19,11 +22,35 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 
 public class ProfileAdapter extends ArrayAdapter<Profile> {
 
-    public ProfileAdapter(@NonNull Context context, @NonNull ArrayList<Profile> objects) {
+    private GoogleSignInAccount account;
+
+    private final OkHttpClient client = new OkHttpClient();
+    private static final String ROOMER_API_HOST = "roomer-backend.herokuapp.com";
+    private static final String ROOMER_API_PATH_APD = "apd";
+    private static final String ROOMER_API_PATH_GET_FILTROS_TOKEN = "getFiltrosPorToken";
+    private static final String ROOMER_API_POST_FILTERS = "http://roomer-backend.herokuapp.com/apd/insertFiltro";
+    private String userToken;
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private String LOG_TAG = getClass().getSimpleName();
+    private Context mContext;
+    private ResultsFragment resultsFragment;
+
+
+    public ProfileAdapter(@NonNull Context context, @NonNull ArrayList<Profile> objects, ResultsFragment resultsFragment) {
         super(context, 0, objects);
+        this.mContext = context;
+        this.resultsFragment = resultsFragment;
+        Log.v("mContext of adap is", mContext.toString());
+    }
+
+    @Override
+    public void remove(@Nullable Profile object) {
+        super.remove(object);
     }
 
     @NonNull
@@ -36,7 +63,23 @@ public class ProfileAdapter extends ArrayAdapter<Profile> {
         final Profile currentProfile = getItem(position);
         ViewHolder holder = new ViewHolder(listItemView);
 
-        //TODO LOGIC FOR PROFILE CARD.
+
+        ImageButton buttonAddLike = listItemView.findViewById(R.id.button_add_list_item);
+
+
+        buttonAddLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.v("onClick Profile Adapter", "onClick Triggered");
+                if(resultsFragment.insertLike(currentProfile.getmToken())) {
+                    Log.v("onClick adp", "insertLike was called");
+                    remove(currentProfile);
+                    notifyDataSetChanged();
+                }
+
+            }
+        });
+
 
         //Get and update the name and full name
         String userfullName = currentProfile.getmName() + " " + currentProfile.getmLastName();
@@ -79,7 +122,6 @@ public class ProfileAdapter extends ArrayAdapter<Profile> {
 //                openWebPage(currentProfile);
 //            }
 //        });
-
 
 
         //TODO - Add more Complex Logic for button pressing and disabling each card.
@@ -128,6 +170,7 @@ public class ProfileAdapter extends ArrayAdapter<Profile> {
             ButterKnife.bind(this, view);
         }
     }
+
 
 //    private void openWebPage(Profile profile) {
 //        //Uri profileUri = Uri.parse(profile.getmInfoLink()); Replace

@@ -441,9 +441,6 @@ public class FiltersFragment extends Fragment {
     }
 
     public void postRequest(String postUrl, String postBody) throws IOException {
-
-        OkHttpClient client = new OkHttpClient();
-
         RequestBody body = RequestBody.create(JSON, postBody);
 
         Request request = new Request.Builder()

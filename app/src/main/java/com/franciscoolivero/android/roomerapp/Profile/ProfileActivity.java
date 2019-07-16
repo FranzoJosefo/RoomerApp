@@ -2,7 +2,6 @@ package com.franciscoolivero.android.roomerapp.Profile;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,7 +32,6 @@ import com.franciscoolivero.android.roomerapp.MainActivity;
 import com.franciscoolivero.android.roomerapp.ParserService;
 import com.franciscoolivero.android.roomerapp.R;
 import com.franciscoolivero.android.roomerapp.SignIn.SignInActivity;
-import com.franciscoolivero.android.roomerapp.data.ProductContract.ProductEntry;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.squareup.picasso.Picasso;
 
@@ -513,48 +511,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
 
-    /**
-     * Insert a new product in the database.
-     */
-    private long insertProduct(ContentValues values) {
-        // Insert the new row, returning the full Uri for the added row (scheme + content authority + path)
-        Uri newUriId = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
-        String strUriId = String.valueOf(newUriId);
-        return Long.valueOf(strUriId.substring(strUriId.lastIndexOf('/') + 1));
-
-    }
-
-    /**
-     * Update an existing product in the database.
-     */
-//    private long updateProduct(ContentValues values) {
-//        return getContentResolver().update(mCurrentProductUri, values, null, null);
-//    }
-    private void makeToast(long affectedRowOrId) {
-        String success;
-        String failure;
-        String logMsg;
-        if (mCurrentAccount == null) {
-            success = getString(R.string.editor_insert_product_successful);
-            failure = getString(R.string.editor_insert_product_failed);
-            logMsg = " with Row ID";
-        } else {
-            success = getString(R.string.editor_update_product_successful);
-            failure = getString(R.string.editor_update_product_failed);
-            logMsg = " - # of Rows updated: ";
-        }
-
-        if (affectedRowOrId > 0) {
-            Toast toast = Toast.makeText(getApplicationContext(), success, Toast.LENGTH_SHORT);
-            toast.show();
-            Log.v(LOG_TAG, success + logMsg + affectedRowOrId);
-
-        } else {
-            Toast toast = Toast.makeText(getApplicationContext(), failure, Toast.LENGTH_SHORT);
-            toast.show();
-            Log.e(LOG_TAG, failure + logMsg + affectedRowOrId);
-        }
-    }
 
     /**
      * Handle clicking on the ImageButton to pick an image from the Gallery

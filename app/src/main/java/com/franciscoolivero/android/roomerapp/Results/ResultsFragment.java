@@ -19,6 +19,9 @@ import com.franciscoolivero.android.roomerapp.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,13 +29,15 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ResultsFragment extends Fragment {
@@ -41,39 +46,38 @@ public class ResultsFragment extends Fragment {
         //Required empty constructor
     }
 
-    FragmentManager fragmentManager;
-
     @BindView(R.id.profile_list_view)
     ListView profileListView;
     @BindView(R.id.empty_view)
     RelativeLayout emptyStateView;
     @BindView(R.id.loading_spinner_container_results)
     View loadingSpinner;
-//    @BindView(R.id.toolbar)
-//    android.support.v7.widget.Toolbar toolbar;
-//    @BindView(R.id.text_home_default)
-//TextView homeDefaultMessage;
 
-    public String userToken;
+    private String userToken;
 
-    public static final OkHttpClient client = new OkHttpClient();
+    private static final OkHttpClient client = new OkHttpClient();
 
     /**
      * Create a new {@link android.widget.ArrayAdapter} of profiles.
      */
-    static private ProfileAdapter profileAdapter;
-    private ArrayList<Profile> dummyProfiles;
+    private ProfileAdapter profileAdapter;
+//    private ArrayList<Profile> dummyProfiles;
 
     /**
      * Constant value for the profile loader ID. We can choose any integer.
      * This really only comes into play if you're using multiple loaders.
      */
-    private static final int PROFILE_LOADER_ID = 1;
-    private static final String ROOMER_API_BASE_URL = "https://www.googleapis.com/profiles/v1/volumes?q=";
     private static final String ROOMER_API_GET_RESULTS = "http://roomer-backend.herokuapp.com/apd/getUsuarios";
-    private String userQuery;
     private static String LOG_TAG = ResultsFragment.class.getSimpleName();
     private GoogleSignInAccount account;
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final String ROOMER_API_HOST = "roomer-backend.herokuapp.com";
+    private static final String ROOMER_API_PATH_APD = "apd";
+    private static final String ROOMER_API_PATH_GET_LIKES_TOKEN = "getLikesPorToken";
+    private static final String ROOMER_API_POST_LIKE = "http://roomer-backend.herokuapp.com/apd/insertLike";
+    private static final String ROOMER_API_POST_MATCH = "http://roomer-backend.herokuapp.com/apd/insertMatch";
+    private String addedUserToken;
+
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -93,35 +97,34 @@ public class ResultsFragment extends Fragment {
     }
 
     private void generateDummyData() {
-        dummyProfiles = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Profile currentProfile = new Profile(
-                    "alfred@tengomail.com",
-                    "Alfredo_" + i,
-                    "Rodriguez_" + i,
-                    "M",
-                    "36412953" + i * 30000,
-                    "68302719" + i * 30000,
-                    54911,
-                    23 + (i * 3),
-                    "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg",
-                    "Esto sigue en desarrollo");
-
-            dummyProfiles.add(currentProfile);
-        }
+//        dummyProfiles = new ArrayList<>();
+//        for (int i = 0; i < 10; i++) {
+//            Profile currentProfile = new Profile(
+//                    "alfred@tengomail.com",
+//                    "Alfredo_" + i,
+//                    "Rodriguez_" + i,
+//                    "M",
+//                    "36412953" + i * 30000,
+//                    "68302719" + i * 30000,
+//                    54911,
+//                    23 + (i * 3),
+//                    "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg",
+//                    "Esto sigue en desarrollo");
+//
+//            dummyProfiles.add(currentProfile);
+//        }
     }
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         account = GoogleSignIn.getLastSignedInAccount(getActivity());
-        if(account!=null){
+        if (account != null) {
             userToken = account.getEmail();
         }
-        profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
+        profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>(), ResultsFragment.this);
         profileListView.setAdapter(profileAdapter);
-        if(isConnected()){
+        if (isConnected()) {
             fetchProfileData(ROOMER_API_GET_RESULTS, getContext());
         } else {
             Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
@@ -132,12 +135,12 @@ public class ResultsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         account = GoogleSignIn.getLastSignedInAccount(getActivity());
-        if(account!=null){
+        if (account != null) {
             userToken = account.getEmail();
         }
-        profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
+        profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>(), ResultsFragment.this);
         profileListView.setAdapter(profileAdapter);
-        if(isConnected()){
+        if (isConnected()) {
             fetchProfileData(ROOMER_API_GET_RESULTS, getContext());
         } else {
             Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
@@ -178,7 +181,7 @@ public class ResultsFragment extends Fragment {
                 //CALL NEW ResultParser method
                 List<Profile> profiles = ParserService.extractProfiles(resultsResponse);
                 //Null Check in case fragment gets detached from activity for long running operations.
-                if(getActivity()!=null){
+                if (getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -202,16 +205,16 @@ public class ResultsFragment extends Fragment {
 
 
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error with request: "+requestUrl, e);
+            Log.e(LOG_TAG, "Error with request: " + requestUrl, e);
             e.printStackTrace();
             //Todo Retry
             Toast.makeText(context, "Hubo un error al cargar, pruebe de nuevo!", Toast.LENGTH_LONG).show();
         }
     }
 
-    private void updateProfileAdapter(List<Profile> profileList){
+    private void updateProfileAdapter(List<Profile> profileList) {
         profileAdapter.clear();
-        if(profileList.isEmpty()){
+        if (profileList.isEmpty()) {
             loadingSpinner.setVisibility(View.GONE);
             emptyStateView.setVisibility(View.VISIBLE);
             profileListView.setVisibility(View.VISIBLE);
@@ -224,6 +227,188 @@ public class ResultsFragment extends Fragment {
             profileAdapter.notifyDataSetChanged();
             Log.v(LOG_TAG, "AGREGO TODO AL PROFILE ADAPTER");
         }
+    }
+
+    public boolean insertLike(String mAddedUserToken) {
+        addedUserToken = mAddedUserToken;
+        String postBodyInsertarLike = "{\n" +
+                "    \"token\": \"" + userToken + "\",\n" +
+                "    \"like\": \"" + addedUserToken + "\"\n" +
+                "}";
+
+        try {
+            postLikeRequest(ROOMER_API_POST_LIKE, postBodyInsertarLike);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "Error al likear, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void postLikeRequest(String postUrl, String postBody) throws IOException {
+
+        RequestBody body = RequestBody.create(JSON, postBody);
+
+        Request request = new Request.Builder()
+                .url(postUrl)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem posting Profile information to Backend", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d("TAG", myResponse);
+
+
+                try {
+                    JSONObject json = new JSONObject(myResponse);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkForAddedUserLikes();
+                        Toast.makeText(getContext(), "Like exitoso!", Toast.LENGTH_LONG).show();
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void checkForAddedUserLikes() {
+        try {
+            getAddedUserLikesbyTokenHTTPRequest(addedUserToken);
+        } catch (IOException e) {
+            Log.v(LOG_TAG, "Error in checkForAddedUserLikes - getAddedUserLikesbyToken Failed");
+            e.printStackTrace();
+        }
+    }
+
+    public void getAddedUserLikesbyTokenHTTPRequest(String token) throws IOException {
+        Log.v(LOG_TAG, "token: " + token);
+
+        String url;
+
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme("http")
+                .host(ROOMER_API_HOST)
+                .addPathSegment(ROOMER_API_PATH_APD)
+                .addPathSegment(ROOMER_API_PATH_GET_LIKES_TOKEN)
+                .addQueryParameter("token", token)
+                .build();
+        url = httpUrl.toString();
+        Log.v(LOG_TAG, "URL FOR GET Added User LIKES BY TOKEN: " + url);
+
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem retrieving the Added User LIKES JSON results", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String resultsResponse = response.body().string();
+                Log.v(LOG_TAG, resultsResponse);
+                //CALL NEW ResultParser method
+                List<String> addedUserLikes = ParserService.extractAddedUserLikes(resultsResponse);
+                //Null Check in case fragment gets detached from activity for long running operations.
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            checkForMatch(addedUserLikes);
+                            Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void checkForMatch(List<String> addedUserLikes) {
+        boolean isMatch = false;
+        for (String currentLike : addedUserLikes) {
+            if (currentLike.equals(userToken)) {
+                isMatch = true;
+            }
+        }
+        if (isMatch) {
+            insertMatch(addedUserToken, userToken);
+            insertMatch(userToken, addedUserToken);
+        }
+    }
+
+    private void insertMatch(String userToken, String matchToken) {
+        String postBodyMatch = "{\n" +
+                "    \"token\": \"" + userToken + "\",\n" +
+                "    \"match\": \"" + matchToken + "\"\n" +
+                "}";
+        try {
+            postMatchRequest(ROOMER_API_POST_MATCH, postBodyMatch);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "Error guardando informacion, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void postMatchRequest(String postUrl, String postBody) throws IOException {
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(JSON, postBody);
+
+        Request request = new Request.Builder()
+                .url(postUrl)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem posting Profile information to Backend", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d("TAG", myResponse);
+
+
+                try {
+                    JSONObject json = new JSONObject(myResponse);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getContext(), "Match exitoso!", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
     }
 }
 

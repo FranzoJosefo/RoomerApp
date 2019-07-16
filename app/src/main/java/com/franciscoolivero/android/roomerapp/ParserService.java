@@ -254,4 +254,37 @@ public class ParserService {
         }
         return false;
     }
+
+    public static List<String> extractAddedUserLikes(String jsonResponse){
+        List<String> addedUserLikesArray = new ArrayList<>();
+        Log.v(LOG_TAG + ": in extAddedUsrLikes()", "matchArray<Filter> created");
+
+        if (TextUtils.isEmpty(jsonResponse)) {
+            Log.v(LOG_TAG + ": in extAddedUsrLikes()", "jsonResponse is empty :/");
+            return null;
+        }
+
+        try {
+            JSONArray jsonRootArray = new JSONArray(jsonResponse);
+            Log.v(LOG_TAG + ": in extAddedUsrLikes()", "jsonRootArray created");
+
+            //Recorrer Array de abajo hacia arriba asi siempre leemos primero los ultimos en agregarse
+            final int numberOfLikes = jsonRootArray.length() - 1;
+            for (int i = numberOfLikes; i >= 0; i--) {
+                JSONObject currentLikeJSONOBject = jsonRootArray.getJSONObject(i);
+                String currentLike = currentLikeJSONOBject.optString("like");
+                addedUserLikesArray.add(currentLike);
+            }
+
+
+        } catch (JSONException e) {
+            Log.e(LOG_TAG + ": in extAddedUsrLikes()", "ERROR Parsing JSON");
+            e.printStackTrace();
+            //TODO error handling maybe return exception? throws... etc
+        }
+
+        Log.v(LOG_TAG + ": in extAddedUsrLikes()", "Return addedUserLikesArray");
+        Log.v(LOG_TAG + ": in extAddedUsrLikes()", addedUserLikesArray.toString());
+        return addedUserLikesArray;
+    }
 }

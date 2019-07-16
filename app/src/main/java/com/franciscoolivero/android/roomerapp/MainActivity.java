@@ -34,17 +34,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean filter_selected = false;
     private boolean results_selected = false;
     private boolean matches_selected = false;
-    private String userToken;
     private GoogleSignInAccount account;
 
+    private String userToken;
 
-    public String getUserToken() {
-        return account.getEmail();
-    }
 
-    public void setUserToken(String userToken) {
-        this.userToken = userToken;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.layout_nav_bar);
 
         account = getIntent().getParcelableExtra("account");
-        if (account != null) {
-            userToken = account.getEmail();
-        }
+
 
         toolbar = getSupportActionBar();
 
@@ -178,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 hideKeyboard(this);
-                if(isConnected()){
+                if (isConnected()) {
                     FiltersFragment fragment = (FiltersFragment) getSupportFragmentManager().findFragmentByTag("filtros");
                     fragment.saveFilters();
                 } else {
@@ -198,34 +190,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
-                // If the product hasn't changed, continue with navigating up to parent activity
-                // which is the {@link CatalogActivity}.
-//                if (!mProductHasChanged) {
-//                    NavUtils.navigateUpFromSameTask(MainActivity.this);
-//                    return true;
-//                }
-//
-//                // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-//                // Create a click listener to handle the user confirming that
-//                // changes should be discarded.
-//                DialogInterface.OnClickListener discardButtonClickListener =
-//                        new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                // User clicked "Discard" button, navigate to parent activity.
-//                                filter_selected = false;
-//                                matches_selected = false;
-//                                results_selected = true;
-//                                ResultsFragment fragment;
-//                                fragment = new ResultsFragment();
-//                                loadFragment(fragment, "busquedas");
-//                                toolbar.setTitle("Busquedas");
-//                                invalidateOptionsMenu();
-//                            }
-//                        };
-//
-//                // Show a dialog that notifies the user they have unsaved changes
-//                showUnsavedChangesDialog(discardButtonClickListener);
                 return true;
 
         }
