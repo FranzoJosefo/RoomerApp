@@ -161,6 +161,21 @@ public class ResultsFragment extends Fragment {
         return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
     }
 
+    private void fetchProfileData(String requestUrl, Context context) {
+        //The following try catch block generates a 1.5 second delay until we make the request so that we can see the Loading Spinner.
+        try {
+            loadingSpinner.setVisibility(View.VISIBLE);
+            getUsuariosHTTPRequest(requestUrl);
+
+
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error with request: " + requestUrl, e);
+            e.printStackTrace();
+            //Todo Retry
+            Toast.makeText(context, "Hubo un error al cargar, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void getUsuariosHTTPRequest(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
@@ -179,7 +194,7 @@ public class ResultsFragment extends Fragment {
                 final String resultsResponse = response.body().string();
                 Log.v(LOG_TAG, resultsResponse);
                 //CALL NEW ResultParser method
-                List<Profile> profiles = ParserService.extractProfiles(resultsResponse);
+                List<Profile> profiles = ParserService.extractProfiles(resultsResponse, userToken);
                 //Null Check in case fragment gets detached from activity for long running operations.
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
@@ -194,22 +209,6 @@ public class ResultsFragment extends Fragment {
 
             }
         });
-    }
-
-
-    private void fetchProfileData(String requestUrl, Context context) {
-        //The following try catch block generates a 1.5 second delay until we make the request so that we can see the Loading Spinner.
-        try {
-            loadingSpinner.setVisibility(View.VISIBLE);
-            getUsuariosHTTPRequest(requestUrl);
-
-
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error with request: " + requestUrl, e);
-            e.printStackTrace();
-            //Todo Retry
-            Toast.makeText(context, "Hubo un error al cargar, pruebe de nuevo!", Toast.LENGTH_LONG).show();
-        }
     }
 
     private void updateProfileAdapter(List<Profile> profileList) {
@@ -296,7 +295,7 @@ public class ResultsFragment extends Fragment {
         }
     }
 
-    public void getAddedUserLikesbyTokenHTTPRequest(String token) throws IOException {
+    private void getAddedUserLikesbyTokenHTTPRequest(String token) throws IOException {
         Log.v(LOG_TAG, "token: " + token);
 
         String url;

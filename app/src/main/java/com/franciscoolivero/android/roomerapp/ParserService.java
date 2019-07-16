@@ -6,6 +6,7 @@ import android.util.Log;
 import com.franciscoolivero.android.roomerapp.Filters.Filter;
 import com.franciscoolivero.android.roomerapp.Matches.Match;
 import com.franciscoolivero.android.roomerapp.Profile.Profile;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,11 +18,12 @@ import java.util.List;
 public class ParserService {
 
     private static String LOG_TAG = ParserService.class.getSimpleName();
+    private GoogleSignIn account;
 
 
     //TODO add filterResults(List<Profile> profiles);
 
-    public static List<Profile> extractProfiles(String jsonResponse) {
+    public static List<Profile> extractProfiles(String jsonResponse, String userToken) {
         List<Profile> profileArray = new ArrayList<>();
         Log.v(LOG_TAG + ": in extractProfiles()", "profileArray<Profile> created");
 
@@ -63,7 +65,7 @@ public class ParserService {
                 );
 
 
-                if (!ParserService.profileAlreadyAdded(profileArray, currentProfile)) {
+                if (!ParserService.profileAlreadyAdded(profileArray, currentProfile) && !isLoggedUserProfile(currentProfile, userToken)) {
                     profileArray.add(currentProfile);
                 }
 
@@ -90,6 +92,14 @@ public class ParserService {
         }
         return false;
     }
+
+    private static boolean isLoggedUserProfile(Profile currentProfile, String userToken) {
+        if (currentProfile.getmToken().equals(userToken)) {
+            return true;
+        }
+        return false;
+    }
+
 
     public static List<Filter> extractFilters(String jsonResponse) {
         List<Filter> filterArray = new ArrayList<>();
@@ -209,7 +219,7 @@ public class ParserService {
 
                 String currentMail = currentMatchJSONObject.optString("token");
                 for (String curToken : matchTokensList) {
-                    if(currentMail.equals(curToken)){
+                    if (currentMail.equals(curToken)) {
                         String currentName = currentMatchJSONObject.optString("nombre");
                         String currentLastName = currentMatchJSONObject.optString("apellido");
                         int currentAge = currentMatchJSONObject.optInt("edad");
@@ -226,7 +236,7 @@ public class ParserService {
                                 currentPhone,
                                 currentAreaCode);
 
-                        if(!matchAlreadyAdded(matchList, currentMatch)) {
+                        if (!matchAlreadyAdded(matchList, currentMatch)) {
                             matchList.add(currentMatch);
                         }
                         Log.v(LOG_TAG + ": in extractMProfile()", "Profile with token {" + currentMail + "} added to profileArray");
@@ -255,7 +265,7 @@ public class ParserService {
         return false;
     }
 
-    public static List<String> extractAddedUserLikes(String jsonResponse){
+    public static List<String> extractAddedUserLikes(String jsonResponse) {
         List<String> addedUserLikesArray = new ArrayList<>();
         Log.v(LOG_TAG + ": in extAddedUsrLikes()", "matchArray<Filter> created");
 
