@@ -1,6 +1,5 @@
 package com.franciscoolivero.android.roomerapp.Results;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -28,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.loader.app.LoaderManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.Call;
@@ -58,16 +56,13 @@ public class ResultsFragment extends Fragment {
 
     public String userToken;
 
-    private static ResultsFragment resultsFragmentInstance;
     public static final OkHttpClient client = new OkHttpClient();
 
     /**
      * Create a new {@link android.widget.ArrayAdapter} of profiles.
      */
     static private ProfileAdapter profileAdapter;
-    private ArrayList<Profile> savedProfiles;
     private ArrayList<Profile> dummyProfiles;
-    LoaderManager loaderManager;
 
     /**
      * Constant value for the profile loader ID. We can choose any integer.
@@ -86,50 +81,16 @@ public class ResultsFragment extends Fragment {
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_results, container, false);
         ButterKnife.bind(this, rootView);
-        resultsFragmentInstance = this;
-//        setSupportActionBar(toolbar);
-        // Get a reference to the LoaderManager, in order to interact with loaders.
-//        loaderManager = androidx.loader.app.LoaderManager.getInstance(this);
-
-
-
-
-
-        if (savedInstanceState != null && savedInstanceState.<Profile>getParcelableArrayList("myKey") != null) {
-//            homeDefaultMessage.setVisibility(View.GONE);
-
-
-            savedProfiles = savedInstanceState.getParcelableArrayList("myKey");
-
-
-            //OPEN WEB PAGE
-//            profileListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    Profile currentProfile = profileAdapter.getItem(position);
-//                    openWebPage(currentProfile);
-//                }
-//            });
-        }
-//        //Test Dummy Profiles
-//        generateDummyData();
-//        profileAdapter = new ProfileAdapter(getActivity(), new ArrayList<>());
-//        profileAdapter.addAll(dummyProfiles);
-//        profileAdapter.notifyDataSetChanged();
-//        profileListView.setAdapter(profileAdapter);
-
-
         return rootView;
-
     }
-
-    public static ResultsFragment getInstance() {
-        return resultsFragmentInstance;
-    }
-
 
     private void generateDummyData() {
         dummyProfiles = new ArrayList<>();
@@ -161,7 +122,7 @@ public class ResultsFragment extends Fragment {
         profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
         profileListView.setAdapter(profileAdapter);
         if(isConnected()){
-            fetchProfileData(ROOMER_API_GET_RESULTS, getActivity(), getContext());
+            fetchProfileData(ROOMER_API_GET_RESULTS, getContext());
         } else {
             Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
         }
@@ -177,7 +138,7 @@ public class ResultsFragment extends Fragment {
         profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
         profileListView.setAdapter(profileAdapter);
         if(isConnected()){
-            fetchProfileData(ROOMER_API_GET_RESULTS, getActivity(), getContext());
+            fetchProfileData(ROOMER_API_GET_RESULTS, getContext());
         } else {
             Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
         }
@@ -186,14 +147,6 @@ public class ResultsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedState) {
-        super.onSaveInstanceState(savedState);
-        if (savedProfiles != null) {
-            savedState.putParcelableArrayList("myKey", savedProfiles);
-        }
     }
 
     private boolean isConnected() {
@@ -205,10 +158,7 @@ public class ResultsFragment extends Fragment {
         return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
     }
 
-    public void getUsuariosHTTPRequest(String url) throws IOException {
-
-        OkHttpClient client = new OkHttpClient();
-
+    private void getUsuariosHTTPRequest(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -244,7 +194,7 @@ public class ResultsFragment extends Fragment {
     }
 
 
-    private void fetchProfileData(String requestUrl, Activity activity, Context context) {
+    private void fetchProfileData(String requestUrl, Context context) {
         //The following try catch block generates a 1.5 second delay until we make the request so that we can see the Loading Spinner.
         try {
             loadingSpinner.setVisibility(View.VISIBLE);
@@ -258,11 +208,6 @@ public class ResultsFragment extends Fragment {
             Toast.makeText(context, "Hubo un error al cargar, pruebe de nuevo!", Toast.LENGTH_LONG).show();
         }
     }
-
-
-
-
-
 
     private void updateProfileAdapter(List<Profile> profileList){
         profileAdapter.clear();
@@ -280,8 +225,6 @@ public class ResultsFragment extends Fragment {
             Log.v(LOG_TAG, "AGREGO TODO AL PROFILE ADAPTER");
         }
     }
-
-
 }
 
 

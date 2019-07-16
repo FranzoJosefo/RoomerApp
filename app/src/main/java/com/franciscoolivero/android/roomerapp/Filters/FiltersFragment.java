@@ -59,7 +59,6 @@ public class FiltersFragment extends Fragment {
      * 0 for unknown gender, 1 for male, 2 for female.
      */
     private static final int PICK_IMAGE_REQUEST = 100;
-    private String userToken;
     private final int GENDER_OTRO_INDEX = 1;
     private final int GENDER_F_INDEX = 2;
     private final int GENDER_M_INDEX = 3;
@@ -78,7 +77,6 @@ public class FiltersFragment extends Fragment {
 //
 //    }
 
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     // Find all relevant views that we will need to read user input from
     @BindView(R.id.spinner)
     Spinner spinner_barrio;
@@ -120,11 +118,15 @@ public class FiltersFragment extends Fragment {
     private Uri selectedImage;
     private GoogleSignInAccount account;
 
-    public final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = new OkHttpClient();
     private static final String ROOMER_API_HOST = "roomer-backend.herokuapp.com";
     private static final String ROOMER_API_PATH_APD = "apd";
     private static final String ROOMER_API_PATH_GET_FILTROS_TOKEN = "getFiltrosPorToken";
     private static final String ROOMER_API_POST_FILTERS = "http://roomer-backend.herokuapp.com/apd/insertFiltro";
+    private String userToken;
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+
 
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
