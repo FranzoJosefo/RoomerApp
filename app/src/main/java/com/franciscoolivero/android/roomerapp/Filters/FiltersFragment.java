@@ -3,7 +3,6 @@ package com.franciscoolivero.android.roomerapp.Filters;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -53,12 +51,6 @@ public class FiltersFragment extends Fragment {
         //Required empty constructor
     }
 
-
-    /**
-     * Gender of the product. The possible values are:
-     * 0 for unknown gender, 1 for male, 2 for female.
-     */
-    private static final int PICK_IMAGE_REQUEST = 100;
     private final int GENDER_OTRO_INDEX = 1;
     private final int GENDER_F_INDEX = 2;
     private final int GENDER_M_INDEX = 3;
@@ -66,16 +58,6 @@ public class FiltersFragment extends Fragment {
     private final String GENDER_F_STRING = "F";
     private final String GENDER_M_STRING = "M";
     private List<String> categoriesBarrios;
-
-//    @Override
-//    public void onLoadFinished(@NonNull Loader<List<String>> loader, List<String> data) {
-//
-//    }
-//
-//    @Override
-//    public void onLoaderReset(@NonNull Loader<List<String>> loader) {
-//
-//    }
 
     // Find all relevant views that we will need to read user input from
     @BindView(R.id.spinner)
@@ -118,8 +100,6 @@ public class FiltersFragment extends Fragment {
 
     private boolean mProductHasChanged = false;
     private String LOG_TAG = getClass().getSimpleName();
-    private Uri mCurrentProductUri;
-    private Uri selectedImage;
     private GoogleSignInAccount account;
 
     private final OkHttpClient client = new OkHttpClient();
@@ -129,8 +109,6 @@ public class FiltersFragment extends Fragment {
     private static final String ROOMER_API_POST_FILTERS = "http://roomer-backend.herokuapp.com/apd/insertFiltro";
     private String userToken;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-
 
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -160,57 +138,11 @@ public class FiltersFragment extends Fragment {
         text_plata_max.setOnTouchListener(mTouchListener);
         spinner_sexo.setOnTouchListener(mTouchListener);
 
-        mCurrentProductUri = getActivity().getIntent().getData();
         account = getActivity().getIntent().getParcelableExtra("account");
 
         // Spinner element
         Spinner spinner = (Spinner) rootView.findViewById(R.id.spinner);
         Spinner spinnerSexo = (Spinner) rootView.findViewById(R.id.spinnerSexo);
-
-        // Spinner click listener
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
-                Object item = adapterView.getItemAtPosition(position);
-                if (item != null) {
-//                    Toast.makeText(getContext(), item.toString(),
-//                            Toast.LENGTH_SHORT).show();
-                }
-//                Toast.makeText(getContext(), "Selected",
-//                        Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-
-        spinnerSexo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
-                Object item = adapterView.getItemAtPosition(position);
-                if (item != null) {
-//                    Toast.makeText(getContext(), item.toString(),
-//                            Toast.LENGTH_SHORT).show();
-                }
-//                Toast.makeText(getContext(), "Selected",
-//                        Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // TODO Auto-generated method stub
-
-            }
-        });
 
         // Spinner Drop down elements
         List<String> categories = new ArrayList<String>();
@@ -298,34 +230,18 @@ public class FiltersFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         account = GoogleSignIn.getLastSignedInAccount(getContext());
-        if(account!=null){
+        if (account != null) {
             userToken = account.getEmail();
         }
         if (getActivity() != null) {
             if (getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName())) {
-                //TODO IMPLEMENT CALLING FILTER DATA SO THAT USER VIEWS HIS PREVIOUS FILTERS.
-                if(isConnected()){
+                if (isConnected()) {
                     fetchFilterData();
                 } else {
                     Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
                 }
             }
         }
-
-
-        //Check
-//        userToken = ((MainActivity) getActivity()).getUserToken();
-//        loadingSpinner.setVisibility(View.VISIBLE);
-//        profileAdapter = new ProfileAdapter(getActivity().getBaseContext(), new ArrayList<>());
-//        profileListView.setAdapter(profileAdapter);
-//        if(isConnected()){
-//            fetchProfileData(ROOMER_API_GET_RESULTS, getActivity(), getContext());
-//        } else {
-//            Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
-//        }
-//
-//        loadingSpinner.setVisibility(View.GONE);
-
     }
 
 
@@ -342,7 +258,6 @@ public class FiltersFragment extends Fragment {
         dinero_max_error.setVisibility(View.GONE);
         dinero_max_error_menor_a_min.setVisibility(View.GONE);
         edad_max_error_menor_a_min.setVisibility(View.GONE);
-
 
 
         String sFilter_barrio = spinner_barrio.getSelectedItem().toString();
@@ -402,11 +317,11 @@ public class FiltersFragment extends Fragment {
                 dinero_max_error.setVisibility(View.VISIBLE);
             }
 
-            if(Integer.valueOf(text_plata_min.getText().toString()) >= Integer.valueOf(text_plata_max.getText().toString())){
+            if (Integer.valueOf(text_plata_min.getText().toString()) >= Integer.valueOf(text_plata_max.getText().toString())) {
                 dinero_max_error_menor_a_min.setVisibility(View.VISIBLE);
             }
 
-            if(Integer.valueOf(text_edad_min.getText().toString()) >= Integer.valueOf(text_edad_max.getText().toString())){
+            if (Integer.valueOf(text_edad_min.getText().toString()) >= Integer.valueOf(text_edad_max.getText().toString())) {
                 edad_max_error_menor_a_min.setVisibility(View.VISIBLE);
             }
             return false;
@@ -442,7 +357,7 @@ public class FiltersFragment extends Fragment {
         if (getActivity() != null) {
             if (getActivity().getClass().getSimpleName().equals(MainActivity.class.getSimpleName())) {
                 userToken = account.getEmail();
-                if(isConnected()){
+                if (isConnected()) {
                     fetchFilterData();
                 } else {
                     Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
@@ -485,9 +400,6 @@ public class FiltersFragment extends Fragment {
                     @Override
                     public void run() {
                         updateUIFilterSaved();
-
-//        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
-
                     }
                 });
             }
@@ -564,8 +476,8 @@ public class FiltersFragment extends Fragment {
         text_plata_max.setText(String.valueOf(userFilters.getmMaxMoney()));
 
 
-        for(int i = 0; i < categoriesBarrios.size(); i++){
-            if(categoriesBarrios.get(i).equals(userFilters.getmHood())){
+        for (int i = 0; i < categoriesBarrios.size(); i++) {
+            if (categoriesBarrios.get(i).equals(userFilters.getmHood())) {
                 spinner_barrio.setSelection(i);
                 i = categoriesBarrios.size();
             }
@@ -605,7 +517,6 @@ public class FiltersFragment extends Fragment {
             Toast.makeText(getContext(), "Hubo un error al cargar, pruebe de nuevo!", Toast.LENGTH_LONG).show();
         }
     }
-
 
 }
 

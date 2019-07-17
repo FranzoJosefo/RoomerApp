@@ -29,7 +29,6 @@ import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -44,11 +43,8 @@ public class MatchesFragment extends Fragment {
     private static final String ROOMER_API_HOST = "roomer-backend.herokuapp.com";
     private static final String ROOMER_API_PATH_APD = "apd";
     private static final String ROOMER_API_PATH_GET_MATCHES_TOKEN = "getMatchPorToken";
-    private static final String ROOMER_API_PATH_GET_USUARIOS_TOKEN = "getUsuariosPorToken";
     private static final String ROOMER_API_GET_RESULTS = "http://roomer-backend.herokuapp.com/apd/getUsuarios";
-    private static final String ROOMER_API_POST_MATCHES = "http://roomer-backend.herokuapp.com/apd/insertFiltro";
     private String userToken;
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private GoogleSignInAccount account;
     private static String LOG_TAG = MatchesFragment.class.getSimpleName();
 
@@ -82,24 +78,6 @@ public class MatchesFragment extends Fragment {
         ButterKnife.bind(this, rootView);
         return rootView;
     }
-
-
-//    private void generateDummyData() {
-//        dummyMatchs = new ArrayList<>();
-//        for (int i = 0; i < 10; i++) {
-//            Match currentMatch = new Match(
-//                    "Fisurita",
-//                    "Del Conurbano",
-//                    25,
-//                    "https://pbs.twimg.com/profile_images/757202149218607104/gyPP5Hyl.jpg",
-//                    "superfisu@fisurismo.com",
-//                    "1165120532",
-//                    "0541");
-//
-//            dummyMatchs.add(currentMatch);
-//        }
-//    }
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -201,7 +179,7 @@ public class MatchesFragment extends Fragment {
                 Log.v(LOG_TAG, resultsResponse);
                 //CALL NEW ResultParser method
                 List<String> matchesTokens = ParserService.extractMatches(resultsResponse);
-                Log.v(LOG_TAG, "Match Tokens Array: "+matchesTokens);
+                Log.v(LOG_TAG, "Match Tokens Array: " + matchesTokens);
 
 
                 //Null Check in case fragment gets detached from activity for long running operations.

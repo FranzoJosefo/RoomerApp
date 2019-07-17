@@ -437,7 +437,6 @@
                             android:id="@+id/spinnerSexo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="ALGO"
                             android:prompt="@string/spinner_title_sexo"
                             android:tooltipText="Seleccione Barrios" />
                     </LinearLayout>

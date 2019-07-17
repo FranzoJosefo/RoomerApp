@@ -20,13 +20,14 @@ public class Filter implements Parcelable {
 
     /**
      * Constructs a new {@link Profile} object.
+     *
      * @param mToken
-     * @param mHood      Neighbourhood selected by the user.
-     * @param mMaxMoney  Max Money selected by the user.
-     * @param mMinAge Min Age selected by the user.
-     * @param mMaxAge Max Age selecetd by the user.
-     * @param mGender Gender selected by the user.
-     * @param mMinMoney      Min Money selected by the user.
+     * @param mHood     Neighbourhood selected by the user.
+     * @param mMaxMoney Max Money selected by the user.
+     * @param mMinAge   Min Age selected by the user.
+     * @param mMaxAge   Max Age selecetd by the user.
+     * @param mGender   Gender selected by the user.
+     * @param mMinMoney Min Money selected by the user.
      */
 
     public Filter(String mToken, @NonNull String mHood, @NonNull int mMaxMoney, @NonNull int mMinAge, @NonNull int mMaxAge, @NonNull String mGender, @NonNull int mMinMoney) {
@@ -48,68 +49,25 @@ public class Filter implements Parcelable {
         return mToken;
     }
 
-    public void setmToken(String mToken) {
-        this.mToken = mToken;
-    }
-
-    public void setmHood(String mHood) {
-        this.mHood = mHood;
-    }
-
     public int getmMinMoney() {
         return mMinMoney;
-    }
-
-    public void setmMinMoney(int mMinMoney) {
-        this.mMinMoney = mMinMoney;
     }
 
     public int getmMaxMoney() {
         return mMaxMoney;
     }
 
-    public void setmMaxMoney(int mMaxMoney) {
-        this.mMaxMoney = mMaxMoney;
-    }
-
     public int getmMinAge() {
         return mMinAge;
-    }
-
-    public void setmMinAge(int mMinAge) {
-        this.mMinAge = mMinAge;
     }
 
     public int getmMaxAge() {
         return mMaxAge;
     }
 
-    public void setmMaxAge(int mMaxAge) {
-        this.mMaxAge = mMaxAge;
-    }
-
     public String getmGender() {
         return mGender;
     }
-
-    public void setmGender(String mGender) {
-        this.mGender = mGender;
-    }
-
-
-//    public boolean hasAuthor(){
-//        return mAuthors != null;
-//    }
-//
-//    public boolean isSaleable(){
-//        return mListPrice != null;
-//    }
-//
-//
-//    public boolean hasRating(){
-//        return !mRating.equals("");
-//    }
-
 
     @Override
     public int describeContents() {

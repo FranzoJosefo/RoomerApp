@@ -107,28 +107,10 @@ public class ResultsFragment extends Fragment {
         return rootView;
     }
 
-    private void generateDummyData() {
-//        dummyProfiles = new ArrayList<>();
-//        for (int i = 0; i < 10; i++) {
-//            Profile currentProfile = new Profile(
-//                    "alfred@tengomail.com",
-//                    "Alfredo_" + i,
-//                    "Rodriguez_" + i,
-//                    "M",
-//                    "36412953" + i * 30000,
-//                    "68302719" + i * 30000,
-//                    54911,
-//                    23 + (i * 3),
-//                    "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg",
-//                    "Esto sigue en desarrollo");
-//
-//            dummyProfiles.add(currentProfile);
-//        }
-    }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        emptyStateView.setVisibility(View.GONE);
         account = GoogleSignIn.getLastSignedInAccount(getActivity());
         if (account != null) {
             userToken = account.getEmail();
@@ -145,6 +127,7 @@ public class ResultsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        emptyStateView.setVisibility(View.GONE);
         account = GoogleSignIn.getLastSignedInAccount(getActivity());
         if (account != null) {
             userToken = account.getEmail();
@@ -205,7 +188,6 @@ public class ResultsFragment extends Fragment {
                 final String resultsResponse = response.body().string();
                 Log.v(LOG_TAG, resultsResponse);
                 //CALL NEW ResultParser method
-//                List<Profile> profiles = ParserService.extractProfiles(resultsResponse, userToken);
                 allProfiles = ParserService.extractProfiles(resultsResponse, userToken);
                 //Null Check in case fragment gets detached from activity for long running operations.
                 if (getActivity() != null) {
@@ -213,7 +195,6 @@ public class ResultsFragment extends Fragment {
                         @Override
                         public void run() {
                             Log.v(LOG_TAG, "ENTRO EN EL RUN DE UI THREAD");
-//                            updateProfileAdapter(profiles);
                             fetchMyFilters();
                             Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
                         }
@@ -631,7 +612,6 @@ public class ResultsFragment extends Fragment {
             }
         });
     }
-
 
     private void updateProfileAdapter(List<Profile> profileList) {
         profileAdapter.clear();

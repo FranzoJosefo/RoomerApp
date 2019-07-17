@@ -201,7 +201,6 @@
                             android:layout_gravity="start"
                             android:layout_margin="8dp"
                             android:background="@null"
-                            android:onClick="pickImage"
                             android:scaleType="centerCrop"
                             android:src="@drawable/placeholder_image" />
 

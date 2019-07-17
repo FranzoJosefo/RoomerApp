@@ -49,7 +49,8 @@ public class Profile implements Parcelable {
 
     /**
      * Constructs a new {@link Profile} object.
-     *  @param mToken
+     *
+     * @param mToken
      * @param mName        Name of the roomate
      * @param mLastName    Last name of the roomate
      * @param mGender      Gender of the roomate
@@ -78,76 +79,36 @@ public class Profile implements Parcelable {
         return mToken;
     }
 
-    public void setmToken(String mToken) {
-        this.mToken = mToken;
-    }
-
     public String getmName() {
         return mName;
-    }
-
-    public void setmName(String mName) {
-        this.mName = mName;
     }
 
     public String getmLastName() {
         return mLastName;
     }
 
-    public void setmLastName(String mLastName) {
-        this.mLastName = mLastName;
-    }
-
     public String getmGender() {
         return mGender;
-    }
-
-    public void setmGender(String mGender) {
-        this.mGender = mGender;
     }
 
     public String getmDni() {
         return mDni;
     }
 
-    public void setmDni(String mDni) {
-        this.mDni = mDni;
-    }
-
     public String getmPhone() {
         return mPhone;
-    }
-
-    public void setmPhone(String mPhone) {
-        this.mPhone = mPhone;
     }
 
     public int getmAreaCode() {
         return mAreaCode;
     }
 
-    public void setmAreaCode(int mAreaCode) {
-        this.mAreaCode = mAreaCode;
-    }
-
     public int getmAge() {
         return mAge;
     }
 
-    public void setmAge(int mAge) {
-        this.mAge = mAge;
-    }
-
     public String getmPicture() {
         return mPicture;
-    }
-
-    public void setmPicture(String mPicture) {
-        this.mPicture = mPicture;
-    }
-
-    public String getmDescription() {
-        return mDescription;
     }
 
     public void setmDescription(String mDescription) {

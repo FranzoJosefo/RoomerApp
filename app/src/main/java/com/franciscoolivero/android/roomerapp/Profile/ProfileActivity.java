@@ -5,12 +5,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -19,7 +16,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -32,13 +28,13 @@ import com.franciscoolivero.android.roomerapp.MainActivity;
 import com.franciscoolivero.android.roomerapp.ParserService;
 import com.franciscoolivero.android.roomerapp.R;
 import com.franciscoolivero.android.roomerapp.SignIn.SignInActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,21 +56,14 @@ import okhttp3.Response;
 /**
  * Allows user to create a new product or edit an existing one.
  */
-public class ProfileActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class ProfileActivity extends AppCompatActivity {
 
     static ProfileActivity profileActivityInstance;
-    /**
-     * Gender of the product. The possible values are:
-     * 0 for unknown gender, 1 for male, 2 for female.
-     */
-    private static final int PICK_IMAGE_REQUEST = 100;
-    private static final int PRODUCT_LOADER_ID = 0;
     public final OkHttpClient client = new OkHttpClient();
     private static final String ROOMER_API_HOST = "roomer-backend.herokuapp.com";
     private static final String ROOMER_API_PATH_APD = "apd";
     private static final String ROOMER_API_PATH_GET_USUARIOS_TOKEN = "getUsuariosPorToken";
     public String postUrl = "http://roomer-backend.herokuapp.com/apd/insertUsuario";
-    public String getProfileDataUrl = "http://roomer-backend.herokuapp.com/apd/getUsuariosPorToken";
 
 
     private final int GENDER_OTRO_INDEX = 1;
@@ -89,8 +78,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     private boolean mProductHasChanged = false;
     private String intentFromActivity;
     private String LOG_TAG = getClass().getSimpleName();
-    private Uri mCurrentAccount;
-    private Uri selectedImage;
     private String currentAccountGoogleEmail;
     private String currentAccountImageURL;
     private String userToken;
@@ -102,14 +89,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
             return false;
         }
     };
-
-    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        //Reduce the quality to avoid issues with BLOB (BLOB cannot exceed 1mb).
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
-        return outputStream.toByteArray();
-    }
-
 
     // OnTouchListener that listens for any user touches on a View, implying that they are modifying
     // the view, and we change the mProductHasChanged boolean to true.
@@ -167,7 +146,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         user_image.setOnTouchListener(mTouchListener);
 
 
-        account = getIntent().getParcelableExtra("account");
+        account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
             userToken = account.getEmail();
         }
@@ -209,10 +188,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
                 Toast.makeText(this, "Error guardando informacion, pruebe de nuevo!", Toast.LENGTH_LONG).show();
                 loading_spinner.setVisibility(View.GONE);
             }
-
-
-//            http://roomer-backend.herokuapp.com/apd/getUsuariosPorToken?token=thisIsAtoken
-
         }
 
 
@@ -234,33 +209,16 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
     }
 
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        // On selecting a spinner item
-        String item = parent.getItemAtPosition(position).toString();
-
-        // Showing selected spinner item
-//        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
-
-    }
-
-    public void onNothingSelected(AdapterView<?> arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
     @Override
     //Gets fired after calling invalidateOptionsMenu()
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        // If this is a new product, hide the "Delete" menu item.
-        if (mCurrentAccount == null) {
-            MenuItem menuItemDel = menu.findItem(R.id.nav_profile);
-            menuItemDel.setVisible(false);
-            MenuItem menuItemBuy = menu.findItem(R.id.action_logout);
-            menuItemBuy.setVisible(false);
-        }
+        //invalidateOptionsMenu() is called when user is redirected from login (first time flow) hide logout and profile buttons.
+        MenuItem menuItemDel = menu.findItem(R.id.nav_profile);
+        menuItemDel.setVisible(false);
+        MenuItem menuItemBuy = menu.findItem(R.id.action_logout);
+        menuItemBuy.setVisible(false);
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(false);      // Disable the button
@@ -310,7 +268,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
                 hideKeyboard(this);
                 // Trigger saveProfile() method to save Product to DB.
                 //Could handle and validate errors here.
-                if(mProductHasChanged){
+                if (mProductHasChanged) {
                     if (isConnected()) {
                         saveProfile();
                     } else {
@@ -413,27 +371,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     }
 
     /**
-     * Perform the deletion of the product in the database.
-     */
-//    private void deleteProduct() {
-//        int rowsDeleted = 0;
-//        if (mCurrentProductUri != null) {
-//            rowsDeleted = getContentResolver().delete(mCurrentProductUri,
-//                    null,
-//                    null);
-//        }
-//        if (rowsDeleted > 0) {
-//            Toast toast = Toast.makeText(this, R.string.editor_delete_product_successful, Toast.LENGTH_SHORT);
-//            toast.show();
-//            Log.v(LOG_TAG, "Success - # Of rows deleted: " + rowsDeleted);
-//        } else {
-//            Toast toast = Toast.makeText(this, R.string.editor_delete_product_failed, Toast.LENGTH_SHORT);
-//            toast.show();
-//            Log.v(LOG_TAG, "Failure - # Of rows deleted: " + rowsDeleted);
-//        }
-//    }
-
-    /**
      * Insert or Update a product in the database.
      */
     private boolean saveProfile() {
@@ -448,10 +385,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         String sUser_phone = String.valueOf(user_phone.getText()).trim();
         String sUser_area_code = String.valueOf(user_area_code.getText()).trim();
         String sUser_dni = String.valueOf(user_dni.getText()).trim();
-//        //Convert Drawable to bitmap
-//        Bitmap bitmapPicture = ((BitmapDrawable) user_image.getDrawable()).getBitmap();
-//        //Create ByteArray from bitmap
-//        byte[] byteArrayPicture = getBitmapAsByteArray(bitmapPicture);
 
         if (TextUtils.isEmpty(sUser_name)
                 || TextUtils.isEmpty(sUser_last_name)
@@ -476,9 +409,9 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         }
 
         if (Integer.valueOf(user_age.getText().toString()) < 18 || Integer.valueOf(user_age.getText().toString()) > 50) {
-            if(Integer.valueOf(user_age.getText().toString()) < 18){
+            if (Integer.valueOf(user_age.getText().toString()) < 18) {
                 edad_min_error.setVisibility(View.VISIBLE);
-            } else if (Integer.valueOf(user_age.getText().toString()) > 50){
+            } else if (Integer.valueOf(user_age.getText().toString()) > 50) {
                 edad_max_error.setVisibility(View.VISIBLE);
             }
             return false;
@@ -502,7 +435,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
         container_profile_layout.setVisibility(View.INVISIBLE);
         loading_spinner.setVisibility(View.VISIBLE);
 
-
         try {
             postRequest(postUrl, postBodyInsertarUsuario);
         } catch (IOException e) {
@@ -510,113 +442,12 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
             Toast.makeText(this, "Error guardando informacion, pruebe de nuevo!", Toast.LENGTH_LONG).show();
             return false;
         }
-
-
-//        //Handles making a Toast in case of success and Error.
-//        makeToast(affectedRowOrId);
         return true;
-
     }
 
     public boolean isNumeric(String s) {
         return s != null && s.matches("[-+]?\\d*\\.?\\d+");
     }
-
-
-    /**
-     * Handle clicking on the ImageButton to pick an image from the Gallery
-     */
-    public void pickImage(View v) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
-    }
-
-    /**
-     * After a user selects an image from the Gallery, update the UI with new data or error if needed.
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        selectedImage = null;
-        switch (requestCode) {
-            case PICK_IMAGE_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    selectedImage = data.getData();
-
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
-
-                        //Check if image isn't 10MB(almost just in case) or bigger, if it is BLOB will cause conflict in DB, so return an Error Toast.
-                        byte[] bitmapAsArray = getBitmapAsByteArray(bitmap);
-                        int bitmapArrayLength = bitmapAsArray.length;
-//                        product_picture.setImageBitmap(bitmap);
-
-                        if (bitmapArrayLength > 9999999) {
-                            Toast toast = Toast.makeText(this, "Image must be smaller than 1MB", Toast.LENGTH_LONG);
-                            toast.show();
-
-                        } else {
-//                            product_picture.setImageBitmap(bitmap);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-        }
-    }
-
-//    public String createEmailBody() {
-//        String supplierName = supplier_name.getText().toString();
-//        String productName = user_name.getText().toString();
-//        String productModel = user_last_name.getText().toString();
-//        String emailBody = "Hi, " + supplierName + "\n\n" +
-//                "I'm writing to you to place an order for the following product: " + "\n\n" +
-//                "Product Name: " + productName + "\n" +
-//                "Product Model: " + productModel + "\n" +
-//                "Quantity: ";
-//
-//        return emailBody;
-//    }
-
-    public void composeEmail(String[] addresses, String subject, String body) {
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
-        intent.putExtra(Intent.EXTRA_EMAIL, addresses);
-        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        intent.putExtra(Intent.EXTRA_TEXT, body);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
-    }
-
-
-//    public void decreaseQuantity(View view) {
-//        String quantity = product_quantity.getText().toString();
-//        if (!TextUtils.isEmpty(quantity)) {
-//            int intQuantity = Integer.parseInt(quantity);
-//            if (intQuantity != 0) {
-//                intQuantity--;
-//                product_quantity.setText(String.valueOf(intQuantity));
-//                return;
-//            }
-//        }
-//        Toast.makeText(this, "Min stock limit reached", Toast.LENGTH_SHORT).show();
-//    }
-
-//    public void increaseQuantity(View view) {
-//        int intQuantity = 0;
-//        String quantity = product_quantity.getText().toString();
-//        if (!TextUtils.isEmpty(quantity)) {
-//            intQuantity = Integer.parseInt(quantity);
-//            if (intQuantity == 9999) {
-//                Toast.makeText(this, "Max stock limit reached", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//        }
-//        intQuantity++;
-//        product_quantity.setText(String.valueOf(intQuantity));
-//    }
 
 
     public void postRequest(String postUrl, String postBody) throws IOException {
@@ -651,9 +482,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
                     @Override
                     public void run() {
                         updateUIProfileSaved();
-
-//        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
-
                     }
                 });
             }
@@ -708,7 +536,6 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     private void updateUIProfileSaved() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         loading_spinner.setVisibility(View.GONE);
-//        container_profile_layout.setVisibility(View.VISIBLE);
         Toast.makeText(this, "Perfil guardado!", Toast.LENGTH_LONG).show();
         if (intentFromActivity.equals(SignInActivity.class.getSimpleName())) {
             Intent intent = new Intent(this, FiltersActivity.class);

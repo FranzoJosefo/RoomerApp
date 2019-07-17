@@ -42,56 +42,28 @@ public class Match implements Parcelable {
         return mLastName;
     }
 
-    public void setmLastName(String mLastName) {
-        this.mLastName = mLastName;
-    }
-
     public String getmName() {
         return mName;
-    }
-
-    public void setmName(String mName) {
-        this.mName = mName;
     }
 
     public int getmAge() {
         return mAge;
     }
 
-    public void setmAge(int mAge) {
-        this.mAge = mAge;
-    }
-
     public String getmImageUrl() {
         return mImageUrl;
-    }
-
-    public void setmImageUrl(String mImageUrl) {
-        this.mImageUrl = mImageUrl;
     }
 
     public String getmMail() {
         return mMail;
     }
 
-    public void setmMail(String mMail) {
-        this.mMail = mMail;
-    }
-
     public String getmPhone() {
         return mPhone;
     }
 
-    public void setmPhone(String mPhone) {
-        this.mPhone = mPhone;
-    }
-
     public int getmAreaCode() {
         return mAreaCode;
-    }
-
-    public void setmAreaCode(int mAreaCode) {
-        this.mAreaCode = mAreaCode;
     }
 
     public boolean hasImage() {

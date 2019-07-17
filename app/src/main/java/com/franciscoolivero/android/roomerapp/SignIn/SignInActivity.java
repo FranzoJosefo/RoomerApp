@@ -26,8 +26,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     GoogleSignInClient mGoogleSignInClient;
     SignInButton signInButton;
-//    @BindView(R.id.sign_in_button)
-//    Buttton
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
