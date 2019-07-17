@@ -511,65 +511,6 @@ public class ResultsFragment extends Fragment {
         });
     }
 
-    private void fetchMyLikes() {
-        try {
-            getLikesbyTokenHTTPRequest(userToken);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(getActivity(), "Error guardando informacion, pruebe de nuevo!", Toast.LENGTH_LONG).show();
-        }
-
-    }
-
-    private void getLikesbyTokenHTTPRequest(String token) throws IOException {
-        Log.v(LOG_TAG, "token: " + token);
-
-        String url;
-
-        HttpUrl httpUrl = new HttpUrl.Builder()
-                .scheme("http")
-                .host(ROOMER_API_HOST)
-                .addPathSegment(ROOMER_API_PATH_APD)
-                .addPathSegment(ROOMER_API_PATH_GET_LIKES_TOKEN)
-                .addQueryParameter("token", token)
-                .build();
-        url = httpUrl.toString();
-        Log.v(LOG_TAG, "URL FOR GET Added User LIKES BY TOKEN: " + url);
-
-
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e(LOG_TAG, "Problem retrieving the Added User LIKES JSON results", e);
-                call.cancel();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-
-                final String resultsResponse = response.body().string();
-                Log.v(LOG_TAG, resultsResponse);
-                //CALL NEW ResultParser method
-                List<String> addedUserLikes = ParserService.extractAddedUserLikes(resultsResponse);
-                //Null Check in case fragment gets detached from activity for long running operations.
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            myLikes = addedUserLikes;
-                            Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
-                        }
-                    });
-                }
-
-            }
-        });
-    }
-
     private void fetchMyProfile() {
         try {
             getUsuariosbyTokenHTTPRequest(userToken);
@@ -616,6 +557,66 @@ public class ResultsFragment extends Fragment {
                 List<Profile> profiles = ParserService.extractMyProfile(resultsResponse, userToken);
                 myProfile = profiles.get(0);
                 allProfiles = ParserService.extractProfilesComparedWithUsersFilters(allFilters, allProfiles, myProfile);
+                //Null Check in case fragment gets detached from activity for long running operations.
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            fetchMyLikes();
+                            Log.v(LOG_TAG, "SALIENDO DEL RUN DE UI THREAD");
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void fetchMyLikes() {
+        try {
+            getLikesbyTokenHTTPRequest(userToken);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "Error guardando informacion, pruebe de nuevo!", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void getLikesbyTokenHTTPRequest(String token) throws IOException {
+        Log.v(LOG_TAG, "token: " + token);
+
+        String url;
+
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme("http")
+                .host(ROOMER_API_HOST)
+                .addPathSegment(ROOMER_API_PATH_APD)
+                .addPathSegment(ROOMER_API_PATH_GET_LIKES_TOKEN)
+                .addQueryParameter("token", token)
+                .build();
+        url = httpUrl.toString();
+        Log.v(LOG_TAG, "URL FOR GET Added User LIKES BY TOKEN: " + url);
+
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(LOG_TAG, "Problem retrieving the Added User LIKES JSON results", e);
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String resultsResponse = response.body().string();
+                Log.v(LOG_TAG, resultsResponse);
+                //CALL NEW ResultParser method
+                myLikes = ParserService.extractAddedUserLikes(resultsResponse);
+                allProfiles = ParserService.extractProfilesRemoveLikedUsers(allProfiles, myLikes);
                 //Null Check in case fragment gets detached from activity for long running operations.
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {

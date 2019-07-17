@@ -6,7 +6,6 @@ import android.util.Log;
 import com.franciscoolivero.android.roomerapp.Filters.Filter;
 import com.franciscoolivero.android.roomerapp.Matches.Match;
 import com.franciscoolivero.android.roomerapp.Profile.Profile;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,10 +17,6 @@ import java.util.List;
 public class ParserService {
 
     private static String LOG_TAG = ParserService.class.getSimpleName();
-    private GoogleSignIn account;
-
-
-    //TODO add filterResults(List<Profile> profiles);
 
     public static List<Profile> extractProfiles(String jsonResponse, String userToken) {
         List<Profile> profileArray = new ArrayList<>();
@@ -161,7 +156,6 @@ public class ParserService {
         }
         return false;
     }
-
 
     public static List<Filter> extractFilters(String jsonResponse) {
         List<Filter> filterArray = new ArrayList<>();
@@ -422,8 +416,13 @@ public class ParserService {
         return profileListFilteredByUsersFiltersVsMyProfile;
     }
 
-    //Todo call method to check if the
-    //validFilters = extractNeededFiltersOnly(allProfiles, profileListFilteredbyUserFilter);
-    //
-
+    public static List<Profile> extractProfilesRemoveLikedUsers(List<Profile> allProfiles, List<String> myLikesTokens) {
+        List<Profile> profileListWithoutLikedUsers = new ArrayList<>();
+        for (Profile currentProfile : allProfiles) {
+            if(!myLikesTokens.contains(currentProfile.getmToken())){
+                profileListWithoutLikedUsers.add(currentProfile);
+            }
+        }
+        return profileListWithoutLikedUsers;
+    }
 }
