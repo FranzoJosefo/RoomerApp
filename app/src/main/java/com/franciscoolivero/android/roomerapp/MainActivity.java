@@ -18,7 +18,13 @@ import com.franciscoolivero.android.roomerapp.Filters.FiltersFragment;
 import com.franciscoolivero.android.roomerapp.Matches.MatchesFragment;
 import com.franciscoolivero.android.roomerapp.Profile.ProfileActivity;
 import com.franciscoolivero.android.roomerapp.Results.ResultsFragment;
+import com.franciscoolivero.android.roomerapp.SignIn.SignInActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -35,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean results_selected = false;
     private boolean matches_selected = false;
     private GoogleSignInAccount account;
-
-    private String userToken;
+    GoogleSignInClient mGoogleSignInClient;
 
 
 
@@ -180,7 +185,16 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             case R.id.action_logout:
-//                showDeleteConfirmationDialog();
+                DialogInterface.OnClickListener discardButtonClickListener =
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                signOut();
+                            }
+                        };
+
+                // Show dialog that there are unsaved changes
+                showSignOutDialog(discardButtonClickListener);
                 return true;
             case R.id.nav_profile:
                 Intent intentProfile = new Intent(this, ProfileActivity.class);
@@ -214,6 +228,45 @@ public class MainActivity extends AppCompatActivity {
         builder.setMessage(R.string.unsaved_changes_dialog_msg);
         builder.setPositiveButton(R.string.discard, discardButtonClickListener);
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Keep editing" button, so dismiss the dialog
+                // and continue editing the product.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void signOut() {
+        Intent intent = new Intent(this, SignInActivity.class);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+
+        // Build a GoogleSignInClient with the options specified by gso
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        startActivity(intent);
+                        invalidateOptionsMenu();
+                        finish();
+                    }
+                });
+    }
+
+    private void showSignOutDialog(
+            DialogInterface.OnClickListener discardButtonClickListener) {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.sign_out_dialog_msg);
+        builder.setPositiveButton(R.string.confirm_sign_out, discardButtonClickListener);
+        builder.setNegativeButton(R.string.discard_sign_out, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
                 // and continue editing the product.

@@ -110,6 +110,15 @@
     <!-- Dialog button text for the option to keep editing the current screen [CHAR LIMIT=20] -->
     <string name="keep_editing">Seguir editando</string>
 
+    <!-- Dialog message when user attempts to logout [CHAR LIMIT=NONE] -->
+    <string name="sign_out_dialog_msg">¿Estás seguro que querés cerrar la sesión?</string>
+
+    <!-- Dialog button text for the option to discard a user's changes [CHAR LIMIT=20] -->
+    <string name="discard_sign_out">Cancelar</string>
+
+    <!-- Dialog button text for the option to keep editing the current screen [CHAR LIMIT=20] -->
+    <string name="confirm_sign_out">Cerrar sesión</string>
+
 
     <!--&lt;!&ndash; Toast message in editor when current product was successfully deleted [CHAR LIMIT=NONE] &ndash;&gt;-->
     <!--<string name="editor_delete_product_successful">Product deleted</string>-->
