@@ -138,6 +138,8 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     View container_profile_layout;
     @BindView(R.id.edad_min_error)
     View edad_min_error;
+    @BindView(R.id.edad_max_error)
+    View edad_max_error;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -308,11 +310,15 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
                 hideKeyboard(this);
                 // Trigger saveProfile() method to save Product to DB.
                 //Could handle and validate errors here.
-                if (isConnected()) {
-                    saveProfile();
+                if(mProductHasChanged){
+                    if (isConnected()) {
+                        saveProfile();
+                    } else {
+                        Toast noInternetToast = Toast.makeText(this, "Revise su conexion a Internet", Toast.LENGTH_SHORT);
+                        noInternetToast.show();
+                    }
                 } else {
-                    Toast noInternetToast = Toast.makeText(this, "Revise su conexion a Internet", Toast.LENGTH_SHORT);
-                    noInternetToast.show();
+                    finish();
                 }
 
                 return true;
@@ -433,6 +439,7 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
     private boolean saveProfile() {
 
         edad_min_error.setVisibility(View.GONE);
+        edad_max_error.setVisibility(View.GONE);
 
         String sUser_name = user_name.getText().toString().trim();
         String sUser_last_name = user_last_name.getText().toString().trim();
@@ -468,8 +475,12 @@ public class ProfileActivity extends AppCompatActivity implements AdapterView.On
 
         }
 
-        if (Integer.valueOf(user_age.getText().toString()) < 18) {
-            edad_min_error.setVisibility(View.VISIBLE);
+        if (Integer.valueOf(user_age.getText().toString()) < 18 || Integer.valueOf(user_age.getText().toString()) > 50) {
+            if(Integer.valueOf(user_age.getText().toString()) < 18){
+                edad_min_error.setVisibility(View.VISIBLE);
+            } else if (Integer.valueOf(user_age.getText().toString()) > 50){
+                edad_max_error.setVisibility(View.VISIBLE);
+            }
             return false;
         }
 

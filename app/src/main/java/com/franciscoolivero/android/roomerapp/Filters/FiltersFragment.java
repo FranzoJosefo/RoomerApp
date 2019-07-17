@@ -102,6 +102,10 @@ public class FiltersFragment extends Fragment {
     View container_filter_layout;
     @BindView(R.id.loading_spinner_container_filter)
     View container_spinner_filter;
+    @BindView(R.id.dinero_max_error_menor_a_min)
+    View dinero_max_error_menor_a_min;
+    @BindView(R.id.edad_max_error_menor_a_min)
+    View edad_max_error_menor_a_min;
 
 
     public boolean ismProductHasChanged() {
@@ -336,6 +340,10 @@ public class FiltersFragment extends Fragment {
         edad_max_error.setVisibility(View.GONE);
         dinero_min_error.setVisibility(View.GONE);
         dinero_max_error.setVisibility(View.GONE);
+        dinero_max_error_menor_a_min.setVisibility(View.GONE);
+        edad_max_error_menor_a_min.setVisibility(View.GONE);
+
+
 
         String sFilter_barrio = spinner_barrio.getSelectedItem().toString();
         String sFilter_edad_min = String.valueOf(text_edad_min.getText()).trim();
@@ -375,7 +383,9 @@ public class FiltersFragment extends Fragment {
         if (Integer.valueOf(text_edad_min.getText().toString()) < 18
                 || Integer.valueOf(text_edad_max.getText().toString()) > 50
                 || Integer.valueOf(text_plata_min.getText().toString()) < 5000
-                || Integer.valueOf(text_plata_max.getText().toString()) > 50000) {
+                || Integer.valueOf(text_plata_max.getText().toString()) > 50000
+                || Integer.valueOf(text_plata_min.getText().toString()) >= Integer.valueOf(text_plata_max.getText().toString())
+                || Integer.valueOf(text_edad_min.getText().toString()) >= Integer.valueOf(text_edad_max.getText().toString())) {
             if (Integer.valueOf(text_edad_min.getText().toString()) < 18) {
                 edad_min_error.setVisibility(View.VISIBLE);
             }
@@ -390,6 +400,14 @@ public class FiltersFragment extends Fragment {
 
             if (Integer.valueOf(text_plata_max.getText().toString()) > 50000) {
                 dinero_max_error.setVisibility(View.VISIBLE);
+            }
+
+            if(Integer.valueOf(text_plata_min.getText().toString()) >= Integer.valueOf(text_plata_max.getText().toString())){
+                dinero_max_error_menor_a_min.setVisibility(View.VISIBLE);
+            }
+
+            if(Integer.valueOf(text_edad_min.getText().toString()) >= Integer.valueOf(text_edad_max.getText().toString())){
+                edad_max_error_menor_a_min.setVisibility(View.VISIBLE);
             }
             return false;
         }
@@ -414,7 +432,6 @@ public class FiltersFragment extends Fragment {
             Toast.makeText(getContext(), "Error guardando filtros, pruebe de nuevo!", Toast.LENGTH_LONG).show();
             return false;
         }
-
         return true;
     }
 
@@ -430,8 +447,6 @@ public class FiltersFragment extends Fragment {
                 } else {
                     Toast.makeText(getContext(), "Verifique la conexion a internet", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         }
     }
@@ -459,7 +474,6 @@ public class FiltersFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 final String myResponse = response.body().string();
                 Log.d("TAG", myResponse);
-
 
                 try {
                     JSONObject json = new JSONObject(myResponse);

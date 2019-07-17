@@ -113,6 +113,26 @@
 
                         </LinearLayout>
 
+                        <LinearLayout
+                            android:id="@+id/edad_max_error"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <TextView
+                                style="@style/ErrorTextFieldStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginRight="16dp"
+                                android:background="@android:color/transparent"
+                                android:text="No puede ser mayor de 50"
+                                android:textColor="@android:color/holo_red_light" />
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </LinearLayout>
