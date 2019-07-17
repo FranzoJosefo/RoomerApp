@@ -15,28 +15,32 @@
       },
       "oauth_client": [
         {
-          "client_id": "739467235704-pmg92gn49nusofsodlmupgi4fs2fnjas.apps.googleusercontent.com",
+          "client_id": "739467235704-q3gdmrmvpagsl9q5ppkl4nr5vbjgaahj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.franciscoolivero.android.roomerapp",
+            "certificate_hash": "7f90229fbf16de6fde7fc6235aa9d58a725a8b04"
+          }
+        },
+        {
+          "client_id": "739467235704-4g2nm0n6mjeofabgbdg8j8fgql2dmec1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.franciscoolivero.android.roomerapp",
             "certificate_hash": "252b3071b7740b901c20ba6fb2f872b771703736"
           }
-        },
-        {
-          "client_id": "739467235704-gfnhgbffagvv4mdcbhkr5hv9fkcbtqka.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDplJqysOcklYYkwhfwljppuo0tD_k5Nuk"
+          "current_key": "AIzaSyAn5d9rC15-Niv10iwIC9asc-TyqiF1KMU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "739467235704-gfnhgbffagvv4mdcbhkr5hv9fkcbtqka.apps.googleusercontent.com",
+              "client_id": "739467235704-kg1hhc46t9t8pjlt2a5i5tt4utlk833f.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

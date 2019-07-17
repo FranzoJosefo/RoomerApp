@@ -48,7 +48,7 @@ public class MatchesAdapter extends ArrayAdapter<Match> {
         holder.mailTextView.setText(currentMatch.getmMail());
 
         //Get and update the user phone
-        holder.phoneTextView.setText(currentMatch.getmAreaCode()+" "+currentMatch.getmPhone());
+        holder.phoneTextView.setText(currentMatch.getmAreaCode() + " " + currentMatch.getmPhone());
 
         //If there is an image, get it using picasso and set it to the ImageView
         if (currentMatch.hasImage()) {
@@ -56,64 +56,6 @@ public class MatchesAdapter extends ArrayAdapter<Match> {
         } else {
             //TODO
         }
-
-//        if (currentMatch.isSaleable()) {
-//            holder.amount.setVisibility(View.VISIBLE);
-//            holder.currencyCode.setVisibility(View.VISIBLE);
-//            holder.amount.setText(currentMatch.getmListPrice());
-//            holder.currencyCode.setText(currentMatch.getmCurrencyCode());
-//        } else {
-//            holder.amount.setVisibility(View.GONE);
-//            holder.currencyCode.setVisibility(View.GONE);
-//        }
-//
-//        if (currentMatch.hasRating()) {
-//            holder.rating.setVisibility(View.VISIBLE);
-//            holder.starRatingImage.setVisibility(View.VISIBLE);
-//            holder.starRatingImage.setImageDrawable(getContext().getResources().getDrawable(R.drawable.round_star_rate_black_18));
-//            holder.rating.setText(currentMatch.getmRating());
-//        } else {
-//            holder.rating.setVisibility(View.GONE);
-//            holder.starRatingImage.setVisibility(View.GONE);
-//        }
-
-
-//        holder.buttonBuy.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                openWebPage(currentMatch);
-//            }
-//        });
-
-
-
-        //TODO - Add more Complex Logic for button pressing and disabling each card.
-//        buttonSale.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                int quantity = Integer.valueOf(holder.quantity.getText().toString());
-//                long affectedRowOrId;
-//
-//                if (quantity != 0) {
-//                    quantity -= 1;
-//                }
-//
-//                String strQuantity = String.valueOf(quantity);
-//
-//                // Create a new map of values, where column names are the keys
-//                ContentValues values = new ContentValues();
-//
-//                values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, strQuantity);
-//
-//                affectedRowOrId = context.getContentResolver().update(mCurrentProductUri, values, null, null);
-//                notifyDataSetChanged();
-//
-//                if (affectedRowOrId == 0) {
-//                    Toast toast = Toast.makeText(view.getContext(), "Error selling product", Toast.LENGTH_SHORT);
-//                    toast.show();
-//                }
-//            }
-//        });
         return listItemView;
     }
 
@@ -135,12 +77,4 @@ public class MatchesAdapter extends ArrayAdapter<Match> {
             ButterKnife.bind(this, view);
         }
     }
-
-//    private void openWebPage(Match profile) {
-//        //Uri profileUri = Uri.parse(profile.getmInfoLink()); Replace
-//        Intent intent = new Intent(Intent.ACTION_VIEW, profileUri);
-//        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-//            getContext().startActivity(intent);
-//        }
-//    }
 }

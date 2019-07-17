@@ -12,7 +12,7 @@ public class Match implements Parcelable {
     private String mImageUrl = null;
     private String mMail;
     private String mPhone;
-    private String mAreaCode;
+    private int mAreaCode;
 
 
 //
@@ -28,7 +28,7 @@ public class Match implements Parcelable {
 //     */
 
 
-    public Match(String mName, String mLastName, int mAge, String mImageUrl, String mMail, String mPhone, String mAreaCode) {
+    public Match(String mName, String mLastName, int mAge, String mImageUrl, String mMail, String mPhone, int mAreaCode) {
         this.mName = mName;
         this.mLastName = mLastName;
         this.mAge = mAge;
@@ -42,56 +42,28 @@ public class Match implements Parcelable {
         return mLastName;
     }
 
-    public void setmLastName(String mLastName) {
-        this.mLastName = mLastName;
-    }
-
     public String getmName() {
         return mName;
-    }
-
-    public void setmName(String mName) {
-        this.mName = mName;
     }
 
     public int getmAge() {
         return mAge;
     }
 
-    public void setmAge(int mAge) {
-        this.mAge = mAge;
-    }
-
     public String getmImageUrl() {
         return mImageUrl;
-    }
-
-    public void setmImageUrl(String mImageUrl) {
-        this.mImageUrl = mImageUrl;
     }
 
     public String getmMail() {
         return mMail;
     }
 
-    public void setmMail(String mMail) {
-        this.mMail = mMail;
-    }
-
     public String getmPhone() {
         return mPhone;
     }
 
-    public void setmPhone(String mPhone) {
-        this.mPhone = mPhone;
-    }
-
-    public String getmAreaCode() {
+    public int getmAreaCode() {
         return mAreaCode;
-    }
-
-    public void setmAreaCode(String mAreaCode) {
-        this.mAreaCode = mAreaCode;
     }
 
     public boolean hasImage() {
@@ -111,7 +83,7 @@ public class Match implements Parcelable {
         dest.writeString(this.mImageUrl);
         dest.writeString(this.mPhone);
         dest.writeString(this.mMail);
-        dest.writeString(this.mAreaCode);
+        dest.writeInt(this.mAreaCode);
     }
 
     protected Match(Parcel in) {
@@ -121,7 +93,7 @@ public class Match implements Parcelable {
         this.mAge = in.readInt();
         this.mImageUrl = in.readString();
         this.mPhone = in.readString();
-        this.mAreaCode = in.readString();
+        this.mAreaCode = in.readInt();
     }
 
     public static final Parcelable.Creator<Match> CREATOR = new Parcelable.Creator<Match>() {

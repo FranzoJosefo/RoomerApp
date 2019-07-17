@@ -12,6 +12,9 @@
     <!-- Title for the activity to add a new product [CHAR LIMIT=20] -->
     <string name="editor_activity_title_profile_create">Crear Perfil</string>
 
+    <!-- Title text for the empty view in Results Screen [CHAR LIMIT=50] -->
+    <string name="generic_loading_tittle">Cargando&#8230;</string>
+
     <string name="editor_activity_title_filters_create">Elegir Filtros</string>
 
     <string name="editor_activity_title_profile_edit">Editar Perfil</string>
@@ -23,16 +26,16 @@
     <string name="action_save">Save</string>
 
     <!-- Label for editor overflow menu option that deletes the current product [CHAR LIMIT=20] -->
-    <string name="action_delete">Delete</string>
+    <string name="nav_profile">Perfil</string>
 
     <!-- Label for editor overflow menu option that starts intent to order the current product [CHAR LIMIT=20] -->
-    <string name="action_order">Order Product</string>
+    <string name="action_logout">Cerrar sesión</string>
 
     <!-- Titulo del Spinner (dropdown) para seleccionar el sexo -->
     <string name="spinner_title_sexo">Sexo</string>
 
     <!-- Label for overview category of attributes in the editor [CHAR LIMIT=30] -->
-    <string name="category_datos">Datos Personales *</string>
+    <string name="category_datos">Info Personal *</string>
 
     <!-- Label for stock category in the editor [CHAR LIMIT=30] -->
     <string name="category_contact">Info de Contacto *</string>
@@ -56,10 +59,10 @@
     <string name="hint_user_age">Edad</string>
 
     <!-- Text hint for model field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_user_phone">Teléfono</string>
+    <string name="hint_user_phone">Teléfono (Ej:. 1168302914)</string>
 
     <!-- Text hint for model field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_user_area_code">Cód. Area</string>
+    <string name="hint_user_area_code">Cód. Area (Ej:. 549)</string>
 
     <!-- Text hint for price field in the editor [CHAR LIMIT=30] -->
     <string name="hint_product_price">Price</string>
@@ -107,6 +110,15 @@
     <!-- Dialog button text for the option to keep editing the current screen [CHAR LIMIT=20] -->
     <string name="keep_editing">Seguir editando</string>
 
+    <!-- Dialog message when user attempts to logout [CHAR LIMIT=NONE] -->
+    <string name="sign_out_dialog_msg">¿Estás seguro que querés cerrar la sesión?</string>
+
+    <!-- Dialog button text for the option to discard a user's changes [CHAR LIMIT=20] -->
+    <string name="discard_sign_out">Cancelar</string>
+
+    <!-- Dialog button text for the option to keep editing the current screen [CHAR LIMIT=20] -->
+    <string name="confirm_sign_out">Cerrar sesión</string>
+
 
     <!--&lt;!&ndash; Toast message in editor when current product was successfully deleted [CHAR LIMIT=NONE] &ndash;&gt;-->
     <!--<string name="editor_delete_product_successful">Product deleted</string>-->
@@ -142,7 +154,7 @@
     <string name="unit_pet_currency">AR$\u0020</string>
 
     <!-- In Stock label for List Item -->
-    <string name="age_label_list_item">Edad:\u0020</string>
+    <string name="age_label_list_item">\u0020años</string>
 
     <!-- OUT OF STOCK label for cases in which quantity is 0 for List Item -->
     <string name="out_of_stock_label_list_item">OUT OF STOCK</string>
@@ -150,6 +162,8 @@
     <!-- Order request subject for Email intent in DetailsActivity -->
     <string name="email_order_request_subject">Order Request</string>
     <string name="title_activity_login">Sign in</string>
+
+
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -160,10 +174,11 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
-
+    <string name="permission_rationale">"Contacts permissions are needed for providing email"</string>
+    <string name="client_id_gsi_debug">739467235704&#8211;4g2nm0n6mjeofabgbdg8j8fgql2dmec1.apps.googleusercontent.com</string>
+    <string name="client_secret_gsi_debug">"ADD CLIENT SECRET."</string>
+    <string name="client_id_gsi_release">739467235704-q3gdmrmvpagsl9q5ppkl4nr5vbjgaahj.apps.googleusercontent.com</string>
+    <string name="web_client_id_gsi">739467235704-kg1hhc46t9t8pjlt2a5i5tt4utlk833f.apps.googleusercontent.com</string>
 
 
 </resources>

@@ -22,22 +22,30 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     private static final int RC_SIGN_IN = 1; //codigo asignado al sign in
     private final String TAG = getClass().getSimpleName();
+
+
     GoogleSignInClient mGoogleSignInClient;
     SignInButton signInButton;
-//    @BindView(R.id.sign_in_button)
-//    Buttton
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in);
+
+        /**
+         * CLIENT ID CHANGE FROM DEBUG TO RELEASE WHEN GENERATING SIGNED APK/BUNDLE
+         */
+        final String WEB_CLIENT_ID_RELEASE = this.getResources().getString(R.string.web_client_id_gsi);
+
         signInButton = findViewById(R.id.sign_in_button);
         signInButton.setEnabled(true);
         signInButton.setSize(SignInButton.SIZE_WIDE);
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("739467235704-kg1hhc46t9t8pjlt2a5i5tt4utlk833f.apps.googleusercontent.com")
+                .requestIdToken(WEB_CLIENT_ID_RELEASE)
                 .requestEmail()
                 .build();
+
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
     }
@@ -67,6 +75,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         Intent intent = new Intent(this, ProfileActivity.class);
         if (account != null) {
             intent.putExtra("account", account);
+            intent.putExtra("intentFromActivity", this.getClass().getSimpleName());
             startActivity(intent);
             finish();
         } else {
